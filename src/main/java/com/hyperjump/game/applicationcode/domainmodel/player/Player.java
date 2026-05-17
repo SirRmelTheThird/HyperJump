@@ -14,7 +14,6 @@ public class Player {
 
     private List<Position> path;
     private int pathIndex;
-    private int previousPathIndex;
     private Position previousPos;
 
     public Player(Colour colour, DiceShaker diceShaker) {
@@ -27,13 +26,28 @@ public class Player {
         return diceShaker.roll();
     }
 
-    public Colour getColour()              { return colour; }
-    public List<Position> getPath()        { return path; }
-    public int getPathIndex()              { return pathIndex; }
-    public Position getStartPos()          { return path.getFirst(); }
-    public Position getEndPos()            { return path.getLast(); }
-    public Position getCurrentPos()        { return path.get(pathIndex); }
-    public Position getPreviousPos()       { return previousPos; }
+    public Colour getColour() {
+        return colour;
+    }
+
+    public List<Position> getPath() {
+        return path;
+    }
+    public int getPathIndex() {
+        return pathIndex;
+    }
+
+    public Position getStartPos() {
+        return path.getFirst();
+    }
+
+    public Position getEndPos() {
+        return path.getLast();
+    }
+
+    public Position getCurrentPos() {
+        return path.get(pathIndex);
+    }
 
     public void setPath(List<Position> path) {
         this.path = List.copyOf(path);
@@ -42,12 +56,7 @@ public class Player {
 
     public void moveToIndex(int index) {
         previousPos = getCurrentPos();
-        previousPathIndex = pathIndex;
         pathIndex = index;
-    }
-
-    public void moveToPreviousIndex() {
-        pathIndex = previousPathIndex;
     }
 
     public void teleportTo(Position position) {

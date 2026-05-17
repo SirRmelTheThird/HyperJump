@@ -25,7 +25,6 @@ public class HitVariationDecorator extends MovementDecorator {
         }
 
         result.addEvent(new HitEvent(hitPlayer.getColour().toString(), result.getEndPosition()));
-
         player.moveToIndex(player.getPath().indexOf(result.getPreviousPosition()));
         result.updateEndPosition(result.getPreviousPosition());
 

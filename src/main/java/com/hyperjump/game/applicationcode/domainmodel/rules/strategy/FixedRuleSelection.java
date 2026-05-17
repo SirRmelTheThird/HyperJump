@@ -23,9 +23,7 @@ public class FixedRuleSelection implements RuleSelectionStrategy {
                 List.of(availableRules.get(1), availableRules.get(2)),
                 List.of(availableRules.get(0), availableRules.get(1), availableRules.get(2))
         );
-
         List<GameRule> selectedCombo = combos.get(index);
-
         index = (index + 1) % combos.size();
 
         return selectedCombo;

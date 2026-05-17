@@ -18,6 +18,6 @@ public class BasicMovement implements Movement {
 
         Position current = player.getCurrentPos();
 
-        return new TurnOutcome (previous, current, current, newIndex);
+        return new TurnOutcome (previous, current, newIndex);
     }
 }

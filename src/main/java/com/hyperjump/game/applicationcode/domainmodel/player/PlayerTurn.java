@@ -15,17 +15,13 @@ public class PlayerTurn {
 
     private final PlayerSelector playerSelector;
     private final Movement movement;
-
     private GameState state;
-
     private DiceRoll roll;
     private TurnOutcome turnOutcome;
-
     private final List<PlayerTurnObserverPort> turnObservers = new ArrayList<>();
     private final List<GameOverObserverPort> gameOverObservers = new ArrayList<>();
 
     public PlayerTurn(PlayerSelector playerSelector, Movement movement, GameState state) {
-
         this.playerSelector = playerSelector;
         this.movement = movement;
         this.state = state;
@@ -46,7 +42,6 @@ public class PlayerTurn {
     }
 
     public void playTurn() {
-
         Player currentPlayer = playerSelector.getCurrentPlayer();
 
         roll = currentPlayer.roll();

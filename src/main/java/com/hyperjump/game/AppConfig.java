@@ -6,8 +6,6 @@ import com.hyperjump.game.applicationcode.port.out.*;
 import com.hyperjump.game.applicationcode.usecase.GameSessionUseCase;
 import com.hyperjump.game.applicationcode.usecase.InitialisePlayerUseCase;
 import com.hyperjump.game.applicationcode.usecase.InitialiseRulesUseCase;
-import com.hyperjump.game.applicationcode.usecase.StartGameService;
-
 import com.hyperjump.game.infrastructure.driving.ConsoleDisplayAdapter;
 import com.hyperjump.game.infrastructure.driving.GameOverDisplayAdapter;
 import com.hyperjump.game.infrastructure.driving.PathsDisplayAdapter;
@@ -21,6 +19,8 @@ import java.util.List;
 
 @Configuration
 public class AppConfig {
+
+    private static final int PLAYER_COUNT = 2;
 
     @Bean
     public ConsoleDisplayAdapter consoleDisplay() {
@@ -58,16 +58,9 @@ public class AppConfig {
     }
 
     @Bean
-    public GameSessionUseCase gameSessionUseCase(Board board, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, PathFactory pathFactory, List<GameRulesObserverPort> rulesObservers) {
-        return new GameSessionUseCase(board, playerSetup, rulesSetup, pathFactory, rulesObservers);
-    }
-
-    @Bean
-    public StartGameUseCase startGameUseCase(GameSessionUseCase gameSessionUseCase, List<GameStartObserverPort> gameStartObservers) {
-        StartGameService service = new StartGameService(gameSessionUseCase);
-
-        gameStartObservers.forEach(gameSessionUseCase::addObserver);
-
-        return service;
+    public StartGameUseCase startGameUseCase(Board board, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, PathFactory pathFactory, List<GameRulesObserverPort> rulesObservers, List<GameStartObserverPort> gameStartObservers) {
+        GameSessionUseCase session = new GameSessionUseCase(PLAYER_COUNT, board, playerSetup, rulesSetup, pathFactory, rulesObservers);
+        gameStartObservers.forEach(session::addObserver);
+        return session;
     }
 }

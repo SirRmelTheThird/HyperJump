@@ -25,7 +25,6 @@ public class InitialisePlayerUseCase {
 
     private List<Player> players;
     private RoundRobinPlayerSelector selector;
-
     private final DiceShaker diceShaker;
 
     public InitialisePlayerUseCase(DiceShaker diceShaker, List<PlayerTurnObserverPort> turnObservers, List<GameOverObserverPort> gameOverObservers) {
@@ -34,15 +33,10 @@ public class InitialisePlayerUseCase {
         this.gameOverObservers = gameOverObservers;
     }
 
-
     public void setupPlayers(int playerCount, BoardFactory boardFactory, PathFactory pathFactory) {
         players = createPlayers(playerCount);
 
-        PlayerStartPositionCalculator calculator = new PlayerStartPositionCalculator(
-            boardFactory.getStartPosition(),
-            boardFactory.getEndPosition(),
-            boardFactory.getCols()
-        );
+        PlayerStartPositionCalculator calculator = new PlayerStartPositionCalculator(boardFactory.getStartPosition(), boardFactory.getEndPosition(), boardFactory.getCols());
 
         List<Position> starts = calculator.getStartPositions(playerCount);
         List<Position> ends   = calculator.getEndPositions(playerCount);
@@ -51,7 +45,6 @@ public class InitialisePlayerUseCase {
             Path path = pathFactory.createPath(boardFactory, starts.get(i), ends.get(i));
             players.get(i).setPath(path.getPositions());
         }
-
         selector = new RoundRobinPlayerSelector(players);
     }
 

@@ -9,8 +9,6 @@ public class RandomTeleportGeneration implements TeleportGenerationStrategy {
 
     private static final int MAX_WORMHOLES = 2;
 
-    private final Random random = new Random();
-
     @Override
     public Map<Position, Position> generate(int boardSize, List<Player> players) {
         Map<Position, Position> wormholes = new HashMap<>();

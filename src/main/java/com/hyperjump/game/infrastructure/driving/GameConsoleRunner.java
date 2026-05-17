@@ -2,7 +2,6 @@ package com.hyperjump.game.infrastructure.driving;
 
 import com.hyperjump.game.applicationcode.port.in.StartGameUseCase;
 import com.hyperjump.game.applicationcode.port.out.DiceShaker;
-import com.hyperjump.game.infrastructure.driven.dice.FixedDiceShakerAdapter;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +19,7 @@ public class GameConsoleRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws InterruptedException {
         for (int i = 0; i < 7; i++) {
-            if (diceShaker instanceof FixedDiceShakerAdapter fixedDice) {
-                fixedDice.reset();
-            }
+            diceShaker.reset();
             System.out.println("\n=== GAME " + (i + 1) + " ===\n");
             startGameUseCase.play();
             Thread.sleep(3000);

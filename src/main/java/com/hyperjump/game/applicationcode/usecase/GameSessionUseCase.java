@@ -8,35 +8,31 @@ import com.hyperjump.game.applicationcode.domainmodel.movement.strategy.HitVaria
 import com.hyperjump.game.applicationcode.domainmodel.movement.strategy.MovementDecoratorStrategy;
 import com.hyperjump.game.applicationcode.domainmodel.movement.strategy.TeleportVariation;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
+import com.hyperjump.game.applicationcode.domainmodel.state.InPlayState;
+import com.hyperjump.game.applicationcode.port.in.StartGameUseCase;
 import com.hyperjump.game.applicationcode.port.out.Board;
 import com.hyperjump.game.applicationcode.port.out.GameRule;
-import com.hyperjump.game.applicationcode.port.out.GameStartObserverPort;
 import com.hyperjump.game.applicationcode.port.out.GameRulesObserverPort;
+import com.hyperjump.game.applicationcode.port.out.GameStartObserverPort;
 import com.hyperjump.game.applicationcode.port.out.PathFactory;
-import com.hyperjump.game.applicationcode.domainmodel.rules.ExactEndRule;
-import com.hyperjump.game.applicationcode.domainmodel.rules.HitRule;
-import com.hyperjump.game.applicationcode.domainmodel.rules.TeleportRule;
-import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.RandomTeleportGeneration;
-import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.SamePositionHit;
-import com.hyperjump.game.applicationcode.domainmodel.state.InPlayState;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameSessionUseCase {
+public class GameSessionUseCase implements StartGameUseCase {
 
-    private static final int PLAYER_COUNT = 2;
-
+    private final int playerCount;
     private final Board boardProvider;
     private final InitialisePlayerUseCase playerSetup;
-    private final InitialiseRulesUseCase  rulesSetup;
+    private final InitialiseRulesUseCase rulesSetup;
     private final PathFactory pathFactory;
     private final List<GameStartObserverPort> observers = new ArrayList<>();
     private final List<GameRulesObserverPort> rulesObservers;
 
     private BoardFactory board;
 
-    public GameSessionUseCase(Board boardProvider, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, PathFactory pathFactory, List<GameRulesObserverPort> rulesObservers) {
+    public GameSessionUseCase(int playerCount, Board boardProvider, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, PathFactory pathFactory, List<GameRulesObserverPort> rulesObservers) {
+        this.playerCount = playerCount;
         this.boardProvider = boardProvider;
         this.playerSetup = playerSetup;
         this.rulesSetup = rulesSetup;
@@ -44,21 +40,27 @@ public class GameSessionUseCase {
         this.rulesObservers = rulesObservers;
     }
 
-    public void setupGame() {
-        board = boardProvider.createBoard(PLAYER_COUNT);
-        playerSetup.setupPlayers(PLAYER_COUNT, board, pathFactory);
+    @Override
+    public void play() {
+        setupGame();
+        startGame();
     }
 
-    public void startGame() {
+    public void addObserver(GameStartObserverPort observer) {
+        observers.add(observer);
+    }
+
+    private void setupGame() {
+        board = boardProvider.createBoard(playerCount);
+        playerSetup.setupPlayers(playerCount, board, pathFactory);
+    }
+
+    private void startGame() {
         List<GameRule> selectedRules = selectRules();
         notifyRulesSelected(selectedRules);
         notifyGameStarted(playerSetup.getPlayers());
         Movement movement = buildMovement(selectedRules);
         playerSetup.startTurns(movement, new InPlayState());
-    }
-
-    public void addObserver(GameStartObserverPort observer) {
-        observers.add(observer);
     }
 
     private List<GameRule> selectRules() {
@@ -68,11 +70,7 @@ public class GameSessionUseCase {
     private Movement buildMovement(List<GameRule> selectedRules) {
         Movement movement = new BasicMovement();
 
-        List<MovementDecoratorStrategy> strategies = List.of(
-            new TeleportVariation(),
-            new ExactEndVariation(),
-            new HitVariation()
-        );
+        List<MovementDecoratorStrategy> strategies = List.of(new TeleportVariation(), new ExactEndVariation(), new HitVariation());
 
         for (GameRule rule : selectedRules) {
             for (MovementDecoratorStrategy strategy : strategies) {
@@ -81,7 +79,6 @@ public class GameSessionUseCase {
                 }
             }
         }
-
         return movement;
     }
 

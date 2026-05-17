@@ -9,22 +9,12 @@ import java.util.List;
 public class TurnOutcome {
 
     private final Position previousPosition;
-    private final Position landedPosition;
-
     private Position endPosition;
-
     private final int newIndex;
-
     private final List<GameEvent> events = new ArrayList<>();
 
-    public TurnOutcome(
-            Position previousPosition,
-            Position landedPosition,
-            Position endPosition,
-            int newIndex
-    ) {
+    public TurnOutcome(Position previousPosition, Position endPosition, int newIndex) {
         this.previousPosition = previousPosition;
-        this.landedPosition = landedPosition;
         this.endPosition = endPosition;
         this.newIndex = newIndex;
     }
@@ -39,10 +29,6 @@ public class TurnOutcome {
 
     public Position getPreviousPosition() {
         return previousPosition;
-    }
-
-    public Position getLandedPosition() {
-        return landedPosition;
     }
 
     public Position getEndPosition() {

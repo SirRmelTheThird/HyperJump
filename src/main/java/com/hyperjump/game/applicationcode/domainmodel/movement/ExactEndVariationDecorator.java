@@ -17,7 +17,6 @@ public class ExactEndVariationDecorator extends MovementDecorator {
     @Override
     public TurnOutcome move(Player player, DiceRoll roll) {
         TurnOutcome  result = wrapped.move(player, roll);
-
         int bouncedIndex = exactEndRule.getBounceIndex(player, result.getNewIndex());
 
         if (bouncedIndex == -1) {
