@@ -12,7 +12,6 @@ public class StartGameService implements StartGameUseCase {
         this.gameSessionUseCase = gameSessionUseCase;
     }
 
-
     @Override
     public void play() {
         gameSessionUseCase.setupGame();

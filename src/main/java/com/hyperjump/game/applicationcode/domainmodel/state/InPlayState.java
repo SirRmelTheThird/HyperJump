@@ -13,7 +13,6 @@ public class InPlayState implements GameState {
         if (!currentPlayer.isWinner()) {
             return;
         }
-
         nextState = new GameOverState(currentPlayer);
     }
 

@@ -24,9 +24,7 @@ public class PlayerTurn {
     private final List<PlayerTurnObserverPort> turnObservers = new ArrayList<>();
     private final List<GameOverObserverPort> gameOverObservers = new ArrayList<>();
 
-    public PlayerTurn(PlayerSelector playerSelector,
-                      Movement movement,
-                      GameState state) {
+    public PlayerTurn(PlayerSelector playerSelector, Movement movement, GameState state) {
 
         this.playerSelector = playerSelector;
         this.movement = movement;
@@ -42,7 +40,6 @@ public class PlayerTurn {
     }
 
     public void play() {
-
         while (!state.isGameOver()) {
             playTurn();
         }
@@ -113,7 +110,4 @@ public class PlayerTurn {
         return turnOutcome;
     }
 
-//    public List<PlayerTurnObserverPort> getObservers() {
-//        return turnObservers;
-//    }
 }

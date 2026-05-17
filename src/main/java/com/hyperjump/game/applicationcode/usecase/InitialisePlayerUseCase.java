@@ -4,7 +4,6 @@ import com.hyperjump.game.applicationcode.domainmodel.board.BoardFactory;
 import com.hyperjump.game.applicationcode.domainmodel.gameenum.Colour;
 import com.hyperjump.game.applicationcode.domainmodel.movement.Movement;
 import com.hyperjump.game.applicationcode.domainmodel.path.Path;
-import com.hyperjump.game.applicationcode.domainmodel.path.PlayerPathRegistry;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
 import com.hyperjump.game.applicationcode.domainmodel.player.PlayerStartPositionCalculator;
 import com.hyperjump.game.applicationcode.domainmodel.player.PlayerTurn;
@@ -17,9 +16,7 @@ import com.hyperjump.game.applicationcode.domainmodel.state.GameState;
 import com.hyperjump.game.applicationcode.domainmodel.value.Position;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class InitialisePlayerUseCase {
 
@@ -31,9 +28,7 @@ public class InitialisePlayerUseCase {
 
     private final DiceShaker diceShaker;
 
-    public InitialisePlayerUseCase(DiceShaker diceShaker,
-                                   List<PlayerTurnObserverPort> turnObservers,
-                                   List<GameOverObserverPort> gameOverObservers) {
+    public InitialisePlayerUseCase(DiceShaker diceShaker, List<PlayerTurnObserverPort> turnObservers, List<GameOverObserverPort> gameOverObservers) {
         this.diceShaker = diceShaker;
         this.turnObservers = turnObservers;
         this.gameOverObservers = gameOverObservers;
@@ -52,14 +47,11 @@ public class InitialisePlayerUseCase {
         List<Position> starts = calculator.getStartPositions(playerCount);
         List<Position> ends   = calculator.getEndPositions(playerCount);
 
-        Map<Player, Path> paths = new LinkedHashMap<>();
         for (int i = 0; i < players.size(); i++) {
             Path path = pathFactory.createPath(boardFactory, starts.get(i), ends.get(i));
             players.get(i).setPath(path.getPositions());
-            paths.put(players.get(i), path);
         }
 
-        new PlayerPathRegistry(paths);
         selector = new RoundRobinPlayerSelector(players);
     }
 
