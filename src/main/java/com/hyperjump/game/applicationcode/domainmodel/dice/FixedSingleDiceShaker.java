@@ -1,0 +1,35 @@
+package com.hyperjump.game.applicationcode.domainmodel.dice;
+
+import com.hyperjump.game.applicationcode.domainmodel.value.DiceRoll;
+
+public class FixedSingleDiceShaker implements DiceShakerFactory {
+
+    private final int[] shakes = new int[]{1, 2, 3, 4, 5, 6};
+    private int index;
+
+    public void reset() {
+        index = 0;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return true;
+    }
+
+    @Override
+    public int next() {
+        int value = shakes[index];
+        index = (index + 1) % shakes.length;
+        return value;
+    }
+
+    @Override
+    public int[] toArray() {
+        return new int[]{next()};
+    }
+
+    @Override
+    public DiceRoll roll() {
+        return new DiceRoll(toArray());
+    }
+}

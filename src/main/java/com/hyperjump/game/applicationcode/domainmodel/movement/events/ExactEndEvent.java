@@ -1,0 +1,11 @@
+package com.hyperjump.game.applicationcode.domainmodel.movement.events;
+
+import com.hyperjump.game.applicationcode.domainmodel.player.Player;
+
+public class ExactEndEvent implements GameEvent {
+
+    @Override
+    public String describe(Player player) {
+        return player.getColour() + " overshot and bounced back";
+    }
+}
