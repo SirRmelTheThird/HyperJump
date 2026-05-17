@@ -1,127 +1,112 @@
 ```mermaid
 classDiagram
+    direction LR
 
-%% =========================
-%% DRIVING ADAPTERS
-%% =========================
+    %% =========================
+    %% DRIVING
+    %% =========================
 
-class GameConsoleRunner {
-    +run(String... args)
-}
+    class GameConsoleRunner {
+    }
 
-class StartGameUseCase {
-    <<port in>>
-    +play()
-}
+    class CommandLineRunner {
+        <<interface>>
+        +run(String... args)
+    }
 
-class TurnDisplayAdapter
-class GameOverDisplayAdapter
-class PathsDisplayAdapter
-class RulesDisplayAdapter
+    class StartGameUseCase {
+        <<interface>>
+        +play()
+    }
 
-class PlayerTurnObserverPort {
-    <<port out>>
-    +onTurnPlayed(playerTurn)
-}
+    %% =========================
+    %% APPLICATION
+    %% =========================
 
-class GameOverObserverPort {
-    <<port out>>
-    +onGameOver(playerTurn)
-}
+    class GameSessionUseCase {
+    }
 
-class GameStartObserverPort {
-    <<port out>>
-    +onGameStarted(players)
-}
+    class InitialisePlayerUseCase {
+    }
 
-class GameRulesObserverPort {
-    <<port out>>
-    +onRulesSelected(rules)
-}
+    class InitialiseRulesUseCase {
+    }
 
-GameConsoleRunner ..> StartGameUseCase : <<use>>
+    %% =========================
+    %% REQUIRED PORTS
+    %% =========================
 
-TurnDisplayAdapter ..|> PlayerTurnObserverPort
-GameOverDisplayAdapter ..|> GameOverObserverPort
-PathsDisplayAdapter ..|> GameStartObserverPort
-RulesDisplayAdapter ..|> GameRulesObserverPort
+    class DiceShaker {
+        <<interface>>
+        +roll() : DiceRoll
+    }
 
-%% =========================
-%% USE CASES
-%% =========================
+    class Board {
+        <<interface>>
+        +createBoard(int playerCount) : BoardFactory
+    }
 
-class GameSessionUseCase {
-    +setupGame()
-    +startGame()
-}
+    class PathFactory {
+        <<interface>>
+        +createPath(BoardFactory board, Position start, Position end) : Path
+    }
 
-class InitialisePlayerUseCase {
-    +setupPlayers()
-}
+    %% =========================
+    %% DRIVEN ADAPTERS
+    %% =========================
 
-class InitialiseRulesUseCase {
-    +setupRules()
-}
+    class RandomDiceShakerAdapter {
+    }
 
-GameSessionUseCase --> InitialisePlayerUseCase
-GameSessionUseCase --> InitialiseRulesUseCase
+    class FixedDiceShakerAdapter {
+    }
 
-%% =========================
-%% REQUIRED PORTS
-%% =========================
+    class BoardFactoryAdapter {
+    }
 
-class DiceShaker {
-    <<port out>>
-    +roll()
-}
+    class BoardPathFactoryAdapter {
+    }
 
-class Board {
-    <<port out>>
-    +createBoard(playerCount)
-}
+    %% =========================
+    %% DOMAIN
+    %% =========================
 
-class PathFactory {
-    <<port out>>
-    +createPath()
-}
+    class BoardFactory {
+    }
 
-GameSessionUseCase ..> Board : <<use>>
-GameSessionUseCase ..> PathFactory : <<use>>
+    class Path {
+    }
 
-InitialisePlayerUseCase ..> DiceShaker : <<use>>
+    class Player {
+    }
 
-%% =========================
-%% DRIVEN ADAPTERS
-%% =========================
+    class GameRule {
+    }
 
-class RandomDiceShakerAdapter
-class FixedDiceShakerAdapter
+    %% =========================
+    %% RELATIONSHIPS
+    %% =========================
 
-class BoardFactoryAdapter
+    GameConsoleRunner ..|> CommandLineRunner
+    GameConsoleRunner ..> StartGameUseCase : << use >>
 
-class BoardPathFactoryAdapter
+    GameSessionUseCase ..> Board : << use >>
+    GameSessionUseCase ..> PathFactory : << use >>
 
-RandomDiceShakerAdapter ..|> DiceShaker
-FixedDiceShakerAdapter ..|> DiceShaker
+    InitialisePlayerUseCase ..> DiceShaker : << use >>
 
-BoardFactoryAdapter ..|> Board
+    RandomDiceShakerAdapter ..|> DiceShaker
+    FixedDiceShakerAdapter ..|> DiceShaker
 
-BoardPathFactoryAdapter ..|> PathFactory
+    BoardFactoryAdapter ..|> Board
+    BoardPathFactoryAdapter ..|> PathFactory
 
-%% =========================
-%% DOMAIN
-%% =========================
+    BoardFactoryAdapter -- BoardFactory
+    BoardPathFactoryAdapter -- Path
 
-class Player
-class Movement
-class GameRule
-class BoardFactory
-class Path
+    GameSessionUseCase --> InitialisePlayerUseCase
+    GameSessionUseCase --> InitialiseRulesUseCase
 
-InitialisePlayerUseCase --> Player
-GameSessionUseCase --> Movement
-InitialiseRulesUseCase --> GameRule
-
-BoardFactoryAdapter --> BoardFactory
-BoardPathFactoryAdapter --> Path
+    InitialisePlayerUseCase --> Player
+    InitialiseRulesUseCase --> GameRule
 ```
