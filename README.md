@@ -1,112 +1,76 @@
 ```mermaid
 classDiagram
-    direction LR
+direction LR
 
-    %% =========================
-    %% DRIVING
-    %% =========================
+class GameConsoleRunner
+class CommandLineRunner {
+    <<interface>>
+    +run(String... args)
+}
 
-    class GameConsoleRunner {
-    }
+class StartGameUseCase {
+    <<interface>>
+    +play()
+}
 
-    class CommandLineRunner {
-        <<interface>>
-        +run(String... args)
-    }
+GameConsoleRunner ..|> CommandLineRunner
+GameConsoleRunner ..> StartGameUseCase : << use >>
+```
 
-    class StartGameUseCase {
-        <<interface>>
-        +play()
-    }
 
-    %% =========================
-    %% APPLICATION
-    %% =========================
+```mermaid
+classDiagram
+direction TB
 
-    class GameSessionUseCase {
-    }
+class GameSessionUseCase
+class InitialisePlayerUseCase
+class InitialiseRulesUseCase
 
-    class InitialisePlayerUseCase {
-    }
+class Board {
+    <<interface>>
+}
 
-    class InitialiseRulesUseCase {
-    }
+class PathFactory {
+    <<interface>>
+}
 
-    %% =========================
-    %% REQUIRED PORTS
-    %% =========================
+class DiceShaker {
+    <<interface>>
+}
 
-    class DiceShaker {
-        <<interface>>
-        +roll() : DiceRoll
-    }
+GameSessionUseCase --> InitialisePlayerUseCase
+GameSessionUseCase --> InitialiseRulesUseCase
 
-    class Board {
-        <<interface>>
-        +createBoard(int playerCount) : BoardFactory
-    }
+GameSessionUseCase ..> Board
+GameSessionUseCase ..> PathFactory
 
-    class PathFactory {
-        <<interface>>
-        +createPath(BoardFactory board, Position start, Position end) : Path
-    }
+InitialisePlayerUseCase ..> DiceShaker
+```
 
-    %% =========================
-    %% DRIVEN ADAPTERS
-    %% =========================
+```mermaid
+classDiagram
+direction LR
 
-    class RandomDiceShakerAdapter {
-    }
+class DiceShaker {
+    <<interface>>
+}
 
-    class FixedDiceShakerAdapter {
-    }
+class Board {
+    <<interface>>
+}
 
-    class BoardFactoryAdapter {
-    }
+class PathFactory {
+    <<interface>>
+}
 
-    class BoardPathFactoryAdapter {
-    }
+class RandomDiceShakerAdapter
+class FixedDiceShakerAdapter
+class BoardFactoryAdapter
+class BoardPathFactoryAdapter
 
-    %% =========================
-    %% DOMAIN
-    %% =========================
+RandomDiceShakerAdapter ..|> DiceShaker
+FixedDiceShakerAdapter ..|> DiceShaker
 
-    class BoardFactory {
-    }
-
-    class Path {
-    }
-
-    class Player {
-    }
-
-    class GameRule {
-    }
-
-    %% =========================
-    %% RELATIONSHIPS
-    %% =========================
-
-    GameConsoleRunner ..|> CommandLineRunner
-    GameConsoleRunner ..> StartGameUseCase : << use >>
-
-    GameSessionUseCase ..> Board : << use >>
-    GameSessionUseCase ..> PathFactory : << use >>
-
-    InitialisePlayerUseCase ..> DiceShaker : << use >>
-
-    RandomDiceShakerAdapter ..|> DiceShaker
-    FixedDiceShakerAdapter ..|> DiceShaker
-
-    BoardFactoryAdapter ..|> Board
-    BoardPathFactoryAdapter ..|> PathFactory
-
-    BoardFactoryAdapter -- BoardFactory
-    BoardPathFactoryAdapter -- Path
-
-    GameSessionUseCase --> InitialisePlayerUseCase
-    GameSessionUseCase --> InitialiseRulesUseCase
-
-    InitialisePlayerUseCase --> Player
-    InitialiseRulesUseCase --> GameRule
+BoardFactoryAdapter ..|> Board
+BoardPathFactoryAdapter ..|> PathFactory
 ```
