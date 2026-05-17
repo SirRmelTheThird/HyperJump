@@ -16,7 +16,8 @@ class StartGameUseCase {
 GameConsoleRunner ..|> CommandLineRunner
 GameConsoleRunner ..> StartGameUseCase : << use >>
 ```
-
+fdsfdsafdafdsfd
+fdsfafdsfa
 
 ```mermaid
 classDiagram
@@ -46,6 +47,12 @@ GameSessionUseCase ..> PathFactory
 
 InitialisePlayerUseCase ..> DiceShaker
 ```
+fdsafdsfds
+fdafssdfdasaf
+
+
+
+
 
 ```mermaid
 classDiagram
@@ -74,3 +81,6 @@ FixedDiceShakerAdapter ..|> DiceShaker
 BoardFactoryAdapter ..|> Board
 BoardPathFactoryAdapter ..|> PathFactory
 ```
+
+
+fdsfddfdsf
