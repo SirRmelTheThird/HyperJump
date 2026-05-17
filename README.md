@@ -17,6 +17,10 @@ classDiagram
         <<interface>>
         +createBoard(playerCount) BoardFactory
     }
+    class PathFactory {
+        <<interface>>
+        +createPath(board, start, end) Path
+    }
     class GameSessionUseCase {
         +play()
     }
@@ -30,14 +34,71 @@ classDiagram
     class BoardFactoryAdapter {
         +createBoard(playerCount) BoardFactory
     }
+    class BoardPathFactoryAdapter {
+        +createPath(board, start, end) Path
+    }
+    class GameConsoleRunner {
+        +run(args)
+    }
 
-    GameSessionUseCase ..|> StartGameUseCase : implements
-    RandomDiceShakerAdapter ..|> DiceShaker : implements
-    FixedDiceShakerAdapter ..|> DiceShaker : implements
-    BoardFactoryAdapter ..|> Board : implements
+    StartGameUseCase <|.. GameSessionUseCase : implements
+    GameConsoleRunner ..> StartGameUseCase : uses
+
+    DiceShaker <|.. RandomDiceShakerAdapter : implements
+    DiceShaker <|.. FixedDiceShakerAdapter : implements
+    GameSessionUseCase ..> DiceShaker : uses
+
+    Board <|.. BoardFactoryAdapter : implements
+    GameSessionUseCase ..> Board : uses
+
+    PathFactory <|.. BoardPathFactoryAdapter : implements
+    GameSessionUseCase ..> PathFactory : uses
 ```
 
-The core game logic has no knowledge of how it is driven or what external services it depends on. Inbound ports such as `StartGameUseCase` define what actions can be triggered, and outbound ports such as `DiceShaker` and `Board` define what the application needs from the outside world. Concrete adapters in the infrastructure layer implement these ports, so swapping the console for a UI, or a real dice shaker for a fixed test one, requires no changes to the domain.
+The core game logic has no knowledge of how it is driven or what external services it depends on. Inbound ports such as `StartGameUseCase` define what actions can be triggered, and outbound ports such as `DiceShaker`, `Board`, and `PathFactory` define what the application needs from the outside world. `GameConsoleRunner` drives the application by using the inbound port, while concrete adapters in the infrastructure layer implement the outbound ports. Swapping the console for a UI, or a real dice shaker for a fixed test one, requires no changes to the domain.
+
+---
+
+### Factory Pattern
+
+```mermaid
+classDiagram
+    class Board {
+        <<interface>>
+        +createBoard(playerCount) BoardFactory
+    }
+    class BoardFactory {
+        <<interface>>
+        +getSize() int
+        +getPositions() List~Position~
+    }
+    class BoardFactoryAdapter {
+        +createBoard(playerCount) BoardFactory
+    }
+    class AbstractBoard {
+        <<abstract>>
+        +getPositions() List~Position~
+        +indexOf(position) int
+        +getPosition(index) Position
+    }
+    class SmallBoard {
+        +getSize() int
+        +getCols() int
+    }
+    class LargeBoard {
+        +getSize() int
+        +getCols() int
+    }
+
+    Board <|.. BoardFactoryAdapter : implements
+    BoardFactory <|.. AbstractBoard : implements
+    AbstractBoard <|-- SmallBoard : extends
+    AbstractBoard <|-- LargeBoard : extends
+    BoardFactoryAdapter ..> SmallBoard : instantiates
+    BoardFactoryAdapter ..> LargeBoard : instantiates
+```
+
+`BoardFactoryAdapter` implements the `Board` port and acts as a factory, selecting either `SmallBoard` or `LargeBoard` based on the player count passed in. Both board types extend `AbstractBoard`, which provides the shared position list logic, with each subclass supplying its own grid layout and dimensions.
 
 ---
 
@@ -49,12 +110,12 @@ classDiagram
         <<interface>>
         +move(player, roll) TurnOutcome
     }
-    class BasicMovement {
-        +move(player, roll) TurnOutcome
-    }
     class MovementDecorator {
         <<abstract>>
         #wrapped Movement
+        +move(player, roll) TurnOutcome
+    }
+    class BasicMovement {
         +move(player, roll) TurnOutcome
     }
     class TeleportVariationDecorator {
@@ -67,12 +128,12 @@ classDiagram
         +move(player, roll) TurnOutcome
     }
 
-    BasicMovement ..|> Movement : implements
-    MovementDecorator ..|> Movement : implements
-    MovementDecorator o-- Movement : wraps
-    TeleportVariationDecorator --|> MovementDecorator : extends
-    ExactEndVariationDecorator --|> MovementDecorator : extends
-    HitVariationDecorator --|> MovementDecorator : extends
+    Movement <|.. BasicMovement : implements
+    Movement <|.. MovementDecorator : implements
+    Movement <--o MovementDecorator : uses
+    MovementDecorator <|-- TeleportVariationDecorator : extends
+    MovementDecorator <|-- ExactEndVariationDecorator : extends
+    MovementDecorator <|-- HitVariationDecorator : extends
 ```
 
 `BasicMovement` handles a standard move by advancing the player along their path by the dice roll total. Each active game rule wraps this in a decorator — `TeleportVariationDecorator`, `ExactEndVariationDecorator`, and `HitVariationDecorator` — that adds its own behaviour around the delegate call. This allows any combination of rules to be layered onto the movement pipeline at runtime without modifying existing classes.
@@ -110,15 +171,27 @@ classDiagram
         +supports(rule) boolean
         +decorate(movement, rule) Movement
     }
+    class PlayerSelector {
+        <<interface>>
+        +getCurrentPlayer() Player
+        +next()
+        +hasTakenATurn()
+    }
+    class RoundRobinPlayerSelector {
+        +getCurrentPlayer() Player
+        +next()
+        +hasTakenATurn()
+    }
 
-    RandomRuleSelection ..|> RuleSelectionStrategy : implements
-    FixedRuleSelection ..|> RuleSelectionStrategy : implements
-    TeleportVariation ..|> MovementDecoratorStrategy : implements
-    ExactEndVariation ..|> MovementDecoratorStrategy : implements
-    HitVariation ..|> MovementDecoratorStrategy : implements
+    RuleSelectionStrategy <|.. RandomRuleSelection : implements
+    RuleSelectionStrategy <|.. FixedRuleSelection : implements
+    MovementDecoratorStrategy <|.. TeleportVariation : implements
+    MovementDecoratorStrategy <|.. ExactEndVariation : implements
+    MovementDecoratorStrategy <|.. HitVariation : implements
+    PlayerSelector <|.. RoundRobinPlayerSelector : implements
 ```
 
-`RuleSelectionStrategy` allows the algorithm for choosing which rules are active to vary independently — `RandomRuleSelection` shuffles and picks a random subset, while `FixedRuleSelection` uses a predetermined list. `MovementDecoratorStrategy` works similarly for applying rules to movement: each strategy declares which rule type it supports via `supports()` and knows how to wrap the current movement with the correct decorator via `decorate()`.
+Three separate strategy hierarchies are used. `RuleSelectionStrategy` controls which rules are active for a session — `RandomRuleSelection` picks a random subset while `FixedRuleSelection` uses a predetermined list. `MovementDecoratorStrategy` controls how each rule is applied to the movement pipeline, with each implementation knowing which rule it supports and how to decorate it. `PlayerSelector` controls turn order, with `RoundRobinPlayerSelector` cycling through players in sequence.
 
 ---
 
@@ -143,12 +216,12 @@ classDiagram
         +getWinner() Player
     }
 
-    InPlayState ..|> GameState : implements
-    GameOverState ..|> GameState : implements
-    InPlayState --> GameOverState : transitions to
+    GameState <|.. InPlayState : implements
+    GameState <|.. GameOverState : implements
+    InPlayState ..> GameOverState : instantiates
 ```
 
-The game progresses through two states: `InPlayState` and `GameOverState`, both implementing the `GameState` interface. After each turn `InPlayState` checks whether the current player has reached the end of their path, and if so transitions to `GameOverState` by returning it from `nextState()`. The game loop in `PlayerTurn` simply calls `isGameOver()` each round, with no conditional logic about which state it is in.
+The game progresses through two states: `InPlayState` and `GameOverState`, both implementing the `GameState` interface. After each turn `InPlayState` checks whether the current player has reached the end of their path, and if so instantiates a `GameOverState` and returns it from `nextState()`. The game loop in `PlayerTurn` simply calls `isGameOver()` each round with no conditional logic about which state it is in.
 
 ---
 
@@ -168,6 +241,14 @@ classDiagram
         <<interface>>
         +onGameStarted(players)
     }
+    class PlayerTurn {
+        +play()
+        +addObserver(observer)
+        +addGameOverObserver(observer)
+    }
+    class GameSessionUseCase {
+        +addObserver(observer)
+    }
     class TurnDisplayAdapter {
         +onTurnPlayed(playerTurn)
     }
@@ -178,55 +259,15 @@ classDiagram
         +onGameStarted(players)
     }
 
-    TurnDisplayAdapter ..|> PlayerTurnObserverPort : implements
-    GameOverDisplayAdapter ..|> GameOverObserverPort : implements
-    PathsDisplayAdapter ..|> GameStartObserverPort : implements
+    PlayerTurnObserverPort <|.. TurnDisplayAdapter : implements
+    GameOverObserverPort <|.. GameOverDisplayAdapter : implements
+    GameStartObserverPort <|.. PathsDisplayAdapter : implements
+    PlayerTurn ..> PlayerTurnObserverPort : uses
+    PlayerTurn ..> GameOverObserverPort : uses
+    GameSessionUseCase ..> GameStartObserverPort : uses
 ```
 
 Three observer ports — `PlayerTurnObserverPort`, `GameOverObserverPort`, and `GameStartObserverPort` — allow the domain to broadcast events without knowing who is listening. The infrastructure display adapters register themselves and react by printing output to the console. Adding a new output target such as a file logger or a UI requires only a new adapter implementing the relevant port, with no changes to the domain.
-
----
-
-### Factory Pattern
-
-```mermaid
-classDiagram
-    class Board {
-        <<interface>>
-        +createBoard(playerCount) BoardFactory
-    }
-    class BoardFactoryAdapter {
-        +createBoard(playerCount) BoardFactory
-    }
-    class BoardFactory {
-        <<interface>>
-        +getSize() int
-        +getPositions() List~Position~
-    }
-    class AbstractBoard {
-        <<abstract>>
-        +getPositions() List~Position~
-        +indexOf(position) int
-        +getPosition(index) Position
-    }
-    class SmallBoard {
-        +getSize() int
-        +getCols() int
-    }
-    class LargeBoard {
-        +getSize() int
-        +getCols() int
-    }
-
-    BoardFactoryAdapter ..|> Board : implements
-    AbstractBoard ..|> BoardFactory : implements
-    SmallBoard --|> AbstractBoard : extends
-    LargeBoard --|> AbstractBoard : extends
-    BoardFactoryAdapter ..> SmallBoard : creates
-    BoardFactoryAdapter ..> LargeBoard : creates
-```
-
-`BoardFactoryAdapter` implements the `Board` port and acts as a factory, selecting either `SmallBoard` or `LargeBoard` based on the player count passed in. Both board types extend `AbstractBoard`, which provides the shared position list logic, with each subclass supplying its own grid layout and dimensions.
 
 ---
 
@@ -249,10 +290,35 @@ classDiagram
         +toArray() int[]
         +reset()
     }
+    class Path {
+        <<interface>>
+        +getPositions() List~Position~
+    }
+    class AbstractPath {
+        <<abstract>>
+        +getPositions() List~Position~
+    }
+    class ForwardRowPath {
+        +getPositions() List~Position~
+    }
+    class BackwardRowPath {
+        +getPositions() List~Position~
+    }
+    class RotatedPath {
+        +getPositions() List~Position~
+    }
+    class ReversedRotatedPath {
+        +getPositions() List~Position~
+    }
 
-    RandomSingleDiceShaker --|> AbstractDiceShaker : extends
-    RandomDoubleDiceShaker --|> AbstractDiceShaker : extends
-    FixedSingleDiceShaker --|> AbstractDiceShaker : extends
+    AbstractDiceShaker <|-- RandomSingleDiceShaker : extends
+    AbstractDiceShaker <|-- RandomDoubleDiceShaker : extends
+    AbstractDiceShaker <|-- FixedSingleDiceShaker : extends
+    Path <|.. AbstractPath : implements
+    AbstractPath <|-- ForwardRowPath : extends
+    AbstractPath <|-- BackwardRowPath : extends
+    AbstractPath <|-- RotatedPath : extends
+    AbstractPath <|-- ReversedRotatedPath : extends
 ```
 
-`AbstractDiceShaker` defines the overall algorithm for rolling dice — calling `toArray()` and wrapping the result in a `DiceRoll` — but leaves the implementation of `toArray()` to its subclasses. `RandomSingleDiceShaker` rolls one die, `RandomDoubleDiceShaker` rolls two, and `FixedSingleDiceShaker` returns a predetermined sequence. The rolling logic is written once in the abstract class and never repeated.
+Two Template Method hierarchies exist. `AbstractDiceShaker` defines the algorithm for rolling — calling `toArray()` and wrapping the result in a `DiceRoll` — leaving the die values to each subclass. `AbstractPath` similarly defines path storage and retrieval, with each subclass providing a differently oriented sequence of positions on the board. The shared logic is written once in the abstract class and never repeated.
