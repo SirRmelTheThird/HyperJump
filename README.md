@@ -314,3 +314,44 @@ MovementDecorator --> Movement : wraps
     class ExactEndVariationDecorator
     class HitVariationDecorator
 ```
+
+```mermaid
+classDiagram
+direction LR
+
+    namespace Adapter {
+        Board <|.. BoardFactoryAdapter
+        BoardFactoryAdapter --> SmallBoard : instantiate
+        BoardFactoryAdapter --> LargeBoard : instantiate
+        SmallBoard --|> BoardFactory
+        LargeBoard --|> BoardFactory
+
+        class Board {
+            <<interface>>
+            createBoard(playerCount): BoardFactory
+        }
+
+        class BoardFactoryAdapter {
+            createBoard(playerCount): BoardFactory
+        }
+
+        class BoardFactory {
+            <<interface>>
+        }
+
+        class SmallBoard
+        class LargeBoard
+    }
+
+    namespace TemplateMethod {
+        BoardFactory <|.. AbstractBoard
+        AbstractBoard <|-- SmallBoard
+        AbstractBoard <|-- LargeBoard
+
+        class AbstractBoard {
+            #buildBoard(): List~Position~
+            +getPositions(): List~Position~
+            +getCols(): int
+        }
+    }
+```
