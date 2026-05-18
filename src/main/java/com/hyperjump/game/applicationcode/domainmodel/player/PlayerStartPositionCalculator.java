@@ -21,14 +21,12 @@ public class PlayerStartPositionCalculator {
         return switch (playerCount) {
             case 2 -> List.of(
                 new Position(start),
-                new Position(end)
-            );
+                new Position(end));
             case 4 -> List.of(
                 new Position(start),
                 new Position(end - cols + 1),
                 new Position(end),
-                new Position(start + cols - 1)
-            );
+                new Position(start + cols - 1));
             default -> throw new DomainException("Unsupported number of players: " + playerCount);
         };
     }
@@ -37,14 +35,12 @@ public class PlayerStartPositionCalculator {
         return switch (playerCount) {
             case 2 -> List.of(
                 new Position(end),
-                new Position(start)
-            );
+                new Position(start));
             case 4 -> List.of(
                 new Position(end),
                 new Position(start + cols - 1),
                 new Position(start),
-                new Position(end - cols + 1)
-            );
+                new Position(end - cols + 1));
             default -> throw new DomainException("Unsupported number of players: " + playerCount);
         };
     }

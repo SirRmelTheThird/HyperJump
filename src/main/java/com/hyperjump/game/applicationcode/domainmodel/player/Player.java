@@ -11,10 +11,8 @@ public class Player {
 
     private final Colour colour;
     private final DiceShaker diceShaker;
-
     private List<Position> path;
     private int pathIndex;
-    private Position previousPos;
 
     public Player(Colour colour, DiceShaker diceShaker) {
         this.colour = colour;
@@ -33,6 +31,7 @@ public class Player {
     public List<Position> getPath() {
         return path;
     }
+
     public int getPathIndex() {
         return pathIndex;
     }
@@ -55,12 +54,10 @@ public class Player {
     }
 
     public void moveToIndex(int index) {
-        previousPos = getCurrentPos();
         pathIndex = index;
     }
 
     public void teleportTo(Position position) {
-        previousPos = getCurrentPos();
         pathIndex = path.indexOf(position);
     }
 
