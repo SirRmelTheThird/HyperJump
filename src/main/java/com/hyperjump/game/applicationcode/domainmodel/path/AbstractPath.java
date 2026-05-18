@@ -3,7 +3,7 @@ package com.hyperjump.game.applicationcode.domainmodel.path;
 import com.hyperjump.game.applicationcode.domainmodel.value.Position;
 import java.util.List;
 
-public abstract class AbstractPath implements Path {
+public abstract class AbstractPath implements PathFactory {
 
     private final List<Position> positions;
 

@@ -3,14 +3,14 @@ package com.hyperjump.game.applicationcode.usecase;
 import com.hyperjump.game.applicationcode.domainmodel.board.BoardFactory;
 import com.hyperjump.game.applicationcode.domainmodel.gameenum.Colour;
 import com.hyperjump.game.applicationcode.domainmodel.movement.Movement;
-import com.hyperjump.game.applicationcode.domainmodel.path.Path;
+import com.hyperjump.game.applicationcode.domainmodel.path.PathFactory;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
 import com.hyperjump.game.applicationcode.domainmodel.player.PlayerStartPositionCalculator;
 import com.hyperjump.game.applicationcode.domainmodel.player.PlayerTurn;
 import com.hyperjump.game.applicationcode.domainmodel.player.RoundRobinPlayerSelector;
 import com.hyperjump.game.applicationcode.port.out.DiceShaker;
 import com.hyperjump.game.applicationcode.port.out.GameOverObserverPort;
-import com.hyperjump.game.applicationcode.port.out.PathFactory;
+import com.hyperjump.game.applicationcode.port.out.Path;
 import com.hyperjump.game.applicationcode.port.out.PlayerTurnObserverPort;
 import com.hyperjump.game.applicationcode.domainmodel.state.GameState;
 import com.hyperjump.game.applicationcode.domainmodel.value.Position;
@@ -33,7 +33,7 @@ public class InitialisePlayerUseCase {
         this.gameOverObservers = gameOverObservers;
     }
 
-    public void setupPlayers(int playerCount, BoardFactory boardFactory, PathFactory pathFactory) {
+    public void setupPlayers(int playerCount, BoardFactory boardFactory, Path pathFactory) {
         players = createPlayers(playerCount);
 
         PlayerStartPositionCalculator calculator = new PlayerStartPositionCalculator(boardFactory.getStartPosition(), boardFactory.getEndPosition(), boardFactory.getCols());
@@ -42,7 +42,7 @@ public class InitialisePlayerUseCase {
         List<Position> ends   = calculator.getEndPositions(playerCount);
 
         for (int i = 0; i < players.size(); i++) {
-            Path path = pathFactory.createPath(boardFactory, starts.get(i), ends.get(i));
+            PathFactory path = pathFactory.createPath(boardFactory, starts.get(i), ends.get(i));
             players.get(i).setPath(path.getPositions());
         }
         selector = new RoundRobinPlayerSelector(players);

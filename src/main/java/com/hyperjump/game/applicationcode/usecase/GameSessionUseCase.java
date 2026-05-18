@@ -14,7 +14,7 @@ import com.hyperjump.game.applicationcode.port.out.Board;
 import com.hyperjump.game.applicationcode.port.out.GameRule;
 import com.hyperjump.game.applicationcode.port.out.GameRulesObserverPort;
 import com.hyperjump.game.applicationcode.port.out.GameStartObserverPort;
-import com.hyperjump.game.applicationcode.port.out.PathFactory;
+import com.hyperjump.game.applicationcode.port.out.Path;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,18 +25,18 @@ public class GameSessionUseCase implements StartGameUseCase {
     private final Board boardProvider;
     private final InitialisePlayerUseCase playerSetup;
     private final InitialiseRulesUseCase rulesSetup;
-    private final PathFactory pathFactory;
+    private final Path path;
     private final List<GameStartObserverPort> observers = new ArrayList<>();
     private final List<GameRulesObserverPort> rulesObservers;
 
     private BoardFactory board;
 
-    public GameSessionUseCase(int playerCount, Board boardProvider, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, PathFactory pathFactory, List<GameRulesObserverPort> rulesObservers) {
+    public GameSessionUseCase(int playerCount, Board boardProvider, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, Path path, List<GameRulesObserverPort> rulesObservers) {
         this.playerCount = playerCount;
         this.boardProvider = boardProvider;
         this.playerSetup = playerSetup;
         this.rulesSetup = rulesSetup;
-        this.pathFactory = pathFactory;
+        this.path = path;
         this.rulesObservers = rulesObservers;
     }
 
@@ -52,7 +52,7 @@ public class GameSessionUseCase implements StartGameUseCase {
 
     private void setupGame() {
         board = boardProvider.createBoard(playerCount);
-        playerSetup.setupPlayers(playerCount, board, pathFactory);
+        playerSetup.setupPlayers(playerCount, board, path);
     }
 
     private void startGame() {

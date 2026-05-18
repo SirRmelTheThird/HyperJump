@@ -3,6 +3,7 @@ classDiagram
 direction LR
 
 class GameConsoleRunner
+
 class CommandLineRunner {
     <<interface>>
     +run(String... args)
@@ -13,18 +14,14 @@ class StartGameUseCase {
     +play()
 }
 
-GameConsoleRunner ..|> CommandLineRunner
-GameConsoleRunner ..> StartGameUseCase : << use >>
-```
-fdsfdsafdafdsfd
-fdsfafdsfa
-
-```mermaid
-classDiagram
-direction TB
+class StartGameService {
+    +play()
+}
 
 class GameSessionUseCase
+
 class InitialisePlayerUseCase
+
 class InitialiseRulesUseCase
 
 class Board {
@@ -38,6 +35,13 @@ class PathFactory {
 class DiceShaker {
     <<interface>>
 }
+
+GameConsoleRunner ..|> CommandLineRunner
+GameConsoleRunner ..> StartGameUseCase : << use >>
+
+StartGameUseCase <|.. StartGameService
+
+StartGameService --> GameSessionUseCase
 
 GameSessionUseCase --> InitialisePlayerUseCase
 GameSessionUseCase --> InitialiseRulesUseCase
@@ -53,55 +57,68 @@ fdafssdfdasaf
 
 ```mermaid
 classDiagram
-direction LR
-
-class DiceShaker {
-    <<interface>>
-}
-
-class Board {
-    <<interface>>
-}
-
-class PathFactory {
-    <<interface>>
-}
-
-class RandomDiceShakerAdapter
-class FixedDiceShakerAdapter
-class BoardFactoryAdapter
-class BoardPathFactoryAdapter
-
-RandomDiceShakerAdapter ..|> DiceShaker
-FixedDiceShakerAdapter ..|> DiceShaker
-
-BoardFactoryAdapter ..|> Board
-BoardPathFactoryAdapter ..|> PathFactory
-```
-
-```mermaid
-classDiagram
-Board <|.. BoardFactoryAdapter
-BoardFactoryAdapter --> SmallBoard : instantiate
-BoardFactoryAdapter --> LargeBoard : instantiate
-SmallBoard --|> BoardFactory
-LargeBoard --|> BoardFactory
-
-    class Board {
-        <<interface>>
-        createBoard(playerCount): BoardFactory
-    }
-
-    class BoardFactoryAdapter {
-        createBoard(playerCount): BoardFactory
-    }
+    AbstractBoard <|-- SmallBoard
+    AbstractBoard <|-- LargeBoard
+    BoardFactory <|.. AbstractBoard
 
     class BoardFactory {
         <<interface>>
     }
 
+    class AbstractBoard {
+        +getPositions(): List~Position~
+        +getCols(): int
+    }
+
     class SmallBoard
     class LargeBoard
+```
+
+```mermaid
+classDiagram
+    AbstractDiceShaker <|-- RandomSingleDiceShaker
+    AbstractDiceShaker <|-- RandomDoubleDiceShaker
+    DiceShakerFactory <|.. AbstractDiceShaker
+    DiceShakerFactory <|.. FixedSingleDiceShaker
+
+    class DiceShakerFactory {
+        <<interface>>
+        +roll(): DiceRoll
+    }
+
+    class AbstractDiceShaker {
+        +roll(): DiceRoll
+    }
+
+    class RandomSingleDiceShaker
+    class RandomDoubleDiceShaker
+
+    class FixedSingleDiceShaker {
+        +reset(): void
+    }
+```
+
+```mermaid
+classDiagram
+    AbstractPath <|-- ForwardRowPath
+    AbstractPath <|-- BackwardRowPath
+    AbstractPath <|-- RotatedPath
+    AbstractPath <|-- ReversedRotatedPath
+    Path <|.. AbstractPath
+
+    class Path {
+        <<interface>>
+        +getPositions(): List~Position~
+    }
+
+    class AbstractPath {
+        +getPositions(): List~Position~
+    }
+
+    class ForwardRowPath
+    class BackwardRowPath
+    class RotatedPath
+    class ReversedRotatedPath
 ```
 
 Board Factory Stuff

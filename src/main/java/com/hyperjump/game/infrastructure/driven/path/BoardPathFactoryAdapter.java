@@ -3,14 +3,14 @@ package com.hyperjump.game.infrastructure.driven.path;
 import com.hyperjump.game.applicationcode.domainmodel.board.BoardFactory;
 import com.hyperjump.game.applicationcode.domainmodel.path.*;
 import com.hyperjump.game.applicationcode.domainmodel.value.Position;
-import com.hyperjump.game.applicationcode.port.out.PathFactory;
+import com.hyperjump.game.applicationcode.port.out.Path;
 import com.hyperjump.game.infrastructure.driven.path.strategy.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class BoardPathFactoryAdapter implements PathFactory {
+public class BoardPathFactoryAdapter implements Path {
 
     private final PathCalculationStrategy forwardStrategy = new ForwardPathCalculation();
     private final PathCalculationStrategy backwardStrategy = new BackwardPathCalculation();
@@ -18,7 +18,7 @@ public class BoardPathFactoryAdapter implements PathFactory {
     private final PathCalculationStrategy reversedRotatedStrategy = new ReversedRotatedPathCalculation();
 
     @Override
-    public Path createPath(BoardFactory boardFactory, Position startPos, Position endPos) {
+    public PathFactory createPath(BoardFactory boardFactory, Position startPos, Position endPos) {
 
         List<Position> fullBoard = boardFactory.getPositions();
         int cols = boardFactory.getCols();

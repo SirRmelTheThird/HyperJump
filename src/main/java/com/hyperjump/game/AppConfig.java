@@ -58,8 +58,8 @@ public class AppConfig {
     }
 
     @Bean
-    public StartGameUseCase startGameUseCase(Board board, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, PathFactory pathFactory, List<GameRulesObserverPort> rulesObservers, List<GameStartObserverPort> gameStartObservers) {
-        GameSessionUseCase session = new GameSessionUseCase(PLAYER_COUNT, board, playerSetup, rulesSetup, pathFactory, rulesObservers);
+    public StartGameUseCase startGameUseCase(Board board, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, Path path, List<GameRulesObserverPort> rulesObservers, List<GameStartObserverPort> gameStartObservers) {
+        GameSessionUseCase session = new GameSessionUseCase(PLAYER_COUNT, board, playerSetup, rulesSetup, path, rulesObservers);
         gameStartObservers.forEach(session::addObserver);
         return session;
     }
