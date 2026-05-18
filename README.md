@@ -1,7 +1,5 @@
 # HyperJump
 
---- 
-
 ## Spring Boot Application
 This diagram represents the entry point and application flow of the game using a Clean Architecture approach.
 
@@ -91,7 +89,6 @@ Game setup and gameplay execution
 - Separation of Concerns
 - Framework-independent business logic
 
----
 ## Adapters
 This diagram represents the board creation and board hierarchy used within the game.
 
@@ -148,9 +145,7 @@ BoardFactoryAdapter --> LargeBoard : instantiate
 - Polymorphism
 - Shared domain behaviour reuse
 
----
-
-## DiceShaker 
+## DiceShaker Adapter 
 This diagram represents the dice rolling system used for gameplay and testing.
 
 ```mermaid
@@ -217,9 +212,7 @@ DiceShaker <|.. FixedDiceShakerAdapter
 - Runtime-swappable behaviour
 - Deterministic testing support
 
----
-
-## Path
+## Path Adapter
 This diagram represents the path generation system used to create player traversal routes across the board.
 
 ```mermaid
@@ -282,11 +275,9 @@ Path <|.. BoardPathFactoryAdapter
 - Strategy-based path generation
 - Template Method / Abstract Base Class pattern
 - Encapsulation of traversal algorithms
----
 
-## Board Hierarchy
+## Board Factory Pattern
 This diagram represents the board creation hierarchy used within the game.
-
 
 ```mermaid
 classDiagram
@@ -329,9 +320,7 @@ classDiagram
 - Shared domain behaviour reuse
 - Polymorphic board implementations
 
----
-
-## Dice Hierarchy
+## Dice Factory Pattern
 This diagram represents the player path hierarchy used to generate movement routes across the board.
 
 ```mermaid
@@ -375,9 +364,7 @@ classDiagram
 - Testable deterministic implementations
 - Runtime-swappable behaviour
 
----
-
-## Path Hierarchy
+## Path Factory Pattern
 This diagram represents the player path hierarchy used to generate movement routes across the board.
 
 ```mermaid
@@ -459,9 +446,7 @@ InitialiseRulesUseCase --> RuleSelectionStrategy : uses
 - Runtime-swappable behaviour
 - Test-friendly configuration
 
----
-
-## Teleport Generation Strategy
+## Teleport Strategy Pattern
 This diagram shows how teleport/wormhole positions are generated.
 
 ```mermaid
@@ -498,9 +483,7 @@ TeleportRule --> TeleportGenerationStrategy : uses
 - Testable rule behaviour
 - Separation between rule logic and generation logic
 
----
-
-## Domain Events
+## Events Strategy Pattern
 This diagram shows how important events from a turn are stored and described.
 
 ```mermaid
@@ -547,9 +530,7 @@ TurnOutcome --> GameEvent : contains
 - Encapsulation of event-specific details
 - Cleaner display logic without large switch statements
 
----
-
-## Movement Decorator Strategy
+## Movement Strategy Pattern
 This diagram shows how selected rules are converted into movement decorators.
 
 ```mermaid
@@ -596,9 +577,7 @@ HitVariation --> HitVariationDecorator : instantiate
 - Decorator Pattern support
 - Open/Closed Principle
 
----
-
-## Movement Decorator
+## Movement Decorator Pattern
 This diagram represents the movement system and decorator hierarchy used to apply gameplay rule variations dynamically.
 
 ```mermaid
@@ -649,9 +628,7 @@ The decorators wrap the base movement implementation at runtime, allowing multip
 - Behaviour extension without modifying existing classes
 - Separation of core movement logic from rule variations
 
----
-
-## State Pattern
+## Game State Pattern
 This diagram represents the game lifecycle state system used to control gameplay flow.
 
 ```mermaid
@@ -708,9 +685,7 @@ The game transitions from `InPlayState` to `GameOverState` dynamically at runtim
 - Polymorphism
 - Cleaner control flow without large conditional statements
 
----
-
-## Observer Pattern
+## Display Observer Pattern
 This diagram represents the observer system used to notify display adapters about important gameplay events.
 
 ```mermaid
