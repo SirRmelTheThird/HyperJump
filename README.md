@@ -89,7 +89,7 @@ Game setup and gameplay execution
 - Separation of Concerns
 - Framework-independent business logic
 
-## Adapters
+## Board Adapter
 This diagram represents the board creation and board hierarchy used within the game.
 
 ```mermaid
