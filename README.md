@@ -18,16 +18,16 @@ classDiagram
 
     class StartGameUseCase {
         <<interface>>
-        +play()
+        + play()
     }
 
     class StartGameService {
-        +play()
+        + play()
     }
 
     class GameSessionUseCase {
-        +setupGame()
-        +startGame()
+        + setupGame()
+        + startGame()
     }
 
     GameConsoleRunner ..|> CommandLineRunner
@@ -121,13 +121,9 @@ BoardFactoryAdapter --> LargeBoard : instantiate
         + getPositions(): List~Position~
     }
 
-    class SmallBoard {
-        + getSize(): int
-    }
-
-    class LargeBoard {
-        + getSize(): int
-    }
+    class SmallBoard 
+    
+    class LargeBoard 
 ```
 
 - `Board` acts as the output port used by the application layer.
@@ -296,13 +292,9 @@ classDiagram
         + getPositions(): List~Position~
     }
 
-    class SmallBoard {
-        + getSize(): int
-    }
+    class SmallBoard
 
-    class LargeBoard {
-        + getSize(): int
-    }
+    class LargeBoard
 
 ```
 
@@ -340,18 +332,18 @@ classDiagram
 
     class DiceShakerFactory {
         <<interface>>
-        +roll(): DiceRoll
+        + roll(): DiceRoll
     }
 
     class AbstractDiceShaker {
-        +roll(): DiceRoll
+        + roll(): DiceRoll
     }
 
     class RandomSingleDiceShaker
     class RandomDoubleDiceShaker
 
     class FixedSingleDiceShaker {
-        +reset(): void
+        + reset(): void
     }
 ```
 
@@ -385,11 +377,11 @@ classDiagram
 
     class PathFactory {
         <<interface>>
-        +getPositions(): List~Position~
+        + getPositions(): List~Position~
     }
 
     class AbstractPath {
-        +getPositions(): List~Position~
+        + getPositions(): List~Position~
     }
 
     class ForwardRowPath
@@ -665,7 +657,7 @@ InPlayState --> GameOverState : transition
     }
 
     class GameOverState {
-        -winner: Player
+        - winner: Player
         handle(currentPlayer, playerTurn): void
         isGameOver(): boolean
         nextState(): GameState
