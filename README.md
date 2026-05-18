@@ -118,14 +118,16 @@ BoardFactoryAdapter --> LargeBoard : instantiate
     }
 
     class AbstractBoard {
-        #buildBoard(): List~Position~
-        +getPositions(): List~Position~
-        +getCols(): int
+        + getPositions(): List~Position~
     }
 
-    class SmallBoard
+    class SmallBoard {
+        + getSize(): int
+    }
 
-    class LargeBoard
+    class LargeBoard {
+        + getSize(): int
+    }
 ```
 
 - `Board` acts as the output port used by the application layer.
@@ -185,8 +187,8 @@ DiceShaker <|.. FixedDiceShakerAdapter
     }
 
     class AbstractDiceShaker {
-        #toArray(): int[]
-        +roll(): DiceRoll
+        + toArray(): int[]
+        + roll(): DiceRoll
     }
 
     class RandomSingleDiceShaker
@@ -194,7 +196,7 @@ DiceShaker <|.. FixedDiceShakerAdapter
     class RandomDoubleDiceShaker
 
     class FixedSingleDiceShaker {
-        +reset(): void
+        + reset(): void
     }
 ```
 
@@ -247,7 +249,7 @@ Path <|.. BoardPathFactoryAdapter
     }
 
     class AbstractPath {
-        +getPositions(): List~Position~
+        + getPositions(): List~Position~
     }
 
     class ForwardRowPath
@@ -291,12 +293,17 @@ classDiagram
     }
 
     class AbstractBoard {
-        +getPositions(): List~Position~
-        +getCols(): int
+        + getPositions(): List~Position~
     }
 
-    class SmallBoard
-    class LargeBoard
+    class SmallBoard {
+        + getSize(): int
+    }
+
+    class LargeBoard {
+        + getSize(): int
+    }
+
 ```
 
 ### Structure
@@ -583,12 +590,16 @@ This diagram represents the movement system and decorator hierarchy used to appl
 
 ```mermaid
 classDiagram
-Movement <|.. BasicMovement
-Movement <|.. MovementDecorator
-MovementDecorator <|-- TeleportVariationDecorator
-MovementDecorator <|-- ExactEndVariationDecorator
-MovementDecorator <|-- HitVariationDecorator
-MovementDecorator --> Movement : wraps
+    direction TB
+
+    Movement <|.. BasicMovement
+    Movement <|.. MovementDecorator
+
+    MovementDecorator --> Movement : wraps
+
+    MovementDecorator <|-- TeleportVariationDecorator
+    MovementDecorator <|-- ExactEndVariationDecorator
+    MovementDecorator <|-- HitVariationDecorator
 
     class Movement {
         <<interface>>
@@ -605,7 +616,9 @@ MovementDecorator --> Movement : wraps
     }
 
     class TeleportVariationDecorator
+
     class ExactEndVariationDecorator
+
     class HitVariationDecorator
 ```
 
