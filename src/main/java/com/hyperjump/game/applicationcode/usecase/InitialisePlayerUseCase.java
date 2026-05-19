@@ -40,9 +40,7 @@ public class InitialisePlayerUseCase {
         PlayerPositionStrategy strategy = positionStrategies.stream()
                 .filter(s -> s.supports(playerCount))
                 .findFirst()
-                .orElseThrow(() -> new DomainException(
-                        "Unsupported number of players: " + playerCount
-                ));
+                .orElseThrow(() -> new DomainException("Unsupported number of players: " + playerCount));
 
         List<Position> starts = strategy.startPositions(boardFactory.getStartPosition(), boardFactory.getEndPosition(), boardFactory.getCols());
         List<Position> ends = strategy.endPositions(boardFactory.getStartPosition(), boardFactory.getEndPosition(), boardFactory.getCols());

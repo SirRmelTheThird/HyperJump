@@ -9,22 +9,30 @@ import java.util.List;
 public class TurnOutcome {
 
     private final Position previousPosition;
-    private Position endPosition;
-    private final int newIndex;
-    private final List<GameEvent> events = new ArrayList<>();
+    private final Position endPosition;
+    private final List<GameEvent> events;
 
-    public TurnOutcome(Position previousPosition, Position endPosition, int newIndex) {
+    public TurnOutcome(Position previousPosition, Position endPosition) {
         this.previousPosition = previousPosition;
         this.endPosition = endPosition;
-        this.newIndex = newIndex;
+        this.events = List.of();
     }
 
-    public void addEvent(GameEvent event) {
-        events.add(event);
-    }
-
-    public void updateEndPosition(Position endPosition) {
+    private TurnOutcome(Position previousPosition, Position endPosition, List<GameEvent> events) {
+        this.previousPosition = previousPosition;
         this.endPosition = endPosition;
+        this.events = List.copyOf(events);
+    }
+
+    public TurnOutcome withEvent(GameEvent event) {
+        List<GameEvent> updatedEvents = new ArrayList<>(events);
+        updatedEvents.add(event);
+
+        return new TurnOutcome(previousPosition, endPosition, updatedEvents);
+    }
+
+    public TurnOutcome withEndPosition(Position position) {
+        return new TurnOutcome(previousPosition, position, events);
     }
 
     public Position getPreviousPosition() {
@@ -33,10 +41,6 @@ public class TurnOutcome {
 
     public Position getEndPosition() {
         return endPosition;
-    }
-
-    public int getNewIndex() {
-        return newIndex;
     }
 
     public List<GameEvent> getEvents() {

@@ -11,13 +11,13 @@ public class BasicMovement implements Movement {
     public TurnOutcome move(Player player, DiceRoll roll) {
         Position previous = player.getCurrentPos();
 
-        int newIndex = player.getPathIndex() + roll.total();
+        int newIndex = player.calculateMoveIndex(roll.total());
         int maxIndex = player.getPath().size() - 1;
 
         player.moveToIndex(Math.min(newIndex, maxIndex));
 
         Position current = player.getCurrentPos();
 
-        return new TurnOutcome (previous, current, newIndex);
+        return new TurnOutcome (previous, current);
     }
 }

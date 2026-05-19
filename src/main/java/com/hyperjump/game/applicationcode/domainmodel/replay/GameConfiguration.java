@@ -9,7 +9,7 @@ public class GameConfiguration {
     private final int playerCount;
     private final List<GameRule> rules;
 
-    public GameConfiguration(int boardSize, int playerCount, List<GameRule> rules) {
+    public GameConfiguration(int playerCount, List<GameRule> rules) {
         this.playerCount = playerCount;
         this.rules       = rules;
     }

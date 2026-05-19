@@ -25,8 +25,6 @@ public class TeleportVariationDecorator extends MovementDecorator {
             return result;
         }
         player.teleportTo(destination);
-        result.updateEndPosition(destination);
-        result.addEvent(new TeleportEvent(currentPosition, destination));
-        return result;
+        return result.withEndPosition(destination).withEvent(new TeleportEvent(currentPosition, destination));
     }
 }

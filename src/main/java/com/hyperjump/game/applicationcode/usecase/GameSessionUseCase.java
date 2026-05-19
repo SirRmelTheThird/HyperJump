@@ -47,7 +47,7 @@ public class GameSessionUseCase implements StartGameUseCase {
 
         SavedGame savedGame = new SavedGame(
                 savedGameRepository.nextId(),
-                new GameConfiguration(board.getSize(), playerCount, selectedRules)
+                new GameConfiguration(playerCount, selectedRules)
         );
 
         diceShaker.startRecording(savedGame);

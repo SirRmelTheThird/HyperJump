@@ -53,6 +53,10 @@ public class Player {
         this.pathIndex = 0;
     }
 
+    public int calculateMoveIndex(int steps) {
+        return pathIndex + steps;
+    }
+
     public void moveToIndex(int index) {
         pathIndex = index;
     }

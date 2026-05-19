@@ -4,6 +4,7 @@ import com.hyperjump.game.applicationcode.domainmodel.board.BoardFactory;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
 import com.hyperjump.game.applicationcode.domainmodel.player.PlayerTurn;
 import com.hyperjump.game.applicationcode.domainmodel.replay.SavedGame;
+import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.NoOpTeleportGeneration;
 import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.SavedRuleSelection;
 import com.hyperjump.game.applicationcode.port.in.ReplayGameUseCase;
 import com.hyperjump.game.applicationcode.port.out.*;
@@ -51,7 +52,7 @@ public class ReplayGameService implements ReplayGameUseCase {
 
         SavedRuleSelection savedRuleSelection = new SavedRuleSelection(savedGame.getConfiguration().getRules(), playerSetup.getPlayers());
 
-        InitialiseRulesUseCase ruleSetup = new InitialiseRulesUseCase(savedRuleSelection, null);
+        InitialiseRulesUseCase ruleSetup = new InitialiseRulesUseCase(savedRuleSelection, new NoOpTeleportGeneration());
 
         List<GameRule> selectedRules = ruleSetup.setupRules(fullBoard.getSize(), playerSetup.getPlayers());
         notifyGameStarted(fullBoard, selectedRules, diceShaker, playerSetup.getPlayers());

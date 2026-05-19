@@ -23,11 +23,7 @@ public class HitVariationDecorator extends MovementDecorator {
         if (hitPlayer == null) {
             return result;
         }
-
-        result.addEvent(new HitEvent(hitPlayer.getColour().toString(), result.getEndPosition()));
         player.moveToIndex(player.getPath().indexOf(result.getPreviousPosition()));
-        result.updateEndPosition(result.getPreviousPosition());
-
-        return result;
+        return result.withEvent(new HitEvent(hitPlayer.getColour().toString(), result.getEndPosition())).withEndPosition(result.getPreviousPosition());
     }
 }

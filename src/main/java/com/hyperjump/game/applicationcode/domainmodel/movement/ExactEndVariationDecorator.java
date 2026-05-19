@@ -17,16 +17,17 @@ public class ExactEndVariationDecorator extends MovementDecorator {
     @Override
     public TurnOutcome move(Player player, DiceRoll roll) {
         TurnOutcome  result = wrapped.move(player, roll);
-        int bouncedIndex = exactEndRule.getBounceIndex(player, result.getNewIndex());
+
+        int previousIndex = player.getPath().indexOf(result.getPreviousPosition());
+        int newIndex = previousIndex + roll.total();
+
+        int bouncedIndex = exactEndRule.getBounceIndex(player, newIndex);
 
         if (bouncedIndex == -1) {
             return result;
         }
 
         player.moveToIndex(bouncedIndex);
-        result.updateEndPosition(player.getCurrentPos());
-        result.addEvent(new ExactEndEvent());
-
-        return result;
+        return result.withEndPosition(player.getCurrentPos()).withEvent(new ExactEndEvent());
     }
 }

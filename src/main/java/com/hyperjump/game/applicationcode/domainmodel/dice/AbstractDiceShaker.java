@@ -1,7 +1,5 @@
 package com.hyperjump.game.applicationcode.domainmodel.dice;
 
-import com.hyperjump.game.applicationcode.domainmodel.value.DiceRoll;
-
 import java.util.Random;
 
 public abstract class AbstractDiceShaker implements DiceShakerFactory {
@@ -10,10 +8,5 @@ public abstract class AbstractDiceShaker implements DiceShakerFactory {
 
     protected int singleDie() {
         return random.nextInt(6) + 1;
-    }
-
-    @Override
-    public DiceRoll roll() {
-        return new DiceRoll(toArray());
     }
 }

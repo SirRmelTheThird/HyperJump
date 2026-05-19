@@ -18,20 +18,13 @@ public class FixedSingleDiceShaker implements DiceShakerFactory {
         return Arrays.stream(shakes).boxed().toList();
     }
 
-    @Override
-    public boolean hasNext() {
-        return true;
-    }
-
-    @Override
-    public int next() {
+    private int next() {
         int value = shakes[index];
         index = (index + 1) % shakes.length;
         return value;
     }
 
-    @Override
-    public int[] toArray() {
+    private int[] toArray() {
         return new int[]{next()};
     }
 
