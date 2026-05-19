@@ -2,11 +2,8 @@ package com.hyperjump.game.applicationcode.domainmodel.player;
 
 import com.hyperjump.game.applicationcode.domainmodel.movement.Movement;
 import com.hyperjump.game.applicationcode.domainmodel.movement.TurnOutcome;
-import com.hyperjump.game.applicationcode.domainmodel.state.GameOverState;
-import com.hyperjump.game.applicationcode.port.out.GameOverObserverPort;
-import com.hyperjump.game.applicationcode.port.out.PlayerTurnObserverPort;
-import com.hyperjump.game.applicationcode.domainmodel.state.GameState;
 import com.hyperjump.game.applicationcode.domainmodel.value.DiceRoll;
+import com.hyperjump.game.applicationcode.port.out.TurnObserverPort;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,30 +12,16 @@ public class PlayerTurn {
 
     private final PlayerSelector playerSelector;
     private final Movement movement;
-    private GameState state;
+
     private DiceRoll roll;
     private TurnOutcome turnOutcome;
-    private final List<PlayerTurnObserverPort> turnObservers = new ArrayList<>();
-    private final List<GameOverObserverPort> gameOverObservers = new ArrayList<>();
+    private Player winner;
 
-    public PlayerTurn(PlayerSelector playerSelector, Movement movement, GameState state) {
+    private final List<TurnObserverPort> turnObservers = new ArrayList<>();
+
+    public PlayerTurn(PlayerSelector playerSelector, Movement movement) {
         this.playerSelector = playerSelector;
         this.movement = movement;
-        this.state = state;
-    }
-
-    public void addObserver(PlayerTurnObserverPort observer) {
-        turnObservers.add(observer);
-    }
-
-    public void addGameOverObserver(GameOverObserverPort observer) {
-        gameOverObservers.add(observer);
-    }
-
-    public void play() {
-        while (!state.isGameOver()) {
-            playTurn();
-        }
     }
 
     public void playTurn() {
@@ -51,38 +34,34 @@ public class PlayerTurn {
 
         notifyTurnPlayed();
 
-        updateState(currentPlayer);
-
-        if (state.isGameOver()) {
-            notifyGameOver();
+        if (updateWinner(currentPlayer)) {
             return;
         }
+
         playerSelector.next();
     }
 
-    private void updateState(Player currentPlayer) {
-        state.handle(currentPlayer, this);
-        state = state.nextState();
-    }
-
-    public Player getWinner() {
-        if (state instanceof GameOverState gameOverState) {
-            return gameOverState.getWinner();
+    private boolean updateWinner(Player player) {
+        if (player.isWinner()) {
+            winner = player;
+            return true;
         }
-        return null;
+
+        return false;
     }
 
+    public void addObserver(TurnObserverPort observer) {
+        turnObservers.add(observer);
+    }
 
     private void notifyTurnPlayed() {
-        for (PlayerTurnObserverPort observer : turnObservers) {
+        for (TurnObserverPort observer : turnObservers) {
             observer.onTurnPlayed(this);
         }
     }
 
-    private void notifyGameOver() {
-        for (GameOverObserverPort observer : gameOverObservers) {
-            observer.onGameOver(this);
-        }
+    public Player getWinner() {
+        return winner;
     }
 
     public int getTurns() {
@@ -104,5 +83,4 @@ public class PlayerTurn {
     public TurnOutcome getVariation() {
         return turnOutcome;
     }
-
 }

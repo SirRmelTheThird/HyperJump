@@ -1,17 +1,16 @@
 package com.hyperjump.game;
 
 import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.RuleSelectionStrategy;
+import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.TeleportGenerationStrategy;
+import com.hyperjump.game.applicationcode.port.in.ReplayGameUseCase;
 import com.hyperjump.game.applicationcode.port.in.StartGameUseCase;
 import com.hyperjump.game.applicationcode.port.out.*;
 import com.hyperjump.game.applicationcode.usecase.GameSessionUseCase;
 import com.hyperjump.game.applicationcode.usecase.InitialisePlayerUseCase;
 import com.hyperjump.game.applicationcode.usecase.InitialiseRulesUseCase;
-import com.hyperjump.game.infrastructure.driving.ConsoleDisplayAdapter;
-import com.hyperjump.game.infrastructure.driving.GameOverDisplayAdapter;
-import com.hyperjump.game.infrastructure.driving.PathsDisplayAdapter;
-import com.hyperjump.game.infrastructure.driving.RulesDisplayAdapter;
-import com.hyperjump.game.infrastructure.driving.TurnDisplayAdapter;
-
+import com.hyperjump.game.applicationcode.usecase.ReplayGameService;
+import com.hyperjump.game.infrastructure.driven.dice.RecordingDiceShakerAdapter;
+import com.hyperjump.game.infrastructure.driving.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,44 +22,69 @@ public class AppConfig {
     private static final int PLAYER_COUNT = 2;
 
     @Bean
-    public ConsoleDisplayAdapter consoleDisplay() {
+    public DisplayPort displayPort() {
         return new ConsoleDisplayAdapter();
     }
 
     @Bean
-    public PlayerTurnObserverPort turnDisplayAdapter(ConsoleDisplayAdapter display) {
-        return new TurnDisplayAdapter(display);
+    public GameStartedObserverPort gameStartedDisplay(DisplayPort display) {
+        return new ConsoleGameStartedAdapter(display);
     }
 
     @Bean
-    public GameOverObserverPort gameOverDisplayAdapter(ConsoleDisplayAdapter display) {
-        return new GameOverDisplayAdapter(display);
+    public TurnObserverPort turnDisplay(DisplayPort display) {
+        return new ConsoleTurnAdapter(display);
     }
 
     @Bean
-    public GameStartObserverPort pathsDisplayAdapter(ConsoleDisplayAdapter display) {
-        return new PathsDisplayAdapter(display);
+    public ConsoleGameEndedAdapter gameEndedDisplay(DisplayPort display) {
+        return new ConsoleGameEndedAdapter(display);
     }
 
     @Bean
-    public GameRulesObserverPort rulesDisplayAdapter(ConsoleDisplayAdapter display) {
-        return new RulesDisplayAdapter(display);
+    public ReplayObserverPort replayDisplay(DisplayPort display) {
+        return new ConsoleReplayAdapter(display);
     }
 
     @Bean
-    public InitialisePlayerUseCase initialisePlayerUseCase(DiceShaker diceShaker, List<PlayerTurnObserverPort> turnObservers, List<GameOverObserverPort> gameOverObservers) {
-        return new InitialisePlayerUseCase(diceShaker, turnObservers, gameOverObservers);
+    public RecordingDiceShakerPort recordingDiceShaker(DiceShaker diceShaker) {
+        return new RecordingDiceShakerAdapter(diceShaker);
     }
 
     @Bean
-    public InitialiseRulesUseCase initialiseRulesUseCase(RuleSelectionStrategy ruleSelectionStrategy) {
-        return new InitialiseRulesUseCase(ruleSelectionStrategy);
+    public InitialisePlayerUseCase initialisePlayerUseCase(RecordingDiceShakerPort diceShaker, TurnObserverPort turnDisplay, GameEndedObserverPort gameEndedDisplay) {
+        return new InitialisePlayerUseCase(diceShaker, List.of(turnDisplay), List.of(gameEndedDisplay));
     }
 
     @Bean
-    public StartGameUseCase startGameUseCase(Board board, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, Path path, List<GameRulesObserverPort> rulesObservers, List<GameStartObserverPort> gameStartObservers) {
-        GameSessionUseCase session = new GameSessionUseCase(PLAYER_COUNT, board, playerSetup, rulesSetup, path, rulesObservers);
-        gameStartObservers.forEach(session::addObserver);
-        return session;
+    public InitialiseRulesUseCase initialiseRulesUseCase(RuleSelectionStrategy ruleSelectionStrategy, TeleportGenerationStrategy teleportGenerationStrategy) {
+        return new InitialiseRulesUseCase(ruleSelectionStrategy, teleportGenerationStrategy);
+    }
+
+    @Bean
+    public StartGameUseCase startGameUseCase(Board board, RecordingDiceShakerPort recordingDice, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, SavedGameRepository savedGameRepository, GameStartedObserverPort gameStartedDisplay, GameEndedObserverPort gameEndedDisplay) {
+        return new GameSessionUseCase(
+                PLAYER_COUNT,
+                board,
+                playerSetup,
+                rulesSetup,
+                recordingDice,
+                savedGameRepository,
+                List.of(gameStartedDisplay),
+                List.of(gameEndedDisplay)
+        );
+    }
+
+    @Bean
+    public ReplayGameUseCase replayGameUseCase(SavedGameRepository repository, Board board, ReplayDiceShakerFactory replayDiceShakerFactory, TurnObserverPort turnDisplay, GameStartedObserverPort gameStartedDisplay, GameEndedObserverPort gameEndedDisplay, ReplayObserverPort replayDisplay) {
+        return new ReplayGameService(
+                repository,
+                board,
+                List.of(turnDisplay),
+                List.of(gameStartedDisplay),
+                List.of(gameEndedDisplay),
+                List.of(replayDisplay),
+                replayDiceShakerFactory
+        );
     }
 }

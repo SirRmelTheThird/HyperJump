@@ -2,6 +2,9 @@ package com.hyperjump.game.applicationcode.domainmodel.dice;
 
 import com.hyperjump.game.applicationcode.domainmodel.value.DiceRoll;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class FixedSingleDiceShaker implements DiceShakerFactory {
 
     private final int[] shakes = new int[]{1, 2, 3, 4, 5, 6};
@@ -9,6 +12,10 @@ public class FixedSingleDiceShaker implements DiceShakerFactory {
 
     public void reset() {
         index = 0;
+    }
+
+    public List<Integer> getRolls() {
+        return Arrays.stream(shakes).boxed().toList();
     }
 
     @Override
@@ -32,4 +39,5 @@ public class FixedSingleDiceShaker implements DiceShakerFactory {
     public DiceRoll roll() {
         return new DiceRoll(toArray());
     }
+
 }

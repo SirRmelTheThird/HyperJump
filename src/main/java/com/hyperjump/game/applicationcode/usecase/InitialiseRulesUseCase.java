@@ -12,26 +12,29 @@ import java.util.List;
 public class InitialiseRulesUseCase {
 
     private final RuleSelectionStrategy ruleSelectionStrategy;
+    private final TeleportGenerationStrategy teleportGenerationStrategy;
+
+    public InitialiseRulesUseCase(RuleSelectionStrategy ruleSelectionStrategy, TeleportGenerationStrategy teleportGenerationStrategy) {
+        this.ruleSelectionStrategy = ruleSelectionStrategy;
+        this.teleportGenerationStrategy = teleportGenerationStrategy;
+    }
 
     public InitialiseRulesUseCase(RuleSelectionStrategy ruleSelectionStrategy) {
-        this.ruleSelectionStrategy = ruleSelectionStrategy;
+        this(ruleSelectionStrategy, null);
     }
 
     public List<GameRule> setupRules(int boardSize, List<Player> players) {
 
-        List<GameRule> randomRules = List.of(
+        if (teleportGenerationStrategy == null) {
+            return ruleSelectionStrategy.select(List.of());
+        }
+
+        List<GameRule> availableRules = List.of(
                 new ExactEndRule(),
-                new TeleportRule(boardSize, players, new RandomTeleportGeneration()),
+                new TeleportRule(boardSize, players, teleportGenerationStrategy),
                 new HitRule(new SamePositionHit(players))
         );
 
-        List<GameRule> fixedRules = List.of(
-                new ExactEndRule(),
-                new TeleportRule(boardSize, players, new FixedTeleportGeneration()),
-                new HitRule(new SamePositionHit(players))
-        );
-
-        List<GameRule> availableRules = ruleSelectionStrategy instanceof FixedRuleSelection ? fixedRules : randomRules;
         return ruleSelectionStrategy.select(availableRules);
     }
 }

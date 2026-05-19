@@ -6,18 +6,26 @@ import com.hyperjump.game.applicationcode.port.out.DiceShaker;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @Profile("test")
 public class FixedDiceShakerAdapter implements DiceShaker {
 
     private final FixedSingleDiceShaker fixedDice = new FixedSingleDiceShaker();
 
-    public void reset() {
-        fixedDice.reset();
-    }
-
     @Override
     public DiceRoll roll() {
         return fixedDice.roll();
+    }
+
+    @Override
+    public String describe() {
+        return "Fixed sequence of dice rolls " + fixedDice.getRolls();
+    }
+
+    @Override
+    public void reset() {
+        fixedDice.reset();
     }
 }

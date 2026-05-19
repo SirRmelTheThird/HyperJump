@@ -2,9 +2,13 @@ package com.hyperjump.game.applicationcode.domainmodel.rules.strategy;
 
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
 import com.hyperjump.game.applicationcode.domainmodel.value.Position;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
+@Profile("real")
 public class RandomTeleportGeneration implements TeleportGenerationStrategy {
 
     private static final int MAX_WORMHOLES = 2;
@@ -17,21 +21,15 @@ public class RandomTeleportGeneration implements TeleportGenerationStrategy {
 
         Collections.shuffle(positions);
 
-        int maxPossibleWormholes = positions.size() / 2;
-        int count = Math.min(MAX_WORMHOLES, maxPossibleWormholes);
-
+        int count = Math.min(MAX_WORMHOLES, positions.size() / 2);
         for (int i = 0; i < count * 2; i += 2) {
-            Position from = new Position(positions.get(i));
-            Position to = new Position(positions.get(i + 1));
-
-            wormholes.put(from, to);
+            wormholes.put(new Position(positions.get(i)), new Position(positions.get(i + 1)));
         }
         return wormholes;
     }
 
     private Set<Integer> getExcludedPositions(List<Player> players) {
         Set<Integer> excluded = new HashSet<>();
-
         for (Player player : players) {
             excluded.add(player.getStartPos().value());
             excluded.add(player.getEndPos().value());
@@ -41,11 +39,8 @@ public class RandomTeleportGeneration implements TeleportGenerationStrategy {
 
     private List<Integer> getAvailablePositions(int boardSize, Set<Integer> excluded) {
         List<Integer> positions = new ArrayList<>();
-
         for (int i = 1; i <= boardSize; i++) {
-            if (!excluded.contains(i)) {
-                positions.add(i);
-            }
+            if (!excluded.contains(i)) positions.add(i);
         }
         return positions;
     }

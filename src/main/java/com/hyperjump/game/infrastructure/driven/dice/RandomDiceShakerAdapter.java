@@ -29,4 +29,9 @@ public class RandomDiceShakerAdapter implements DiceShaker {
     public DiceRoll roll() {
         return diceTypes.get(random.nextInt(diceTypes.size())).roll();
     }
+
+    @Override
+    public String describe() {
+        return "Random sequence of dice rolls";
+    }
 }

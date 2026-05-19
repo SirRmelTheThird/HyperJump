@@ -1,5 +1,9 @@
 package com.hyperjump.game.applicationcode.domainmodel.board;
 
+import com.hyperjump.game.applicationcode.domainmodel.value.Position;
+
+import java.util.List;
+
 public class SmallBoard extends AbstractBoard {
 
     private static final int COLS = 5;
@@ -18,7 +22,6 @@ public class SmallBoard extends AbstractBoard {
     @Override public int getSize() {
         return GRID.length;
     }
-
     @Override public int getCols() {
         return COLS;
     }
@@ -30,4 +33,9 @@ public class SmallBoard extends AbstractBoard {
     @Override public int getEndPosition() {
         return GRID.length;
     }
+
+    @Override public boolean supports(int playerCount) {
+        return playerCount == 2;
+    }
+
 }

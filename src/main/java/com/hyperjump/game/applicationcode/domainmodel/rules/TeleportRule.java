@@ -1,6 +1,9 @@
 package com.hyperjump.game.applicationcode.domainmodel.rules;
 
+import com.hyperjump.game.applicationcode.domainmodel.movement.Movement;
+import com.hyperjump.game.applicationcode.domainmodel.movement.TeleportVariationDecorator;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
+import com.hyperjump.game.applicationcode.domainmodel.replay.SavedRule;
 import com.hyperjump.game.applicationcode.port.out.GameRule;
 import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.TeleportGenerationStrategy;
 import com.hyperjump.game.applicationcode.domainmodel.value.Position;
@@ -16,16 +19,31 @@ public class TeleportRule implements GameRule {
         this.wormholeMap = strategy.generate(boardSize, players);
     }
 
+    public TeleportRule(Map<Position, Position> wormholeMap) {
+        this.wormholeMap = wormholeMap;
+    }
+
     public Position getDestination(Position position) {
         return wormholeMap.getOrDefault(position, position);
     }
 
-    public Map<Position, Position> getWormholeMap() {
-        return wormholeMap;
+    @Override
+    public Movement decorate(Movement movement) {
+        return new TeleportVariationDecorator(movement, this);
+    }
+
+    @Override
+    public SavedRule toSavedRule() {
+        return new SavedRule("TeleportRule", wormholeMap);
+    }
+
+    @Override
+    public GameRule rebuild(List<Player> players) {
+        return new TeleportRule(wormholeMap);
     }
 
     @Override
     public String getDescription() {
-        return "Teleport: Player is teleported to the other end of the wormhole, Wormholes: " + getWormholeMap();
+        return "Teleport: Player is teleported to the other end of the wormhole, Wormholes: " + wormholeMap;
     }
 }

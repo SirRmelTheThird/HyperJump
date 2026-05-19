@@ -1,7 +1,12 @@
 package com.hyperjump.game.applicationcode.domainmodel.rules;
 
+import com.hyperjump.game.applicationcode.domainmodel.movement.ExactEndVariationDecorator;
+import com.hyperjump.game.applicationcode.domainmodel.movement.Movement;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
+import com.hyperjump.game.applicationcode.domainmodel.replay.SavedRule;
 import com.hyperjump.game.applicationcode.port.out.GameRule;
+
+import java.util.List;
 
 public class ExactEndRule implements GameRule {
 
@@ -16,6 +21,21 @@ public class ExactEndRule implements GameRule {
             newIndex = maxIndex - (newIndex - maxIndex);
         }
         return Math.max(0, newIndex);
+    }
+
+    @Override
+    public Movement decorate(Movement movement) {
+        return new ExactEndVariationDecorator(movement, this);
+    }
+
+    @Override
+    public SavedRule toSavedRule() {
+        return new SavedRule("ExactEndRule");
+    }
+
+    @Override
+    public GameRule rebuild(List<Player> players) {
+        return new ExactEndRule();
     }
 
     @Override
