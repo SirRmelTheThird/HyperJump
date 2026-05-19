@@ -67,7 +67,7 @@ This interfaces used by external adapters to interact with the application core.
 
 Application services implement the input ports and coordinate the game flow.
 
-Examples:
+Files:
 - `StartGameService`
 - `GameSessionUseCase`
 - `InitialisePlayerUseCase`
@@ -122,7 +122,7 @@ This interfaces used by external adapters to interact with the application core.
 
 Application services implement the input ports and coordinate the game flow.
 
-Examples:
+Files:
 - `ReplayGameService`
 - `ReplaySessionUseCase`
 - `InitialisePlayerUseCase`
@@ -135,8 +135,6 @@ These classes control the use cases but do not directly depend on infrastructure
 The project uses **Ports and Adapters**, also known as **Hexagonal Architecture**.
 
 The main idea is that the core application should not depend directly on external systems. Instead, the application depends on interfaces called **ports**, and infrastructure classes implement those ports as **adapters**.
-
-## Ports and Adapters UML
 
 ## Turn Port
 ```mermaid
@@ -158,6 +156,11 @@ classDiagram
     TurnDisplayAdapter ..|> TurnObserverPort
 ```
 
+Output ports define what the application needs from outside systems.
+File:
+- `TurnObserverPort`
+This port requires to notify the turns count and interacts with the associated adapter.
+
 ## Game Started Port
 ```mermaid
 classDiagram
@@ -177,6 +180,11 @@ classDiagram
     GameSessionUseCase --> GameStartedObserverPort : notifies
     PathsDisplayAdapter ..|> GameStartedObserverPort
 ```
+
+Output ports define what the application needs from outside systems.
+File:
+- `GameStartedObserverPort`
+This port requires to notify that the game has started and interacts with the associated adapter.
 
 ## Game Ended Port
 ```mermaid
@@ -198,6 +206,11 @@ classDiagram
     GameOverDisplayAdapter ..|> GameEndedObserverPort
 ```
 
+Output ports define what the application needs from outside systems.
+File:
+- `GameEndedObserverPort`
+This port requires to notify the game has ended and interacts with the associated adapter.
+
 ## Game Saved Port
 ```mermaid
 classDiagram
@@ -218,6 +231,11 @@ classDiagram
     GameSavedDisplayAdapter ..|> GameSavedObserverPort
 ```
 
+Output ports define what the application needs from outside systems.
+File:
+- `GameSavedObserverPort`
+This port requires to notify the game has saved and interacts with the associated adapter.
+
 ## Replay Port
 ```mermaid
 classDiagram
@@ -237,6 +255,11 @@ classDiagram
     ReplayGameService --> ReplayObserverPort : notifies
     ReplayDisplayAdapter ..|> ReplayObserverPort
 ```
+
+Output ports define what the application needs from outside systems.
+File:
+- `ReplayObserverPort`
+This port requires to notify the replay has started and interacts with the associated adapter.
 
 ## Board Port
 ```mermaid
@@ -259,6 +282,11 @@ classDiagram
     BoardFactoryAdapter ..|> Board
 ```
 
+Output ports define what the application needs from outside systems.
+File:
+- `Board`
+This port requires to notify the game has created a board and interacts with the associated adapter.
+
 ## DiceShaker Port
 ```mermaid
 classDiagram
@@ -276,9 +304,22 @@ classDiagram
     class RandomDiceShakerAdapter {
     }
 
+    class FixedDiceShakerAdapter {
+    }
+
+    class ReplayDiceShakerAdapter {
+    }
+
     GameSessionUseCase --> DiceShaker : << output port >>
     RandomDiceShakerAdapter ..|> DiceShaker
+    FixedDiceShakerAdapter ..|> DiceShaker
+    ReplayDiceShakerAdapter ..|> DiceShaker
 ```
+
+Output ports define what the application needs from outside systems.
+File:
+- `DiceShaker`
+This port requires to notify types of diceshaker sequences and interacts with the associated adapter.
 
 ## Game Saved Port
 ```mermaid
@@ -307,63 +348,11 @@ classDiagram
     InMemorySavedGameRepositoryAdapter ..|> SavedGameRepository
 ```
 
-```mermaid
-
-```
-
-```mermaid
-
-```
-
-Application services implement the input ports and coordinate the game flow.
-
-Examples:
-
-- `GameSessionUseCase`
-- `ReplayGameService`
-- `InitialisePlayerUseCase`
-- `InitialiseRulesUseCase`
-- `ReplaySessionUseCase`
-
-These classes control the use cases but do not directly depend on infrastructure details.
-
-### Output Ports
-
 Output ports define what the application needs from outside systems.
-
-Examples:
-
-- `Board`
-- `DiceShaker`
+File:
 - `SavedGameRepository`
-- `TurnObserverPort`
-- `GameStartedObserverPort`
-- `GameEndedObserverPort`
-- `GameSavedObserverPort`
-- `ReplayObserverPort`
-
-The application depends on these abstractions rather than concrete infrastructure classes.
-
-### Driven Adapters
-
-Driven adapters implement output ports.
-
-Examples:
-
-- `BoardFactoryAdapter`
-- `RandomDiceShakerAdapter`
-- `FixedDiceShakerAdapter`
-- `RecordingDiceShakerAdapter`
-- `ReplayDiceShakerAdapter`
-- `JsonFileSavedGameRepositoryAdapter`
-- `InMemorySavedGameRepositoryAdapter`
-- `ConsoleTurnAdapter`
-- `ConsoleGameStartedAdapter`
-- `ConsoleGameEndedAdapter`
-- `ConsoleGameSavedAdapter`
-- `ConsoleReplayAdapter`
-
-These adapters connect the application to external concerns such as dice generation, persistence, replay, and console output.
+This port requires to notify game repository has saved and interacts with the associated adapter.
+These adapters connect the application to external concerns
 
 ## Dependency Explanation
 
