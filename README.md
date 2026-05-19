@@ -1,4 +1,4 @@
-# Game Architecture
+# Game
 
 ## Introduction
 
@@ -20,6 +20,7 @@ These patterns help make the game easier to extend, test, and maintain.
 
 # Architecture
 
+## Game
 ```mermaid
 classDiagram
     direction LR
@@ -61,6 +62,21 @@ classDiagram
     StartGameService ..> SavedGameRepository : << use >>
 ```
 
+The `GameConsoleRunner` receives user interaction from the console and calls the input ports frome `StartGameUseCase`
+This interfaces used by external adapters to interact with the application core.
+
+Application services implement the input ports and coordinate the game flow.
+
+Examples:
+- `StartGameService`
+- `GameSessionUseCase`
+- `InitialisePlayerUseCase`
+- `InitialiseRulesUseCase`
+
+These classes control the use cases but do not directly depend on infrastructure details.
+
+## Replay
+
 ```mermaid
 classDiagram
     direction LR
@@ -101,16 +117,28 @@ classDiagram
     ReplayGameService ..> ReplaySessionUseCase : << use >>
     ReplayGameService ..> SavedGameRepository : << use >>
 ```
+The `GameConsoleRunner` receives user replay interaction from the console and calls the input ports from `ReplayGameUseCase`.
+This interfaces used by external adapters to interact with the application core.
 
-## Ports and Adapters Architecture
+Application services implement the input ports and coordinate the game flow.
 
-The project uses **Ports and Adapters Architecture**, also known as **Hexagonal Architecture**.
+Examples:
+- `ReplayGameService`
+- `ReplaySessionUseCase`
+- `InitialisePlayerUseCase`
+- `InitialiseRulesUseCase`
+
+These classes control the use cases but do not directly depend on infrastructure details.
+
+## Ports and Adapters 
+
+The project uses **Ports and Adapters**, also known as **Hexagonal Architecture**.
 
 The main idea is that the core application should not depend directly on external systems. Instead, the application depends on interfaces called **ports**, and infrastructure classes implement those ports as **adapters**.
 
 ## Ports and Adapters UML
 
-## Turn Observer
+## Turn Port
 ```mermaid
 classDiagram
     direction BT
@@ -130,7 +158,7 @@ classDiagram
     TurnDisplayAdapter ..|> TurnObserverPort
 ```
 
-## Game Started Observer
+## Game Started Port
 ```mermaid
 classDiagram
     direction BT
@@ -150,7 +178,7 @@ classDiagram
     PathsDisplayAdapter ..|> GameStartedObserverPort
 ```
 
-## Game Ended Observer
+## Game Ended Port
 ```mermaid
 classDiagram
     direction BT
@@ -170,7 +198,7 @@ classDiagram
     GameOverDisplayAdapter ..|> GameEndedObserverPort
 ```
 
-## Game Saved Observer
+## Game Saved Port
 ```mermaid
 classDiagram
     direction BT
@@ -190,7 +218,7 @@ classDiagram
     GameSavedDisplayAdapter ..|> GameSavedObserverPort
 ```
 
-## Replay Observer
+## Replay Port
 ```mermaid
 classDiagram
     direction BT
@@ -210,7 +238,7 @@ classDiagram
     ReplayDisplayAdapter ..|> ReplayObserverPort
 ```
 
-## Board Observer
+## Board Port
 ```mermaid
 classDiagram
     direction BT
@@ -231,7 +259,7 @@ classDiagram
     BoardFactoryAdapter ..|> Board
 ```
 
-## DiceShaker Observer
+## DiceShaker Port
 ```mermaid
 classDiagram
     direction BT
@@ -252,7 +280,7 @@ classDiagram
     RandomDiceShakerAdapter ..|> DiceShaker
 ```
 
-## Game Saved Observer
+## Game Saved Port
 ```mermaid
 classDiagram
     direction BT
@@ -286,30 +314,6 @@ classDiagram
 ```mermaid
 
 ```
-## Structure Explanation
-
-### Driving Adapters
-
-Driving adapters start the application flow.
-
-Examples:
-
-- `GameConsoleRunner`
-
-The `GameConsoleRunner` receives user interaction from the console and calls the input ports such as `StartGameUseCase` and `ReplayGameUseCase`.
-
-### Input Ports
-
-Input ports define what the application can do.
-
-Examples:
-
-- `StartGameUseCase`
-- `ReplayGameUseCase`
-
-These are interfaces used by external adapters to interact with the application core.
-
-### Application Services
 
 Application services implement the input ports and coordinate the game flow.
 
