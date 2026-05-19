@@ -10,18 +10,15 @@ import java.util.List;
 
 public class ReplaySessionUseCase {
 
-    private final BoardFactory board;
     private final InitialisePlayerUseCase playerSetup;
-    private final InitialiseRulesUseCase rulesSetup;
+    private final List<GameRule> selectedRules;
 
-    public ReplaySessionUseCase(BoardFactory board, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup) {
-        this.board = board;
+    public ReplaySessionUseCase(InitialisePlayerUseCase playerSetup, List<GameRule> selectedRules) {
         this.playerSetup = playerSetup;
-        this.rulesSetup = rulesSetup;
+        this.selectedRules = selectedRules;
     }
 
     public PlayerTurn play() {
-        List<GameRule> selectedRules = rulesSetup.setupRules(board.getSize(), playerSetup.getPlayers());
         Movement movement = buildMovement(selectedRules);
         return playerSetup.startTurns(movement);
     }

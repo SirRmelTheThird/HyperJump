@@ -5,7 +5,10 @@ import com.hyperjump.game.applicationcode.domainmodel.movement.events.GameEvent;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
 import com.hyperjump.game.applicationcode.domainmodel.player.PlayerTurn;
 import com.hyperjump.game.applicationcode.domainmodel.value.DiceRoll;
+import com.hyperjump.game.applicationcode.domainmodel.value.Position;
 import com.hyperjump.game.applicationcode.port.out.TurnObserverPort;
+
+import java.util.stream.Collectors;
 
 public class ConsoleTurnAdapter implements TurnObserverPort {
 
@@ -41,13 +44,19 @@ public class ConsoleTurnAdapter implements TurnObserverPort {
     }
 
     private String buildMovementMessage(Player player, TurnOutcome outcome) {
-        StringBuilder message = new StringBuilder();
+        return outcome.getEvents()
+                .stream()
+                .map(event -> event.describe(player))
+                .collect(Collectors.joining("\n"));
+    }
 
-        for (GameEvent event : outcome.getEvents()) {
-            message.append(event.describe(player)).append("\n");
+    private String formatPosition(Player player, Position position) {
+        if (position.equals(player.getStartPos())) {
+            return "Home (Position " + position + ")";
         }
-
-        message.append(player.getColour()).append(" moves from Position ").append(outcome.getPreviousPosition().value()).append(" to ").append(outcome.getEndPosition().value());
-        return message.toString();
+        if (position.equals(player.getEndPos())) {
+            return "End (Position " + position + ")";
+        }
+        return String.valueOf(position.value());
     }
 }

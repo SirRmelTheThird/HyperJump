@@ -50,7 +50,7 @@ public class JsonFileSavedGameRepositoryAdapter implements SavedGameRepository {
 
     @Override
     public List<SavedGame> findAll() {
-        doesFileExists();
+        ensureFileExists();
         try {
             return objectMapper.readValue(file.toFile(), SAVED_GAME_LIST);
         } catch (IOException e) {
@@ -59,7 +59,7 @@ public class JsonFileSavedGameRepositoryAdapter implements SavedGameRepository {
     }
 
     private void writeGames(List<SavedGame> games) {
-        doesDirectoryExists();
+        ensureDirectoryExists();
         try {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(file.toFile(), games);
         } catch (IOException e) {
@@ -67,8 +67,8 @@ public class JsonFileSavedGameRepositoryAdapter implements SavedGameRepository {
         }
     }
 
-    private void doesFileExists() {
-        doesDirectoryExists();
+    private void ensureFileExists() {
+        ensureDirectoryExists();
         if (Files.exists(file)) {
             return;
         }
@@ -80,7 +80,7 @@ public class JsonFileSavedGameRepositoryAdapter implements SavedGameRepository {
         }
     }
 
-    private void doesDirectoryExists() {
+    private void ensureDirectoryExists() {
         try {
             Files.createDirectories(directory);
         } catch (IOException e) {

@@ -15,6 +15,6 @@ public class HitEvent implements GameEvent {
 
     @Override
     public String describe(Player player) {
-        return player.getColour() + " hits " + hitPlayerColor + " at Position " + hitPosition.value();
+        return player.getColour() + " hit " + hitPlayerColor + " at position Position " + hitPosition.value();
     }
 }

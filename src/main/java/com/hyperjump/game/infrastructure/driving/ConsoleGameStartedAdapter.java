@@ -59,10 +59,20 @@ public class ConsoleGameStartedAdapter implements GameStartedObserverPort {
         for (Player player : info.players()) {
             String path = player.getPath()
                     .stream()
-                    .map(Position::toString)
+                    .map(position -> formatPosition(player, position))
                     .collect(Collectors.joining(", "));
 
-            display.show(player.getColour() + " Home " + path);
+            display.show(path);
         }
+    }
+
+    private String formatPosition(Player player, Position position) {
+        if (position.equals(player.getStartPos())) {
+            return player.getColour() + " Home (Position " + position + ")";
+        }
+        if (position.equals(player.getEndPos())) {
+            return "End (Position " + position + ")";
+        }
+        return position.toString();
     }
 }

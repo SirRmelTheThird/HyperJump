@@ -18,13 +18,12 @@ public class TeleportVariationDecorator extends MovementDecorator {
     @Override
     public TurnOutcome move(Player player, DiceRoll roll) {
         TurnOutcome  result = wrapped.move(player, roll);
-        Position currentPosition = result.getEndPosition();
         Position destination = teleportRule.getDestination(result.getEndPosition());
 
         if (destination.value() == result.getEndPosition().value()) {
             return result;
         }
         player.teleportTo(destination);
-        return result.withEndPosition(destination).withEvent(new TeleportEvent(currentPosition, destination));
+        return result.withEndPosition(destination).withEvent(new TeleportEvent());
     }
 }

@@ -57,7 +57,7 @@ public class ReplayGameService implements ReplayGameUseCase {
         List<GameRule> selectedRules = ruleSetup.setupRules(fullBoard.getSize(), playerSetup.getPlayers());
         notifyGameStarted(fullBoard, selectedRules, diceShaker, playerSetup.getPlayers());
 
-        ReplaySessionUseCase session = new ReplaySessionUseCase(fullBoard, playerSetup, ruleSetup);
+        ReplaySessionUseCase session = new ReplaySessionUseCase(playerSetup, selectedRules);
         PlayerTurn playerTurn = session.play();
 
         notifyGameEnded(playerTurn, savedGame);

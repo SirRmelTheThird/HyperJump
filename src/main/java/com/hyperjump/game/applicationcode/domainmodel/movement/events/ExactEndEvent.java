@@ -6,6 +6,6 @@ public class ExactEndEvent implements GameEvent {
 
     @Override
     public String describe(Player player) {
-        return player.getColour() + " overshot and bounced back";
+        return player.getColour() + " overshoots end";
     }
 }

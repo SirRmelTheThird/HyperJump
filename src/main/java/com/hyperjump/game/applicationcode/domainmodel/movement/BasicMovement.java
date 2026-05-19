@@ -1,6 +1,7 @@
 package com.hyperjump.game.applicationcode.domainmodel.movement;
 
 
+import com.hyperjump.game.applicationcode.domainmodel.movement.events.MoveEvent;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
 import com.hyperjump.game.applicationcode.domainmodel.value.DiceRoll;
 import com.hyperjump.game.applicationcode.domainmodel.value.Position;
@@ -18,6 +19,6 @@ public class BasicMovement implements Movement {
 
         Position current = player.getCurrentPos();
 
-        return new TurnOutcome (previous, current);
+        return new TurnOutcome(previous, current).withEvent(new MoveEvent(previous, current));
     }
 }
