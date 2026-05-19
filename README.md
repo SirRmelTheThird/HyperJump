@@ -5,6 +5,40 @@ Introduction Here
 
 The architecture of HyperJump follows a modular and loosely coupled structure that separates the application into multiple layers and responsibilities. The system is heavily influenced by Hexagonal Architecture, where communication occurs through interfaces (ports) and concrete implementations (adapters).
 
+### Game
+```mermaid
+classDiagram
+    direction LR
+
+    class GameConsoleRunner {
+    }
+
+    class CommandLineRunner {
+        <<interface>>
+        +run(String... args)
+    }
+
+    class StartGameUseCase {
+        <<interface>>
+        + play()
+    }
+
+    class StartGameService {
+        + play()
+    }
+
+    class GameSessionUseCase {
+        + setupGame()
+        + startGame()
+    }
+
+    GameConsoleRunner ..|> CommandLineRunner
+    GameConsoleRunner ..> StartGameUseCase : << use >>
+
+    StartGameService ..|> StartGameUseCase
+    StartGameService ..> GameSessionUseCase : << use >>
+```
+
 ## Strengths of the Architecture
 
 ### Separation of Concerns
@@ -78,39 +112,6 @@ The replay subsystem demonstrates strong architectural separation by isolating r
 
 ---
 
-### Game
-```mermaid
-classDiagram
-    direction LR
-
-    class GameConsoleRunner {
-    }
-
-    class CommandLineRunner {
-        <<interface>>
-        +run(String... args)
-    }
-
-    class StartGameUseCase {
-        <<interface>>
-        + play()
-    }
-
-    class StartGameService {
-        + play()
-    }
-
-    class GameSessionUseCase {
-        + setupGame()
-        + startGame()
-    }
-
-    GameConsoleRunner ..|> CommandLineRunner
-    GameConsoleRunner ..> StartGameUseCase : << use >>
-
-    StartGameService ..|> StartGameUseCase
-    StartGameService ..> GameSessionUseCase : << use >>
-```
 ### Components
 
 #### GameConsoleRunner
