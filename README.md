@@ -1,8 +1,82 @@
 # HyperJump
 Introduction Here
 
-## Spring Boot Application
-This diagram represents the entry point and application flow of the game using a Clean Architecture approach.
+# Architecture Evaluation
+
+The architecture of HyperJump follows a modular and loosely coupled structure that separates the application into multiple layers and responsibilities. The system is heavily influenced by Hexagonal Architecture, where communication occurs through interfaces (ports) and concrete implementations (adapters).
+
+## Strengths of the Architecture
+
+### Separation of Concerns
+
+The project cleanly separates:
+- Application logic
+- Domain/game logic
+- Infrastructure implementations
+- User interaction
+
+This improves readability and maintainability because each component has a clearly defined responsibility.
+
+### Loose Coupling Through Interfaces
+
+Interfaces such as:
+- `StartGameUseCase`
+- `SavedGameRepository`
+- Observer ports
+- Board
+- DiceShaker
+- Rule
+
+allow the core game logic to remain independent from implementation details. This improves flexibility and testability.
+
+### Extensibility
+
+The architecture allows additional features to be added without modifying existing core logic. Examples include:
+- Adding new board types
+- Introducing new movement rules
+- Supporting alternative storage systems
+- Creating graphical interfaces instead of console adapters
+
+### Testability
+
+Because dependencies are injected through abstractions, components can be mocked or replaced during testing. This improves unit testing capabilities and reduces dependency on infrastructure implementations.
+
+### Replay and Persistence Support
+```mermaid
+classDiagram
+    direction LR
+
+    class GameConsoleRunner {
+    }
+
+    class CommandLineRunner {
+        <<interface>>
+        +run(String... args)
+    }
+
+    class ReplayGameUseCase {
+        <<interface>>
+        + replay()
+    }
+
+    class ReplayGameService {
+        + replay()
+    }
+
+    class ReplaySessionUseCase {
+        + setupReplay()
+        + startReplay()
+    }
+
+    GameConsoleRunner ..|> CommandLineRunner
+    GameConsoleRunner ..> ReplayGameUseCase : << use >>
+
+    ReplayGameService ..|> ReplayGameUseCase
+    ReplayGameService ..> ReplaySessionUseCase : << use >>
+```
+The replay subsystem demonstrates strong architectural separation by isolating replay functionality from standard gameplay. Repository abstractions also support multiple persistence strategies.
+
+---
 
 ### Game
 ```mermaid
@@ -37,41 +111,6 @@ classDiagram
     StartGameService ..|> StartGameUseCase
     StartGameService ..> GameSessionUseCase : << use >>
 ```
-
-### Replay
-```mermaid
-classDiagram
-    direction LR
-
-    class GameConsoleRunner {
-    }
-
-    class CommandLineRunner {
-        <<interface>>
-        +run(String... args)
-    }
-
-    class ReplayGameUseCase {
-        <<interface>>
-        + replay()
-    }
-
-    class ReplayGameService {
-        + replay()
-    }
-
-    class ReplaySessionUseCase {
-        + setupReplay()
-        + startReplay()
-    }
-
-    GameConsoleRunner ..|> CommandLineRunner
-    GameConsoleRunner ..> ReplayGameUseCase : << use >>
-
-    ReplayGameService ..|> ReplayGameUseCase
-    ReplayGameService ..> ReplaySessionUseCase : << use >>
-```
-
 ### Components
 
 #### GameConsoleRunner
