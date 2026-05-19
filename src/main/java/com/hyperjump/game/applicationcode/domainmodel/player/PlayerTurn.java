@@ -30,14 +30,13 @@ public class PlayerTurn {
         roll = currentPlayer.roll();
         turnOutcome = movement.move(currentPlayer, roll);
 
-        playerSelector.hasTakenATurn();
+        playerSelector.recordTurn();
 
         notifyTurnPlayed();
 
         if (updateWinner(currentPlayer)) {
             return;
         }
-
         playerSelector.next();
     }
 
@@ -46,7 +45,6 @@ public class PlayerTurn {
             winner = player;
             return true;
         }
-
         return false;
     }
 

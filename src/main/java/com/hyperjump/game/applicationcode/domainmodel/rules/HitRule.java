@@ -3,7 +3,6 @@ package com.hyperjump.game.applicationcode.domainmodel.rules;
 import com.hyperjump.game.applicationcode.domainmodel.movement.HitVariationDecorator;
 import com.hyperjump.game.applicationcode.domainmodel.movement.Movement;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
-import com.hyperjump.game.applicationcode.domainmodel.replay.SavedRule;
 import com.hyperjump.game.applicationcode.port.out.GameRule;
 import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.HitStrategy;
 import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.SamePositionHit;
@@ -26,11 +25,6 @@ public class HitRule implements GameRule {
     @Override
     public Movement decorate(Movement movement) {
         return new HitVariationDecorator(movement, this);
-    }
-
-    @Override
-    public SavedRule toSavedRule() {
-        return new SavedRule("HitRule");
     }
 
     @Override

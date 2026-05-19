@@ -27,18 +27,11 @@ public class InitialisePlayerUseCase {
     private List<Player> players;
     private RoundRobinPlayerSelector selector;
 
-    public InitialisePlayerUseCase(
-            DiceShaker diceShaker,
-            List<TurnObserverPort> turnObservers,
-            List<GameEndedObserverPort> gameEndedObservers
-    ) {
+    public InitialisePlayerUseCase(DiceShaker diceShaker, List<TurnObserverPort> turnObservers, List<GameEndedObserverPort> gameEndedObservers) {
         this.diceShaker = diceShaker;
         this.turnObservers = turnObservers;
         this.gameEndedObservers = gameEndedObservers;
-        this.positionStrategies = List.of(
-                new TwoPlayerPosition(),
-                new FourPlayerPosition()
-        );
+        this.positionStrategies = List.of(new TwoPlayerPosition(), new FourPlayerPosition());
     }
 
     public void setupPlayers(int playerCount, BoardFactory boardFactory) {
@@ -51,23 +44,11 @@ public class InitialisePlayerUseCase {
                         "Unsupported number of players: " + playerCount
                 ));
 
-        List<Position> starts = strategy.startPositions(
-                boardFactory.getStartPosition(),
-                boardFactory.getEndPosition(),
-                boardFactory.getCols()
-        );
-
-        List<Position> ends = strategy.endPositions(
-                boardFactory.getStartPosition(),
-                boardFactory.getEndPosition(),
-                boardFactory.getCols()
-        );
+        List<Position> starts = strategy.startPositions(boardFactory.getStartPosition(), boardFactory.getEndPosition(), boardFactory.getCols());
+        List<Position> ends = strategy.endPositions(boardFactory.getStartPosition(), boardFactory.getEndPosition(), boardFactory.getCols());
 
         for (int i = 0; i < players.size(); i++) {
-            List<Position> path = boardFactory.calculatePath(
-                    starts.get(i),
-                    ends.get(i)
-            );
+            List<Position> path = boardFactory.calculatePath(starts.get(i), ends.get(i));
             players.get(i).setPath(path);
         }
 

@@ -3,7 +3,6 @@ package com.hyperjump.game.applicationcode.domainmodel.rules;
 import com.hyperjump.game.applicationcode.domainmodel.movement.Movement;
 import com.hyperjump.game.applicationcode.domainmodel.movement.TeleportVariationDecorator;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
-import com.hyperjump.game.applicationcode.domainmodel.replay.SavedRule;
 import com.hyperjump.game.applicationcode.port.out.GameRule;
 import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.TeleportGenerationStrategy;
 import com.hyperjump.game.applicationcode.domainmodel.value.Position;
@@ -30,11 +29,6 @@ public class TeleportRule implements GameRule {
     @Override
     public Movement decorate(Movement movement) {
         return new TeleportVariationDecorator(movement, this);
-    }
-
-    @Override
-    public SavedRule toSavedRule() {
-        return new SavedRule("TeleportRule", wormholeMap);
     }
 
     @Override

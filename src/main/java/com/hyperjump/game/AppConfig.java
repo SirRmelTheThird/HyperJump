@@ -21,65 +21,61 @@ public class AppConfig {
 
     private static final int PLAYER_COUNT = 2;
 
-    @Bean
-    public DisplayPort displayPort() {
-        return new ConsoleDisplayAdapter();
-    }
+    private final DisplayPort              display          = new ConsoleDisplayAdapter();
+    private final TurnObserverPort         turnDisplay      = new ConsoleTurnAdapter(display);
+    private final GameEndedObserverPort    gameEndedDisplay = new ConsoleGameEndedAdapter(display);
+    private final GameStartedObserverPort  gameStartedDisplay = new ConsoleGameStartedAdapter(display);
+    private final GameSavedObserverPort    gameSavedDisplay = new ConsoleGameSavedAdapter(display);
+    private final ReplayObserverPort       replayDisplay    = new ConsoleReplayAdapter(display);
 
-    @Bean
-    public GameStartedObserverPort gameStartedDisplay(DisplayPort display) {
-        return new ConsoleGameStartedAdapter(display);
-    }
-
-    @Bean
-    public TurnObserverPort turnDisplay(DisplayPort display) {
-        return new ConsoleTurnAdapter(display);
-    }
-
-    @Bean
-    public ConsoleGameEndedAdapter gameEndedDisplay(DisplayPort display) {
-        return new ConsoleGameEndedAdapter(display);
-    }
-
-    @Bean
-    public ReplayObserverPort replayDisplay(DisplayPort display) {
-        return new ConsoleReplayAdapter(display);
-    }
-
+    // Volatile (transitive): wraps the profile-selected DiceShaker
     @Bean
     public RecordingDiceShakerPort recordingDiceShaker(DiceShaker diceShaker) {
         return new RecordingDiceShakerAdapter(diceShaker);
     }
 
+    // Volatile (transitive): depends on RecordingDiceShakerPort (volatile)
     @Bean
-    public InitialisePlayerUseCase initialisePlayerUseCase(RecordingDiceShakerPort diceShaker, TurnObserverPort turnDisplay, GameEndedObserverPort gameEndedDisplay) {
+    public InitialisePlayerUseCase initialisePlayerUseCase(RecordingDiceShakerPort diceShaker) {
         return new InitialisePlayerUseCase(diceShaker, List.of(turnDisplay), List.of(gameEndedDisplay));
     }
 
+    // Volatile (transitive): depends on RuleSelectionStrategy and
+    // TeleportGenerationStrategy — both swapped by profile
     @Bean
-    public InitialiseRulesUseCase initialiseRulesUseCase(RuleSelectionStrategy ruleSelectionStrategy, TeleportGenerationStrategy teleportGenerationStrategy) {
+    public InitialiseRulesUseCase initialiseRulesUseCase(
+            RuleSelectionStrategy ruleSelectionStrategy,
+            TeleportGenerationStrategy teleportGenerationStrategy) {
         return new InitialiseRulesUseCase(ruleSelectionStrategy, teleportGenerationStrategy);
     }
 
+    // Volatile (transitive): depends on Board, both use cases, and
+    // SavedGameRepository — all volatile
     @Bean
-    public StartGameUseCase startGameUseCase(Board board, RecordingDiceShakerPort recordingDice, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, SavedGameRepository savedGameRepository, GameStartedObserverPort gameStartedDisplay, GameEndedObserverPort gameEndedDisplay) {
+    public StartGameUseCase startGameUseCase(
+            Board board,
+            RecordingDiceShakerPort recordingDice,
+            InitialisePlayerUseCase playerSetup,
+            InitialiseRulesUseCase rulesSetup,
+            SavedGameRepository savedGameRepository) {
         return new GameSessionUseCase(
-                PLAYER_COUNT,
-                board,
-                playerSetup,
-                rulesSetup,
-                recordingDice,
-                savedGameRepository,
+                PLAYER_COUNT, board, playerSetup, rulesSetup,
+                recordingDice, savedGameRepository,
                 List.of(gameStartedDisplay),
-                List.of(gameEndedDisplay)
+                List.of(gameEndedDisplay),
+                List.of(gameSavedDisplay)
         );
     }
 
+    // Volatile: SavedGameRepository is the volatile dependency itself
+    // (swapped between memory/file profiles)
     @Bean
-    public ReplayGameUseCase replayGameUseCase(SavedGameRepository repository, Board board, ReplayDiceShakerFactory replayDiceShakerFactory, TurnObserverPort turnDisplay, GameStartedObserverPort gameStartedDisplay, GameEndedObserverPort gameEndedDisplay, ReplayObserverPort replayDisplay) {
+    public ReplayGameUseCase replayGameUseCase(
+            SavedGameRepository repository,
+            Board board,
+            ReplayDiceShakerFactory replayDiceShakerFactory) {
         return new ReplayGameService(
-                repository,
-                board,
+                repository, board,
                 List.of(turnDisplay),
                 List.of(gameStartedDisplay),
                 List.of(gameEndedDisplay),

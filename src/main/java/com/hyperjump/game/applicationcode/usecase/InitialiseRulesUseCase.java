@@ -11,21 +11,16 @@ import java.util.List;
 
 public class InitialiseRulesUseCase {
 
-    private final RuleSelectionStrategy ruleSelectionStrategy;
+    private final RuleSelectionStrategy      ruleSelectionStrategy;
     private final TeleportGenerationStrategy teleportGenerationStrategy;
 
     public InitialiseRulesUseCase(RuleSelectionStrategy ruleSelectionStrategy, TeleportGenerationStrategy teleportGenerationStrategy) {
-        this.ruleSelectionStrategy = ruleSelectionStrategy;
+        this.ruleSelectionStrategy      = ruleSelectionStrategy;
         this.teleportGenerationStrategy = teleportGenerationStrategy;
     }
 
-    public InitialiseRulesUseCase(RuleSelectionStrategy ruleSelectionStrategy) {
-        this(ruleSelectionStrategy, null);
-    }
-
     public List<GameRule> setupRules(int boardSize, List<Player> players) {
-
-        if (teleportGenerationStrategy == null) {
+        if (ruleSelectionStrategy.hasPreselectedRules()) {
             return ruleSelectionStrategy.select(List.of());
         }
 

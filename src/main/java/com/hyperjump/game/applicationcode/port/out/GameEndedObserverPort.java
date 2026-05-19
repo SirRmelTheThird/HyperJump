@@ -1,6 +1,5 @@
 package com.hyperjump.game.applicationcode.port.out;
 
-import com.hyperjump.game.applicationcode.domainmodel.gameenum.GameMode;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
 import com.hyperjump.game.applicationcode.domainmodel.replay.SavedGame;
 
@@ -11,7 +10,6 @@ public interface GameEndedObserverPort {
     record GameEndInfo(
             Player winner,
             int totalTurns,
-            SavedGame savedGame,
-            GameMode mode
+            SavedGame savedGame
     ) {}
 }

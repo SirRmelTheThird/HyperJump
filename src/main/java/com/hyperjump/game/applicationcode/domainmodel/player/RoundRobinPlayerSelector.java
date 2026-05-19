@@ -40,7 +40,7 @@ public class RoundRobinPlayerSelector implements PlayerSelector {
     }
 
     @Override
-    public void hasTakenATurn() {
+    public void recordTurn() {
         count++;
     }
 

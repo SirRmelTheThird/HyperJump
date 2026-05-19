@@ -6,5 +6,5 @@ public interface PlayerSelector {
     Player getCurrentPlayer();
     int getPlayerTurns();
     void next();
-    void hasTakenATurn();
+    void recordTurn();
 }

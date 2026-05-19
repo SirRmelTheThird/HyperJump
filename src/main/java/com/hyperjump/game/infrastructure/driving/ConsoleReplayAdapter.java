@@ -13,13 +13,11 @@ public class ConsoleReplayAdapter implements ReplayObserverPort {
 
     @Override
     public void onReplayStarted(SavedGame savedGame) {
-        display.show("\n=== REPLAY GAME ID: " + savedGame.getId() + " ===\n"
-        );
+        display.show("\n=== REPLAY GAME ID: " + savedGame.getId() + " ===\n");
     }
 
     @Override
     public void onReplayNotFound(int gameId) {
-        display.show("No saved game found with id: " + gameId
-        );
+        display.show("No saved game found with id: " + gameId);
     }
 }

@@ -1,35 +1,19 @@
 package com.hyperjump.game.applicationcode.domainmodel.replay;
 
+import com.hyperjump.game.applicationcode.port.out.GameRule;
+
 import java.util.List;
 
 public class GameConfiguration {
 
-    private int boardSize;
-    private int playerCount;
-    private List<SavedRule> rules;
+    private final int playerCount;
+    private final List<GameRule> rules;
 
-    public GameConfiguration() {
-    }
-
-    public GameConfiguration(
-            int boardSize,
-            int playerCount,
-            List<SavedRule> rules
-    ) {
-        this.boardSize = boardSize;
+    public GameConfiguration(int boardSize, int playerCount, List<GameRule> rules) {
         this.playerCount = playerCount;
-        this.rules = rules;
+        this.rules       = rules;
     }
 
-    public int getBoardSize() {
-        return boardSize;
-    }
-
-    public int getPlayerCount() {
-        return playerCount;
-    }
-
-    public List<SavedRule> getRules() {
-        return rules;
-    }
+    public int getPlayerCount()    { return playerCount; }
+    public List<GameRule> getRules() { return rules; }
 }

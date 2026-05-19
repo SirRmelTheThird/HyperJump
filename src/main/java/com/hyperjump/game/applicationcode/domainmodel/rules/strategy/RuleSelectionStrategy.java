@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface RuleSelectionStrategy {
     List<GameRule> select(List<GameRule> availableRules);
+    default boolean hasPreselectedRules() {
+        return false;
+    }
 }
