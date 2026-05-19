@@ -1,11 +1,25 @@
-# HyperJump
-Introduction Here
+# Game Architecture
 
-# Architecture Evaluation
+## Introduction
 
-The architecture of HyperJump follows a modular and loosely coupled structure that separates the application into multiple layers and responsibilities. The system is heavily influenced by Hexagonal Architecture, where communication occurs through interfaces (ports) and concrete implementations (adapters).
+HyperJump is a Java-based turn-based board game that allows players to move across a board using dice rolls. The game supports multiple gameplay variations such as single-die movement, exact-end rules, hit detection, teleporting through wormholes, and larger boards for four players.
 
-### Game
+The project is designed using clean architecture principles, especially **Ports and Adapters Architecture**, so that the core game logic is separated from infrastructure code such as console output, persistence, replay storage, and dice adapters.
+
+The implementation also uses several design patterns, including:
+
+- Factory Pattern
+- Strategy Pattern
+- Decorator Pattern
+- State Pattern
+- Observer Pattern
+- Repository Pattern
+- Adapter Pattern
+
+These patterns help make the game easier to extend, test, and maintain.
+
+# Architecture
+
 ```mermaid
 classDiagram
     direction LR
@@ -32,50 +46,21 @@ classDiagram
         + startGame()
     }
 
+    class SavedGameRepository {
+        <<interface>>
+        + save(SavedGame)
+        + findById(id)
+        + findAll()
+    }
+
     GameConsoleRunner ..|> CommandLineRunner
     GameConsoleRunner ..> StartGameUseCase : << use >>
 
     StartGameService ..|> StartGameUseCase
     StartGameService ..> GameSessionUseCase : << use >>
+    StartGameService ..> SavedGameRepository : << use >>
 ```
 
-## Strengths of the Architecture
-
-### Separation of Concerns
-
-The project cleanly separates:
-- Application logic
-- Domain/game logic
-- Infrastructure implementations
-- User interaction
-
-This improves readability and maintainability because each component has a clearly defined responsibility.
-
-### Loose Coupling Through Interfaces
-
-Interfaces such as:
-- `StartGameUseCase`
-- `SavedGameRepository`
-- Observer ports
-- Board
-- DiceShaker
-- Rule
-
-allow the core game logic to remain independent from implementation details. This improves flexibility and testability.
-
-### Extensibility
-
-The architecture allows additional features to be added without modifying existing core logic. Examples include:
-- Adding new board types
-- Introducing new movement rules
-- Supporting alternative storage systems
-- Creating graphical interfaces instead of console adapters
-
-### Testability
-
-Because dependencies are injected through abstractions, components can be mocked or replaced during testing. This improves unit testing capabilities and reduces dependency on infrastructure implementations.
-
-### Replay and Persistence Support
 ```mermaid
 classDiagram
     direction LR
@@ -102,77 +87,609 @@ classDiagram
         + startReplay()
     }
 
+    class SavedGameRepository {
+        <<interface>>
+        + save(SavedGame)
+        + findById(id)
+        + findAll()
+    }
+
     GameConsoleRunner ..|> CommandLineRunner
     GameConsoleRunner ..> ReplayGameUseCase : << use >>
 
     ReplayGameService ..|> ReplayGameUseCase
     ReplayGameService ..> ReplaySessionUseCase : << use >>
+    ReplayGameService ..> SavedGameRepository : << use >>
 ```
-The replay subsystem demonstrates strong architectural separation by isolating replay functionality from standard gameplay. Repository abstractions also support multiple persistence strategies.
+
+## Ports and Adapters Architecture
+
+The project uses **Ports and Adapters Architecture**, also known as **Hexagonal Architecture**.
+
+The main idea is that the core application should not depend directly on external systems. Instead, the application depends on interfaces called **ports**, and infrastructure classes implement those ports as **adapters**.
+
+## Ports and Adapters UML
+
+## Turn Observer
+```mermaid
+classDiagram
+    direction BT
+
+    class PlayerTurn {
+    }
+
+    class TurnObserverPort {
+        <<interface>>
+        +onTurnPlayed(playerTurn): void
+    }
+
+    class TurnDisplayAdapter {
+    }
+
+    PlayerTurn --> TurnObserverPort : notifies
+    TurnDisplayAdapter ..|> TurnObserverPort
+```
+
+## Game Started Observer
+```mermaid
+classDiagram
+    direction BT
+
+    class GameSessionUseCase {
+    }
+
+    class GameStartedObserverPort {
+        <<interface>>
+        +onGameStarted(players): void
+    }
+
+    class PathsDisplayAdapter {
+    }
+
+    GameSessionUseCase --> GameStartedObserverPort : notifies
+    PathsDisplayAdapter ..|> GameStartedObserverPort
+```
+
+## Game Ended Observer
+```mermaid
+classDiagram
+    direction BT
+
+    class PlayerTurn {
+    }
+
+    class GameEndedObserverPort {
+        <<interface>>
+        +onGameOver(playerTurn): void
+    }
+
+    class GameOverDisplayAdapter {
+    }
+
+    PlayerTurn --> GameEndedObserverPort : notifies
+    GameOverDisplayAdapter ..|> GameEndedObserverPort
+```
+
+## Game Saved Observer
+```mermaid
+classDiagram
+    direction BT
+
+    class GameSessionUseCase {
+    }
+
+    class GameSavedObserverPort {
+        <<interface>>
+        +onGameSaved(savedGame): void
+    }
+
+    class GameSavedDisplayAdapter {
+    }
+
+    GameSessionUseCase --> GameSavedObserverPort : notifies
+    GameSavedDisplayAdapter ..|> GameSavedObserverPort
+```
+
+## Replay Observer
+```mermaid
+classDiagram
+    direction BT
+
+    class ReplayGameService {
+    }
+
+    class ReplayObserverPort {
+        <<interface>>
+        +onReplayStarted(savedGame): void
+    }
+
+    class ReplayDisplayAdapter {
+    }
+
+    ReplayGameService --> ReplayObserverPort : notifies
+    ReplayDisplayAdapter ..|> ReplayObserverPort
+```
+
+## Board Observer
+```mermaid
+classDiagram
+    direction BT
+
+    class GameSessionUseCase {
+        +play()
+    }
+
+    class Board {
+        <<interface>>
+        +createBoard(playerCount)
+    }
+
+    class BoardFactoryAdapter {
+    }
+
+    GameSessionUseCase --> Board : << output port >>
+    BoardFactoryAdapter ..|> Board
+```
+
+## DiceShaker Observer
+```mermaid
+classDiagram
+    direction BT
+
+    class GameSessionUseCase {
+        +play()
+    }
+
+    class DiceShaker {
+        <<interface>>
+        +roll()
+    }
+
+    class RandomDiceShakerAdapter {
+    }
+
+    GameSessionUseCase --> DiceShaker : << output port >>
+    RandomDiceShakerAdapter ..|> DiceShaker
+```
+
+## Game Saved Observer
+```mermaid
+classDiagram
+    direction BT
+
+    class GameSessionUseCase {
+        +play()
+    }
+
+    class SavedGameRepository {
+        <<interface>>
+        +save(SavedGame)
+        +findById(id)
+    }
+
+    class JsonFileSavedGameRepositoryAdapter {
+    }
+
+    class InMemorySavedGameRepositoryAdapter {
+    }
+
+    GameSessionUseCase --> SavedGameRepository : << output port >>
+
+    JsonFileSavedGameRepositoryAdapter ..|> SavedGameRepository
+    InMemorySavedGameRepositoryAdapter ..|> SavedGameRepository
+```
+
+```mermaid
+
+```
+
+```mermaid
+
+```
+## Structure Explanation
+
+### Driving Adapters
+
+Driving adapters start the application flow.
+
+Examples:
+
+- `GameConsoleRunner`
+
+The `GameConsoleRunner` receives user interaction from the console and calls the input ports such as `StartGameUseCase` and `ReplayGameUseCase`.
+
+### Input Ports
+
+Input ports define what the application can do.
+
+Examples:
+
+- `StartGameUseCase`
+- `ReplayGameUseCase`
+
+These are interfaces used by external adapters to interact with the application core.
+
+### Application Services
+
+Application services implement the input ports and coordinate the game flow.
+
+Examples:
+
+- `GameSessionUseCase`
+- `ReplayGameService`
+- `InitialisePlayerUseCase`
+- `InitialiseRulesUseCase`
+- `ReplaySessionUseCase`
+
+These classes control the use cases but do not directly depend on infrastructure details.
+
+### Output Ports
+
+Output ports define what the application needs from outside systems.
+
+Examples:
+
+- `Board`
+- `DiceShaker`
+- `SavedGameRepository`
+- `TurnObserverPort`
+- `GameStartedObserverPort`
+- `GameEndedObserverPort`
+- `GameSavedObserverPort`
+- `ReplayObserverPort`
+
+The application depends on these abstractions rather than concrete infrastructure classes.
+
+### Driven Adapters
+
+Driven adapters implement output ports.
+
+Examples:
+
+- `BoardFactoryAdapter`
+- `RandomDiceShakerAdapter`
+- `FixedDiceShakerAdapter`
+- `RecordingDiceShakerAdapter`
+- `ReplayDiceShakerAdapter`
+- `JsonFileSavedGameRepositoryAdapter`
+- `InMemorySavedGameRepositoryAdapter`
+- `ConsoleTurnAdapter`
+- `ConsoleGameStartedAdapter`
+- `ConsoleGameEndedAdapter`
+- `ConsoleGameSavedAdapter`
+- `ConsoleReplayAdapter`
+
+These adapters connect the application to external concerns such as dice generation, persistence, replay, and console output.
+
+## Dependency Explanation
+
+The dependencies point inward toward the application core.
+
+```text
+Console / Infrastructure
+        ↓
+Adapters
+        ↓
+Ports / Interfaces
+        ↓
+Application Use Cases
+        ↓
+Domain Model
+```
+
+This means the core game logic does not depend on console output, files, JSON storage, or infrastructure classes.
+
+## SOLID Principles Used
+
+### Dependency Inversion Principle
+
+The application depends on interfaces such as `Board`, `DiceShaker`, and `SavedGameRepository`, not concrete classes.
+
+### Single Responsibility Principle
+
+Each adapter has one job. For example, `JsonFileSavedGameRepositoryAdapter` handles file persistence, while `ConsoleTurnAdapter` handles turn output.
+
+### Open/Closed Principle
+
+New adapters can be added without changing the core game logic.
 
 ---
 
-### Components
+# Variations and Advanced Features
 
-#### GameConsoleRunner
-- Acts as the application's entry point.
-- Implements Spring Boot’s `CommandLineRunner`.
-- Executes automatically when the application starts.
+## Single Die Variation
 
-#### CommandLineRunner
-- Spring Boot interface used to run console-based applications.
+### Description
 
-#### StartGameUseCase
-- Input port of the application.
-- Defines the behaviour exposed to external layers through:
+The game supports the use of a single six-sided die as an alternative to the standard two-dice setup.
 
-```text
-play()
-```
-
-#### StartGameService
-- Concrete implementation of `StartGameUseCase`.
-- Responsible for orchestrating the game startup process.
-
-#### GameSessionUseCase
-- Coordinates the core gameplay lifecycle.
-- Handles:
-    - `setupGame()`
-    - `startGame()`
-
-### Execution Flow
-
-```text
-Spring Boot Application
-        ↓
-GameConsoleRunner.run()
-        ↓
-StartGameUseCase.play()
-        ↓
-StartGameService
-        ↓
-GameSessionUseCase
-        ↓
-Game setup and gameplay execution
-```
-
-### Architectural Concepts Demonstrated
-
-- Clean Architecture
-- Dependency Inversion Principle
-- Input Port Pattern
-- Use Case Orchestration
-- Separation of Concerns
-- Framework-independent business logic
-
-## Board Adapter
-This diagram represents the board creation and board hierarchy used within the game.
+### UML Diagram
 
 ```mermaid
 classDiagram
-Board <|.. BoardFactoryAdapter
-BoardFactoryAdapter --> SmallBoard : instantiate
-BoardFactoryAdapter --> LargeBoard : instantiate
+    DiceShakerFactory <|.. AbstractDiceShaker
+    DiceShakerFactory <|.. FixedSingleDiceShaker
+    AbstractDiceShaker <|-- RandomSingleDiceShaker
+    AbstractDiceShaker <|-- RandomDoubleDiceShaker
+
+    class DiceShakerFactory {
+        <<interface>>
+        +roll(): DiceRoll
+    }
+
+    class AbstractDiceShaker {
+        +roll(): DiceRoll
+    }
+
+    class RandomSingleDiceShaker {
+        +roll(): DiceRoll
+    }
+
+    class RandomDoubleDiceShaker {
+        +roll(): DiceRoll
+    }
+
+    class FixedSingleDiceShaker {
+        +roll(): DiceRoll
+    }
+```
+
+### Design
+
+The dice system is abstracted through dice interfaces and implementations. This allows the game to use either a single die, double dice, or fixed dice for replay/testing.
+
+### SOLID Principles Used
+
+#### Single Responsibility Principle
+
+Each dice class is only responsible for producing dice rolls.
+
+#### Open/Closed Principle
+
+New dice types can be added without changing the main game session logic.
+
+#### Dependency Inversion Principle
+
+The game depends on dice abstractions rather than concrete dice classes.
+
+---
+
+## Exact End Variation
+
+### Description
+
+Players must land exactly on the END position to win. If the dice roll is too high, the player reaches the end and then bounces backwards.
+
+### UML Diagram
+
+```mermaid
+classDiagram
+    Movement <|.. BasicMovement
+    Movement <|.. MovementDecorator
+    MovementDecorator <|-- ExactEndVariationDecorator
+
+    ExactEndVariationDecorator --> ExactEndRule : uses
+    ExactEndRule ..|> GameRule
+
+    class Movement {
+        <<interface>>
+        +move(Player, DiceRoll): TurnOutcome
+    }
+
+    class BasicMovement {
+        +move(Player, DiceRoll): TurnOutcome
+    }
+
+    class MovementDecorator {
+        -Movement wrapped
+        +move(Player, DiceRoll): TurnOutcome
+    }
+
+    class ExactEndVariationDecorator {
+        +move(Player, DiceRoll): TurnOutcome
+    }
+
+    class ExactEndRule {
+        +getBounceIndex(Player, int)
+        +decorate(Movement): Movement
+    }
+
+    class GameRule {
+        <<interface>>
+        +decorate(Movement): Movement
+    }
+```
+
+### Design
+
+The Exact End variation is implemented using a movement decorator. The `ExactEndVariationDecorator` wraps the normal movement behaviour and adds bounce-back logic.
+
+### SOLID Principles Used
+
+#### Open/Closed Principle
+
+Exact-end behaviour is added without modifying `BasicMovement`.
+
+#### Single Responsibility Principle
+
+`ExactEndVariationDecorator` only handles exact-end movement behaviour.
+
+#### Liskov Substitution Principle
+
+The decorator can be used wherever a `Movement` object is expected.
+
+---
+
+## Hit Variation
+
+### Description
+
+If a player would land on a position occupied by another player, the moving player stays where they are and forfeits the turn.
+
+### UML Diagram
+
+```mermaid
+classDiagram
+    Movement <|.. BasicMovement
+    Movement <|.. MovementDecorator
+    MovementDecorator <|-- HitVariationDecorator
+
+    HitVariationDecorator --> HitRule : uses
+    HitRule --> HitStrategy : uses
+    HitStrategy <|.. SamePositionHit
+    HitRule ..|> GameRule
+
+    class Movement {
+        <<interface>>
+        +move(Player, DiceRoll): TurnOutcome
+    }
+
+    class BasicMovement {
+        +move(Player, DiceRoll): TurnOutcome
+    }
+
+    class MovementDecorator {
+        -Movement wrapped
+    }
+
+    class HitVariationDecorator {
+        +move(Player, DiceRoll): TurnOutcome
+    }
+
+    class HitRule {
+        +getHitPlayer(Player, Position): Player
+        +decorate(Movement): Movement
+    }
+
+    class HitStrategy {
+        <<interface>>
+        +getHitPlayer(Player, Position): Player
+    }
+
+    class SamePositionHit {
+        +getHitPlayer(Player, Position): Player
+    }
+
+    class GameRule {
+        <<interface>>
+    }
+```
+
+### Design
+
+The Hit variation uses both the **Decorator Pattern** and the **Strategy Pattern**. The decorator adds hit behaviour to movement, while `HitStrategy` allows the hit detection algorithm to be separated from the rule itself.
+
+### SOLID Principles Used
+
+#### Single Responsibility Principle
+
+`HitVariationDecorator` handles movement behaviour, while `SamePositionHit` handles hit detection logic.
+
+#### Open/Closed Principle
+
+New hit strategies can be added without changing `HitRule`.
+
+#### Dependency Inversion Principle
+
+`HitRule` depends on the `HitStrategy` interface rather than a concrete implementation.
+
+---
+
+## Teleport Variation
+
+### Description
+
+Players can teleport through wormholes. If a player lands on one side of a wormhole, they are moved to the paired position.
+
+### UML Diagram
+
+```mermaid
+classDiagram
+    Movement <|.. BasicMovement
+    Movement <|.. MovementDecorator
+    MovementDecorator <|-- TeleportVariationDecorator
+
+    TeleportVariationDecorator --> TeleportRule : uses
+    TeleportRule --> TeleportGenerationStrategy : uses
+
+    TeleportGenerationStrategy <|.. FixedTeleportGeneration
+    TeleportGenerationStrategy <|.. RandomTeleportGeneration
+    TeleportGenerationStrategy <|.. NoOpTeleportGeneration
+
+    TeleportRule ..|> GameRule
+
+    class Movement {
+        <<interface>>
+        +move(Player, DiceRoll): TurnOutcome
+    }
+
+    class BasicMovement
+
+    class MovementDecorator {
+        -Movement wrapped
+    }
+
+    class TeleportVariationDecorator {
+        +move(Player, DiceRoll): TurnOutcome
+    }
+
+    class TeleportRule {
+        +getDestination(Position): Position
+        +decorate(Movement): Movement
+    }
+
+    class TeleportGenerationStrategy {
+        <<interface>>
+        +generate(boardSize, players): Map~Position, Position~
+    }
+
+    class FixedTeleportGeneration
+
+    class RandomTeleportGeneration
+
+    class NoOpTeleportGeneration
+
+    class GameRule {
+        <<interface>>
+    }
+```
+
+### Design
+
+The Teleport variation uses the **Decorator Pattern** to add teleport behaviour to movement. It also uses the **Strategy Pattern** to allow different ways of generating wormholes, such as fixed teleport positions, random teleport positions, or no teleport positions.
+
+### SOLID Principles Used
+
+#### Open/Closed Principle
+
+Teleport behaviour and teleport generation can be changed without modifying the main movement logic.
+
+#### Single Responsibility Principle
+
+`TeleportVariationDecorator` handles teleport movement, while teleport generation classes handle wormhole creation.
+
+#### Dependency Inversion Principle
+
+`TeleportRule` depends on `TeleportGenerationStrategy`, not a concrete generator.
+
+---
+
+## Large Board with Four Players Variation
+
+### Description
+
+The game supports two board/player configurations:
+
+- Small 5x5 board with 2 players
+- Large 6x6 board with 4 players
+
+### UML Diagram
+
+```mermaid
+classDiagram
+    Board <|.. BoardFactoryAdapter
+    BoardFactoryAdapter --> SmallBoard : instantiate
+    BoardFactoryAdapter --> LargeBoard : instantiate
 
     SmallBoard --|> AbstractBoard
     LargeBoard --|> AbstractBoard
@@ -181,11 +698,11 @@ BoardFactoryAdapter --> LargeBoard : instantiate
 
     class Board {
         <<interface>>
-        createBoard(playerCount): BoardFactory
+        +createBoard(playerCount): BoardFactory
     }
 
     class BoardFactoryAdapter {
-        createBoard(playerCount): BoardFactory
+        +createBoard(playerCount): BoardFactory
     }
 
     class BoardFactory {
@@ -193,641 +710,1040 @@ BoardFactoryAdapter --> LargeBoard : instantiate
     }
 
     class AbstractBoard {
-        + getPositions(): List~Position~
-    }
-
-    class SmallBoard 
-    
-    class LargeBoard 
-```
-
-- `Board` acts as the output port used by the application layer.
-- `BoardFactoryAdapter` is the driven adapter responsible for creating the correct board implementation.
-- `SmallBoard` and `LargeBoard` are concrete board implementations.
-- `AbstractBoard` contains shared board behaviour such as:
-    - board generation
-    - retrieving positions
-    - retrieving column counts
-- `BoardFactory` defines the common abstraction for all board implementations.
-
-### Architectural Concepts
-
-- Ports and Adapters Architecture
-- Adapter Pattern
-- Factory Pattern
-- Template Method / Abstract Base Class pattern
-- Polymorphism
-- Shared domain behaviour reuse
-
-## DiceShaker Adapter 
-This diagram represents the dice rolling system used for gameplay and testing.
-
-```mermaid
-classDiagram
-DiceShaker <|.. RandomDiceShakerAdapter
-DiceShaker <|.. FixedDiceShakerAdapter
-
-    RandomDiceShakerAdapter --> RandomSingleDiceShaker : uses
-    RandomDiceShakerAdapter --> RandomDoubleDiceShaker : uses
-    FixedDiceShakerAdapter --> FixedSingleDiceShaker : uses
-
-    RandomSingleDiceShaker --|> AbstractDiceShaker
-    RandomDoubleDiceShaker --|> AbstractDiceShaker
-
-    AbstractDiceShaker --|> DiceShakerFactory
-
-    FixedSingleDiceShaker ..|> DiceShakerFactory
-
-    class DiceShaker {
-        <<interface>>
-        roll(): DiceRoll
-    }
-
-    class RandomDiceShakerAdapter {
-        roll(): DiceRoll
-    }
-
-    class FixedDiceShakerAdapter {
-        roll(): DiceRoll
-        reset(): void
-    }
-
-    class DiceShakerFactory {
-        <<interface>>
-        roll(): DiceRoll
-    }
-
-    class AbstractDiceShaker {
-        + toArray(): int[]
-        + roll(): DiceRoll
-    }
-
-    class RandomSingleDiceShaker
-
-    class RandomDoubleDiceShaker
-
-    class FixedSingleDiceShaker {
-        + reset(): void
-    }
-```
-
-- `DiceShaker` acts as the output port used by the application layer.
-- `RandomDiceShakerAdapter` provides random gameplay behaviour.
-- `FixedDiceShakerAdapter` provides deterministic behaviour for testing and replayable game states.
-- `RandomSingleDiceShaker` and `RandomDoubleDiceShaker` inherit shared rolling logic from `AbstractDiceShaker`.
-- `FixedSingleDiceShaker` implements fixed deterministic rolling behaviour independently.
-
-### Architectural Concepts
-
-- Ports and Adapters Architecture
-- Adapter Pattern
-- Strategy Pattern
-- Template Method / Abstract Base Class pattern
-- Runtime-swappable behaviour
-- Deterministic testing support
-
-## Path Adapter
-This diagram represents the path generation system used to create player traversal routes across the board.
-
-```mermaid
-classDiagram
-Path <|.. BoardPathFactoryAdapter
-
-    BoardPathFactoryAdapter --> ForwardRowPath : instantiate
-    BoardPathFactoryAdapter --> BackwardRowPath : instantiate
-    BoardPathFactoryAdapter --> RotatedPath : instantiate
-    BoardPathFactoryAdapter --> ReversedRotatedPath : instantiate
-
-    ForwardRowPath --|> AbstractPath
-    BackwardRowPath --|> AbstractPath
-    RotatedPath --|> AbstractPath
-    ReversedRotatedPath --|> AbstractPath
-
-    AbstractPath --|> PathFactory
-
-    class Path {
-        <<interface>>
-        createPath(board, start, end): Path
-    }
-
-    class BoardPathFactoryAdapter {
-        createPath(board, start, end): Path
-    }
-
-    class PathFactory {
-        <<interface>>
-        getPositions(): List~Position~
-    }
-
-    class AbstractPath {
-        + getPositions(): List~Position~
-    }
-
-    class ForwardRowPath
-
-    class BackwardRowPath
-
-    class RotatedPath
-
-    class ReversedRotatedPath
-```
-
-- `Path` acts as the output port used by the application layer.
-- `BoardPathFactoryAdapter` determines and creates the correct path implementation.
-- `ForwardRowPath` generates forward row traversal paths.
-- `BackwardRowPath` generates backward traversal paths.
-- `RotatedPath` generates rotated traversal paths.
-- `ReversedRotatedPath` generates reversed rotated traversal paths.
-- `AbstractPath` provides shared path behaviour and position storage functionality.
-- `PathFactory` defines the common abstraction for all path implementations.
-
-### Architectural Concepts
-
-- Ports and Adapters Architecture
-- Adapter Pattern
-- Factory Pattern
-- Strategy-based path generation
-- Template Method / Abstract Base Class pattern
-- Encapsulation of traversal algorithms
-
-## Board Factory Pattern
-This diagram represents the board creation hierarchy used within the game.
-
-```mermaid
-classDiagram
-    AbstractBoard <|-- SmallBoard
-    AbstractBoard <|-- LargeBoard
-    BoardFactory <|.. AbstractBoard
-
-    class BoardFactory {
-        <<interface>>
-    }
-
-    class AbstractBoard {
-        + getPositions(): List~Position~
+        +getPositions(): List~Position~
+        +getRows(): int
+        +getPosition(index): Position
     }
 
     class SmallBoard
 
     class LargeBoard
-
 ```
 
-### Structure
+### Design
+
+The game uses a board factory adapter to create the correct board based on the number of players. This separates board creation from the main game logic.
+
+### SOLID Principles Used
+
+#### Open/Closed Principle
+
+New board types can be added without changing the main game flow.
+
+#### Liskov Substitution Principle
+
+`SmallBoard` and `LargeBoard` can both be used as `BoardFactory` implementations.
+
+#### Dependency Inversion Principle
+
+The application uses the `Board` port instead of directly depending on board implementations.
+
+---
+
+## Player Position Variation
+
+### Description
+
+Player starting and ending positions change depending on whether the game has two or four players.
+
+### UML Diagram
+
+```mermaid
+classDiagram
+    PlayerPositionStrategy <|.. TwoPlayerPosition
+    PlayerPositionStrategy <|.. FourPlayerPosition
+
+    InitialisePlayerUseCase --> PlayerPositionStrategy : uses
+
+    class InitialisePlayerUseCase {
+        +setupPlayers(playerCount, BoardFactory)
+    }
+
+    class PlayerPositionStrategy {
+        <<interface>>
+        +supports(playerCount): boolean
+        +startPositions(start, end, cols): List~Position~
+        +endPositions(start, end, cols): List~Position~
+    }
+
+    class TwoPlayerPosition
+
+    class FourPlayerPosition
+```
+
+### Design
+
+This uses the Strategy Pattern. Different positioning algorithms are used for two-player and four-player games.
+
+### SOLID Principles Used
+
+#### Single Responsibility Principle
+
+Each positioning strategy only handles one player-count configuration.
+
+#### Open/Closed Principle
+
+New player positioning rules can be added as new strategies.
+
+#### Dependency Inversion Principle
+
+`InitialisePlayerUseCase` can depend on the strategy abstraction instead of hardcoding player placement logic.
+
+---
+
+# Advanced Features
+
+## Game State Machine
+
+### Description
+
+The game uses a state machine to control the game lifecycle:
+
+- Ready State
+- In Play State
+- Game Over State
+
+### State UML Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> ReadyState
+
+    ReadyState --> InPlayState : turn()
+    InPlayState --> InPlayState : turn()
+    InPlayState --> GameOverState : winnerFound()
+
+    GameOverState --> GameOverState : turn()
+    GameOverState --> [*]
+```
+
+### Class UML Diagram
+
+```mermaid
+classDiagram
+    GameState <|.. ReadyState
+    GameState <|.. InPlayState
+    GameState <|.. GameOverState
+
+    GameStateMachine --> GameState : current state
+    GameStateMachine ..|> GameContext
+
+    ReadyState --> GameContext : updates
+    InPlayState --> GameContext : updates
+    GameOverState --> GameContext : uses
+
+    class GameState {
+        <<interface>>
+        +turn()
+        +isGameOver(): boolean
+        +getWinner(): Player
+    }
+
+    class GameContext {
+        <<interface>>
+        +setGameState(GameState)
+    }
+
+    class GameStateMachine {
+        +play()
+        +setGameState(GameState)
+    }
+
+    class ReadyState
+
+    class InPlayState
+
+    class GameOverState
+```
+
+### Design
+
+The game state machine is implemented using the **State Pattern**. Each state controls its own behaviour rather than using large conditional statements.
+
+### SOLID Principles Used
+
+#### Single Responsibility Principle
+
+Each state class only handles behaviour for one game state.
+
+#### Open/Closed Principle
+
+New states can be added without rewriting the state machine.
+
+#### Liskov Substitution Principle
+
+All states implement `GameState` and can be used interchangeably.
+
+---
+
+## Game Save and Replay
+
+### Description
+
+The game can save completed games and replay them later using the saved configuration and dice rolls.
+
+### UML Diagram
+
+```mermaid
+classDiagram
+    ReplayGameUseCase <|.. ReplayGameService
+
+    ReplayGameService --> SavedGameRepository : loads
+    ReplayGameService --> ReplayDiceShakerFactory : creates replay dice
+    ReplayGameService --> ReplayObserverPort : notifies
+    ReplayGameService --> ReplaySessionUseCase : uses
+
+    SavedGameRepository <|.. InMemorySavedGameRepositoryAdapter
+    SavedGameRepository <|.. JsonFileSavedGameRepositoryAdapter
+
+    ReplayDiceShakerFactory <|.. ReplayDiceShakerFactoryAdapter
+    DiceShaker <|.. ReplayDiceShakerAdapter
+
+    ReplayDiceShakerFactoryAdapter --> ReplayDiceShakerAdapter : instantiate
+
+    class ReplayGameUseCase {
+        <<interface>>
+        +replay(gameId)
+    }
+
+    class ReplayGameService {
+        +replay(gameId)
+    }
+
+    class SavedGameRepository {
+        <<interface>>
+        +save(SavedGame)
+        +findById(id)
+        +findAll()
+    }
+
+    class ReplayDiceShakerFactory {
+        <<interface>>
+        +createReplayDiceShaker(rolls): DiceShaker
+    }
+
+    class DiceShaker {
+        <<interface>>
+        +roll(): DiceRoll
+    }
+
+    class ReplayObserverPort {
+        <<interface>>
+    }
+
+    class ReplaySessionUseCase
+
+    class InMemorySavedGameRepositoryAdapter
+
+    class JsonFileSavedGameRepositoryAdapter
+
+    class ReplayDiceShakerFactoryAdapter
+
+    class ReplayDiceShakerAdapter
+```
+
+### Design
+
+The save and replay system uses ports and adapters to keep persistence and replay dice separate from the core game logic.
+
+### SOLID Principles Used
+
+#### Dependency Inversion Principle
+
+Replay logic depends on `SavedGameRepository` and `ReplayDiceShakerFactory` interfaces.
+
+#### Open/Closed Principle
+
+Different storage implementations can be added without changing replay logic.
+
+#### Single Responsibility Principle
+
+`ReplayGameService` handles replay, repositories handle saving/loading, and replay dice adapters reproduce saved dice rolls.
+
+---
+
+# Design Patterns Used
+
+## Factory Pattern
+
+### Type
+
+Creational Design Pattern
+
+### Where It Is Used
+
+The Factory Pattern is used in:
 
 - `BoardFactory`
-    - Defines the common contract for all board implementations.
-    - Acts as the abstraction used throughout the application layer.
+- `BoardFactoryAdapter`
+- `SmallBoard`
+- `LargeBoard`
+- `DiceShakerFactory`
+- `ReplayDiceShakerFactory`
 
-- `AbstractBoard`
-    - Provides shared board behaviour and reusable logic.
-    - Contains common functionality such as:
-        - retrieving board positions
-        - retrieving column counts
-
-- `SmallBoard` Concrete implementation for smaller game configurations.
-- `LargeBoard` Concrete implementation for larger game configurations.
-
-### Architectural Concepts
-
-- Interface-based abstraction
-- Template Method / Abstract Base Class pattern
-- Shared domain behaviour reuse
-- Polymorphic board implementations
-
-## Dice Factory Pattern
-This diagram represents the player path hierarchy used to generate movement routes across the board.
+### UML Diagram
 
 ```mermaid
 classDiagram
-    AbstractDiceShaker <|-- RandomSingleDiceShaker
-    AbstractDiceShaker <|-- RandomDoubleDiceShaker
-    DiceShakerFactory <|.. AbstractDiceShaker
-    DiceShakerFactory <|.. FixedSingleDiceShaker
+    Board <|.. BoardFactoryAdapter
+    BoardFactoryAdapter --> SmallBoard : instantiate
+    BoardFactoryAdapter --> LargeBoard : instantiate
 
-    class DiceShakerFactory {
+    SmallBoard --|> AbstractBoard
+    LargeBoard --|> AbstractBoard
+
+    AbstractBoard --|> BoardFactory
+
+    class Board {
         <<interface>>
-        + roll(): DiceRoll
+        +createBoard(playerCount): BoardFactory
     }
 
-    class AbstractDiceShaker {
-        + roll(): DiceRoll
+    class BoardFactoryAdapter {
+        +createBoard(playerCount): BoardFactory
     }
 
-    class RandomSingleDiceShaker
-    class RandomDoubleDiceShaker
-
-    class FixedSingleDiceShaker {
-        + reset(): void
+    class BoardFactory {
+        <<interface>>
     }
+
+    class AbstractBoard {
+        +getPositions(): List~Position~
+    }
+
+    class SmallBoard
+
+    class LargeBoard
 ```
 
-### Structure
+### Why It Is Used
 
-- `DiceShakerFactory` Defines the dice rolling contract used by the application.
-- `AbstractDiceShaker` Provides shared dice rolling behaviour for random dice implementations.
-- `RandomSingleDiceShaker` Simulates rolling a single random dice.
-- `RandomDoubleDiceShaker` Simulates rolling two random dice.
-- `FixedSingleDiceShaker`
-    - Deterministic dice implementation used for testing and replayable game states.
-    - Supports resetting the predefined sequence.
+The Factory Pattern is used to separate object creation from game logic. For example, `BoardFactoryAdapter` decides whether to create a `SmallBoard` or a `LargeBoard`.
 
-### Architectural Concepts
+### SOLID Principles Used
 
-- Strategy pattern
-- Template Method / Abstract Base Class pattern
-- Testable deterministic implementations
-- Runtime-swappable behaviour
+#### Open/Closed Principle
 
-## Path Factory Pattern
-This diagram represents the player path hierarchy used to generate movement routes across the board.
+New board types can be added without changing the game session logic.
 
-```mermaid
-classDiagram
-    AbstractPath <|-- ForwardRowPath
-    AbstractPath <|-- BackwardRowPath
-    AbstractPath <|-- RotatedPath
-    AbstractPath <|-- ReversedRotatedPath
-    PathFactory <|.. AbstractPath
+#### Single Responsibility Principle
 
-    class PathFactory {
-        <<interface>>
-        + getPositions(): List~Position~
-    }
+The factory is responsible only for object creation.
 
-    class AbstractPath {
-        + getPositions(): List~Position~
-    }
+#### Dependency Inversion Principle
 
-    class ForwardRowPath
-    class BackwardRowPath
-    class RotatedPath
-    class ReversedRotatedPath
-```
+The game uses the `Board` abstraction instead of creating concrete board objects directly.
 
-### Structure
+---
 
-- `PathFactory` Defines the common contract for all path implementations.
-- `AbstractPath` Provides shared functionality for storing and retrieving path positions.
-- `ForwardRowPath` Generates paths moving forward row by row.
-- `BackwardRowPath` Generates paths moving backward across rows.
-- `RotatedPath` Generates rotated traversal paths across the board.
-- `ReversedRotatedPath` Generates reversed rotated traversal paths.
+## Strategy Pattern: Rule Selection
 
-### Architectural Concepts
+### Type
 
-- Strategy-based path generation
-- Polymorphic movement paths
-- Shared path behaviour reuse
-- Encapsulation of traversal algorithms
+Behavioural Design Pattern
 
+### Where It Is Used
 
-## Rule Selection Strategy
-This diagram shows how the game chooses which rule variations are active.
+The Strategy Pattern is used in:
+
+- `RuleSelectionStrategy`
+- `FixedRuleSelection`
+- `RandomRuleSelection`
+- `SavedRuleSelection`
+- `InitialiseRulesUseCase`
+
+### UML Diagram
 
 ```mermaid
 classDiagram
-RuleSelectionStrategy <|.. RandomRuleSelection
-RuleSelectionStrategy <|.. FixedRuleSelection
-InitialiseRulesUseCase --> RuleSelectionStrategy : uses
+    RuleSelectionStrategy <|.. FixedRuleSelection
+    RuleSelectionStrategy <|.. RandomRuleSelection
+    RuleSelectionStrategy <|.. SavedRuleSelection
+
+    InitialiseRulesUseCase --> RuleSelectionStrategy : uses
+
+    class InitialiseRulesUseCase {
+        +setupRules(boardSize, players): List~GameRule~
+    }
 
     class RuleSelectionStrategy {
         <<interface>>
-        select(availableRules): List~GameRule~
+        +select(availableRules): List~GameRule~
     }
 
-    class RandomRuleSelection {
-        select(availableRules): List~GameRule~
-    }
+    class FixedRuleSelection
 
-    class FixedRuleSelection {
-        select(availableRules): List~GameRule~
-    }
+    class RandomRuleSelection
 
-    class InitialiseRulesUseCase {
-        setupRules(boardSize, players): List~GameRule~
-    }
+    class SavedRuleSelection
 ```
 
-- `RuleSelectionStrategy` defines the rule-selection contract.
-- `RandomRuleSelection` is used for random/real gameplay.
-- `FixedRuleSelection` is used for predictable testing.
-- `InitialiseRulesUseCase` depends on the strategy interface, not a concrete implementation.
+### Why It Is Used
 
-### Architectural Concepts
+Rule selection can change depending on whether the game uses fixed rules, random rules, or saved rules for replay. The Strategy Pattern allows this behaviour to change without modifying `InitialiseRulesUseCase`.
 
-- Strategy Pattern
-- Dependency Inversion
-- Runtime-swappable behaviour
-- Test-friendly configuration
+### SOLID Principles Used
 
-## Teleport Strategy Pattern
-This diagram shows how teleport/wormhole positions are generated.
+#### Open/Closed Principle
+
+New rule-selection strategies can be added without changing the rule setup use case.
+
+#### Dependency Inversion Principle
+
+`InitialiseRulesUseCase` depends on `RuleSelectionStrategy`, not concrete rule selection classes.
+
+---
+
+## Strategy Pattern: Teleport Generation
+
+### Type
+
+Behavioural Design Pattern
+
+### Where It Is Used
+
+The Strategy Pattern is used in:
+
+- `TeleportGenerationStrategy`
+- `FixedTeleportGeneration`
+- `RandomTeleportGeneration`
+- `NoOpTeleportGeneration`
+- `TeleportRule`
+
+### UML Diagram
 
 ```mermaid
 classDiagram
-TeleportGenerationStrategy <|.. RandomTeleportGeneration
-TeleportGenerationStrategy <|.. FixedTeleportGeneration
-TeleportRule --> TeleportGenerationStrategy : uses
+    TeleportGenerationStrategy <|.. FixedTeleportGeneration
+    TeleportGenerationStrategy <|.. RandomTeleportGeneration
+    TeleportGenerationStrategy <|.. NoOpTeleportGeneration
+
+    TeleportRule --> TeleportGenerationStrategy : uses
+
+    class TeleportRule {
+        +getDestination(Position): Position
+        +decorate(Movement): Movement
+    }
 
     class TeleportGenerationStrategy {
         <<interface>>
-        generate(boardSize, players): Map~Position, Position~
+        +generate(boardSize, players): Map~Position, Position~
     }
 
-    class RandomTeleportGeneration {
-        generate(boardSize, players): Map~Position, Position~
-    }
+    class FixedTeleportGeneration
 
-    class FixedTeleportGeneration {
-        generate(boardSize, players): Map~Position, Position~
-    }
+    class RandomTeleportGeneration
 
-    class TeleportRule
+    class NoOpTeleportGeneration
 ```
 
-- `TeleportGenerationStrategy` defines how wormholes are created.
-- `RandomTeleportGeneration` creates random wormhole positions.
-- `FixedTeleportGeneration` creates predictable wormholes for testing.
-- `TeleportRule` uses the strategy without knowing whether it is random or fixed.
+### Why It Is Used
 
-### Architectural Concepts
+The game can generate teleport wormholes in different ways. This allows teleporting to be fixed, random, or disabled without changing the teleport rule itself.
 
-- Strategy Pattern
-- Open/Closed Principle
-- Testable rule behaviour
-- Separation between rule logic and generation logic
+### SOLID Principles Used
 
-## Events Strategy Pattern
-This diagram shows how important events from a turn are stored and described.
+#### Open/Closed Principle
+
+New teleport generation methods can be added as new strategies.
+
+#### Single Responsibility Principle
+
+Teleport generation is separated from teleport movement behaviour.
+
+#### Dependency Inversion Principle
+
+`TeleportRule` depends on the `TeleportGenerationStrategy` abstraction.
+
+---
+
+## Strategy Pattern: Hit Detection
+
+### Type
+
+Behavioural Design Pattern
+
+### Where It Is Used
+
+The Strategy Pattern is used in:
+
+- `HitStrategy`
+- `SamePositionHit`
+- `HitRule`
+
+### UML Diagram
 
 ```mermaid
 classDiagram
-GameEvent <|.. TeleportEvent
-GameEvent <|.. HitEvent
-GameEvent <|.. ExactEndEvent
-TurnOutcome --> GameEvent : contains
+    HitStrategy <|.. SamePositionHit
 
-    class GameEvent {
+    HitRule --> HitStrategy : uses
+
+    class HitRule {
+        +getHitPlayer(Player, Position): Player
+        +decorate(Movement): Movement
+    }
+
+    class HitStrategy {
         <<interface>>
-        describe(player): String
+        +getHitPlayer(Player, Position): Player
     }
 
-    class TeleportEvent {
-        describe(player): String
-    }
-
-    class HitEvent {
-        describe(player): String
-    }
-
-    class ExactEndEvent {
-        describe(player): String
-    }
-
-    class TurnOutcome {
-        addEvent(event): void
-        getEvents(): List~GameEvent~
-    }
+    class SamePositionHit
 ```
 
+### Why It Is Used
 
-- `GameEvent` defines a common interface for turn events.
-- `TeleportEvent` represents a player landing on a wormhole.
-- `HitEvent` represents a player hitting another player.
-- `ExactEndEvent` represents a player overshooting and bouncing back.
-- `TurnOutcome` stores all events that happened during a turn.
+Hit detection is separated into a strategy so the rule can support different ways of checking collisions in the future.
 
-### Architectural Concepts
+### SOLID Principles Used
 
-- Domain Event Pattern
-- Polymorphism
-- Encapsulation of event-specific details
-- Cleaner display logic without large switch statements
+#### Single Responsibility Principle
 
-## Movement Strategy Pattern
-This diagram shows how selected rules are converted into movement decorators.
+`SamePositionHit` only checks whether a player has landed on another player.
+
+#### Open/Closed Principle
+
+New hit detection algorithms can be added without changing `HitRule`.
+
+#### Dependency Inversion Principle
+
+`HitRule` depends on the `HitStrategy` interface.
+
+---
+
+## Strategy Pattern: Path Calculation
+
+### Type
+
+Behavioural Design Pattern
+
+### Where It Is Used
+
+The Strategy Pattern is used in:
+
+- `PathCalculationStrategy`
+- `ForwardPathCalculation`
+- `BackwardPathCalculation`
+- `RotatedPathCalculation`
+- `ReversedRotatedPathCalculation`
+- `AbstractBoard`
+
+### UML Diagram
 
 ```mermaid
 classDiagram
-MovementDecoratorStrategy <|.. TeleportVariation
-MovementDecoratorStrategy <|.. ExactEndVariation
-MovementDecoratorStrategy <|.. HitVariation
-TeleportVariation --> TeleportVariationDecorator : instantiate
-ExactEndVariation --> ExactEndVariationDecorator : instantiate
-HitVariation --> HitVariationDecorator : instantiate
+    PathCalculationStrategy <|.. ForwardPathCalculation
+    PathCalculationStrategy <|.. BackwardPathCalculation
+    PathCalculationStrategy <|.. RotatedPathCalculation
+    PathCalculationStrategy <|.. ReversedRotatedPathCalculation
 
-    class MovementDecoratorStrategy {
+    AbstractBoard --> PathCalculationStrategy : uses
+
+    class AbstractBoard {
+        +calculatePath(startPos, endPos): List~Position~
+    }
+
+    class PathCalculationStrategy {
         <<interface>>
-        supports(rule): boolean
-        decorate(movement, rule): Movement
+        +calculate(fullBoard, cols, startPos): List~Position~
     }
 
-    class TeleportVariation {
-        supports(rule): boolean
-        decorate(movement, rule): Movement
-    }
+    class ForwardPathCalculation
 
-    class ExactEndVariation {
-        supports(rule): boolean
-        decorate(movement, rule): Movement
-    }
+    class BackwardPathCalculation
 
-    class HitVariation {
-        supports(rule): boolean
-        decorate(movement, rule): Movement
-    }
+    class RotatedPathCalculation
+
+    class ReversedRotatedPathCalculation
 ```
 
-- `MovementDecoratorStrategy` defines how a rule can decorate movement.
-- `TeleportVariation` creates a teleport movement decorator.
-- `ExactEndVariation` creates an exact-end movement decorator.
-- `HitVariation` creates a hit movement decorator.
-- Each strategy checks whether it supports a rule, then wraps the movement logic if needed.
+### Why It Is Used
 
-### Architectural Concepts
+Different players may need different board paths depending on their start and end positions. The Strategy Pattern allows path calculation to change without changing the board class.
 
-- Strategy Pattern
-- Factory-style object creation
-- Decorator Pattern support
-- Open/Closed Principle
+### SOLID Principles Used
 
-## Movement Decorator Pattern
-This diagram represents the movement system and decorator hierarchy used to apply gameplay rule variations dynamically.
+#### Open/Closed Principle
+
+New path calculations can be added as separate classes.
+
+#### Single Responsibility Principle
+
+Each path calculation class handles one path algorithm.
+
+---
+
+## Strategy Pattern: Player Positioning
+
+### Type
+
+Behavioural Design Pattern
+
+### Where It Is Used
+
+The Strategy Pattern is used in:
+
+- `PlayerPositionStrategy`
+- `TwoPlayerPosition`
+- `FourPlayerPosition`
+- `InitialisePlayerUseCase`
+
+### UML Diagram
 
 ```mermaid
 classDiagram
-    direction TB
+    PlayerPositionStrategy <|.. TwoPlayerPosition
+    PlayerPositionStrategy <|.. FourPlayerPosition
 
+    InitialisePlayerUseCase --> PlayerPositionStrategy : uses
+
+    class InitialisePlayerUseCase {
+        +setupPlayers(playerCount, boardFactory)
+    }
+
+    class PlayerPositionStrategy {
+        <<interface>>
+        +supports(playerCount): boolean
+        +startPositions(start, end, cols): List~Position~
+        +endPositions(start, end, cols): List~Position~
+    }
+
+    class TwoPlayerPosition
+
+    class FourPlayerPosition
+```
+
+### Why It Is Used
+
+The game needs different player start and end positions for two-player and four-player games. The Strategy Pattern avoids hardcoding all positioning logic inside the player setup class.
+
+### SOLID Principles Used
+
+#### Open/Closed Principle
+
+New player count configurations can be added as new strategies.
+
+#### Single Responsibility Principle
+
+Each positioning strategy handles one player layout.
+
+---
+
+## Decorator Pattern
+
+### Type
+
+Structural Design Pattern
+
+### Where It Is Used
+
+The Decorator Pattern is used in:
+
+- `Movement`
+- `BasicMovement`
+- `MovementDecorator`
+- `ExactEndVariationDecorator`
+- `HitVariationDecorator`
+- `TeleportVariationDecorator`
+
+### UML Diagram
+
+```mermaid
+classDiagram
     Movement <|.. BasicMovement
     Movement <|.. MovementDecorator
 
     MovementDecorator --> Movement : wraps
 
-    MovementDecorator <|-- TeleportVariationDecorator
     MovementDecorator <|-- ExactEndVariationDecorator
     MovementDecorator <|-- HitVariationDecorator
+    MovementDecorator <|-- TeleportVariationDecorator
 
     class Movement {
         <<interface>>
-        move(player, roll): TurnOutcome
+        +move(Player, DiceRoll): TurnOutcome
     }
 
     class BasicMovement {
-        move(player, roll): TurnOutcome
+        +move(Player, DiceRoll): TurnOutcome
     }
 
     class MovementDecorator {
-        -wrapped: Movement
-        move(player, roll): TurnOutcome
+        -Movement wrapped
+        +move(Player, DiceRoll): TurnOutcome
     }
-
-    class TeleportVariationDecorator
 
     class ExactEndVariationDecorator
 
     class HitVariationDecorator
+
+    class TeleportVariationDecorator
 ```
 
-- `Movement` defines the core movement contract used throughout the game.
-- `BasicMovement` provides the default player movement behaviour.
-- `MovementDecorator` acts as the abstract decorator base class.
-    - Wraps another `Movement` implementation.
-    - Allows additional behaviour to be layered dynamically.
-- `TeleportVariationDecorator` Adds teleport/wormhole movement behaviour.
-- `ExactEndVariationDecorator` Adds exact-end win conditions and bounce-back behaviour.
-- `HitVariationDecorator` Adds player hit/collision behaviour.
+### Why It Is Used
 
-The decorators wrap the base movement implementation at runtime, allowing multiple rule variations to be combined without modifying the core movement logic.
+The Decorator Pattern allows gameplay variations to be layered on top of basic movement. For example, the game can use only basic movement, or combine exact-end, hit, and teleport variations together.
 
-### Architectural Concepts
+### SOLID Principles Used
 
-- Decorator Pattern
-- Open/Closed Principle
-- Runtime composition of behaviour
-- Polymorphism
-- Behaviour extension without modifying existing classes
-- Separation of core movement logic from rule variations
+#### Open/Closed Principle
 
-## Game State Pattern
-This diagram represents the game lifecycle state system used to control gameplay flow.
+New movement rules can be added without editing `BasicMovement`.
 
-```mermaid
-classDiagram
-GameState <|.. InPlayState
-GameState <|.. GameOverState
-InPlayState --> GameOverState : transition
+#### Single Responsibility Principle
 
-    class GameState {
-        <<interface>>
-        handle(currentPlayer, playerTurn): void
-        isGameOver(): boolean
-        nextState(): GameState
-    }
+Each decorator handles one rule.
 
-    class InPlayState {
-        handle(currentPlayer, playerTurn): void
-        isGameOver(): boolean
-        nextState(): GameState
-    }
+#### Liskov Substitution Principle
 
-    class GameOverState {
-        - winner: Player
-        handle(currentPlayer, playerTurn): void
-        isGameOver(): boolean
-        nextState(): GameState
-        getWinner(): Player
-    }
-```
+Each decorator implements `Movement`, so it can replace any other movement object.
 
-- `GameState` defines the common contract for all game states.
-    - Handles state-specific behaviour.
-    - Determines whether the game has ended.
-    - Controls state transitions.
+---
 
+## State Pattern
+
+### Type
+
+Behavioural Design Pattern
+
+### Where It Is Used
+
+The State Pattern is used in:
+
+- `GameState`
+- `GameStateMachine`
+- `ReadyState`
 - `InPlayState`
-    - Represents the active gameplay state.
-    - Processes turns while the game is still running.
-    - Transitions to `GameOverState` once a winner is detected.
-
 - `GameOverState`
-    - Represents the completed game state.
-    - Stores the winning player.
-    - Prevents further gameplay execution once the game has ended.
 
-The game transitions from `InPlayState` to `GameOverState` dynamically at runtime based on gameplay conditions.
+### UML Diagram
 
-### Architectural Concepts
+```mermaid
+stateDiagram-v2
+    [*] --> ReadyState
 
-- State Pattern
-- Encapsulation of state-specific behaviour
-- Runtime state transitions
-- Separation of gameplay lifecycle logic
-- Polymorphism
-- Cleaner control flow without large conditional statements
+    ReadyState --> InPlayState : turn()
+    InPlayState --> InPlayState : turn()
+    InPlayState --> GameOverState : winner found
+    GameOverState --> GameOverState : extra turn gives Game Over message
+```
 
-## Display Observer Pattern
-This diagram represents the observer system used to notify display adapters about important gameplay events.
+### Why It Is Used
+
+The State Pattern controls the lifecycle of the game without relying on procedural `if` or `switch` logic.
+
+### SOLID Principles Used
+
+#### Single Responsibility Principle
+
+Each state handles its own behaviour.
+
+#### Open/Closed Principle
+
+New states can be added without rewriting the whole state machine.
+
+#### Liskov Substitution Principle
+
+All states implement the same `GameState` interface.
+
+---
+
+## Observer Pattern
+
+### Type
+
+Behavioural Design Pattern
+
+### Where It Is Used
+
+The Observer Pattern is used in:
+
+- `TurnObserverPort`
+- `GameStartedObserverPort`
+- `GameEndedObserverPort`
+- `GameSavedObserverPort`
+- `ReplayObserverPort`
+- `ConsoleTurnAdapter`
+- `ConsoleGameStartedAdapter`
+- `ConsoleGameEndedAdapter`
+- `ConsoleGameSavedAdapter`
+- `ConsoleReplayAdapter`
+
+### UML Diagram
 
 ```mermaid
 classDiagram
-PlayerTurnObserverPort <|.. TurnDisplayAdapter
-GameOverObserverPort <|.. GameOverDisplayAdapter
-GameStartObserverPort <|.. PathsDisplayAdapter
-GameRulesObserverPort <|.. RulesDisplayAdapter
-PlayerTurn --> PlayerTurnObserverPort : notifies
-PlayerTurn --> GameOverObserverPort : notifies
-GameSessionUseCase --> GameStartObserverPort : notifies
-GameSessionUseCase --> GameRulesObserverPort : notifies
+    TurnObserverPort <|.. ConsoleTurnAdapter
+    GameStartedObserverPort <|.. ConsoleGameStartedAdapter
+    GameEndedObserverPort <|.. ConsoleGameEndedAdapter
+    GameSavedObserverPort <|.. ConsoleGameSavedAdapter
+    ReplayObserverPort <|.. ConsoleReplayAdapter
 
-    class PlayerTurnObserverPort {
+    PlayerTurn --> TurnObserverPort : notifies
+    GameSessionUseCase --> GameStartedObserverPort : notifies
+    GameSessionUseCase --> GameEndedObserverPort : notifies
+    GameSessionUseCase --> GameSavedObserverPort : notifies
+    ReplayGameService --> ReplayObserverPort : notifies
+
+    class PlayerTurn
+
+    class GameSessionUseCase
+
+    class ReplayGameService
+
+    class TurnObserverPort {
         <<interface>>
-        onTurnPlayed(playerTurn): void
     }
 
-    class GameOverObserverPort {
+    class GameStartedObserverPort {
         <<interface>>
-        onGameOver(playerTurn): void
     }
 
-    class GameStartObserverPort {
+    class GameEndedObserverPort {
         <<interface>>
-        onGameStarted(players): void
     }
 
-    class GameRulesObserverPort {
+    class GameSavedObserverPort {
         <<interface>>
-        onRulesSelected(rules): void
     }
 
-    class TurnDisplayAdapter
+    class ReplayObserverPort {
+        <<interface>>
+    }
 
-    class GameOverDisplayAdapter
+    class ConsoleTurnAdapter
 
-    class PathsDisplayAdapter
+    class ConsoleGameStartedAdapter
 
-    class RulesDisplayAdapter
+    class ConsoleGameEndedAdapter
+
+    class ConsoleGameSavedAdapter
+
+    class ConsoleReplayAdapter
 ```
 
-- `PlayerTurnObserverPort` Defines the contract for responding to player turn events.
-- `GameOverObserverPort` Defines the contract for responding to game completion events.
-- `GameStartObserverPort` Defines the contract for responding to game start events.
-- `GameRulesObserverPort` Defines the contract for responding to selected rule events.
-- `TurnDisplayAdapter` Displays player turn information.
-- `GameOverDisplayAdapter` Displays winner and game-over information.
-- `PathsDisplayAdapter` Displays player movement paths when the game starts.
-- `RulesDisplayAdapter` Displays the active rules selected for the game.
-- `PlayerTurn` Notifies observers whenever a turn is played or the game ends.
-- `GameSessionUseCase` Notifies observers when the game starts and when rules are selected.
+### Why It Is Used
 
-This architecture allows display behaviour to remain separated from the core gameplay logic.
+The Observer Pattern decouples game events from console output. The game does not need to know how events are displayed.
 
-### Architectural Concepts
+### SOLID Principles Used
 
-- Observer Pattern
-- Ports and Adapters Architecture
-- Event-driven communication
-- Loose coupling
-- Separation of Concerns
+#### Single Responsibility Principle
+
+Game logic produces events, while console adapters display them.
+
+#### Open/Closed Principle
+
+New observers can be added without changing the game session logic.
+
+#### Dependency Inversion Principle
+
+The game depends on observer interfaces, not console classes.
+
+---
+
+## Repository Pattern
+
+### Type
+
+Architectural / Persistence Design Pattern
+
+### Where It Is Used
+
+The Repository Pattern is used in:
+
+- `SavedGameRepository`
+- `InMemorySavedGameRepositoryAdapter`
+- `JsonFileSavedGameRepositoryAdapter`
+- `SavedGame`
+
+### UML Diagram
+
+```mermaid
+classDiagram
+    SavedGameRepository <|.. InMemorySavedGameRepositoryAdapter
+    SavedGameRepository <|.. JsonFileSavedGameRepositoryAdapter
+
+    InMemorySavedGameRepositoryAdapter --> SavedGame : stores
+    JsonFileSavedGameRepositoryAdapter --> SavedGame : stores
+
+    class SavedGameRepository {
+        <<interface>>
+        +nextId()
+        +save(SavedGame)
+        +findById(id): SavedGame
+        +findAll(): List~SavedGame~
+    }
+
+    class InMemorySavedGameRepositoryAdapter
+
+    class JsonFileSavedGameRepositoryAdapter
+
+    class SavedGame {
+        +recordRoll(DiceRoll)
+        +getConfiguration()
+        +getDiceRolls()
+    }
+```
+
+### Why It Is Used
+
+The Repository Pattern separates game saving and loading from the main game logic.
+
+### SOLID Principles Used
+
+#### Dependency Inversion Principle
+
+Use cases depend on `SavedGameRepository`, not file or memory storage directly.
+
+#### Open/Closed Principle
+
+New storage methods can be added without changing game or replay services.
+
+#### Single Responsibility Principle
+
+Repository classes only handle persistence.
+
+---
+
+## Adapter Pattern
+
+### Type
+
+Structural Design Pattern
+
+### Where It Is Used
+
+The Adapter Pattern is used in:
+
+- `BoardFactoryAdapter`
+- `RandomDiceShakerAdapter`
+- `FixedDiceShakerAdapter`
+- `RecordingDiceShakerAdapter`
+- `ReplayDiceShakerAdapter`
+- `ReplayDiceShakerFactoryAdapter`
+- `ConsoleTurnAdapter`
+- `ConsoleGameStartedAdapter`
+- `ConsoleGameEndedAdapter`
+- `ConsoleGameSavedAdapter`
+- `ConsoleReplayAdapter`
+
+### UML Diagram
+
+```mermaid
+classDiagram
+    Board <|.. BoardFactoryAdapter
+    DiceShaker <|.. RandomDiceShakerAdapter
+    DiceShaker <|.. FixedDiceShakerAdapter
+    RecordingDiceShakerPort <|.. RecordingDiceShakerAdapter
+    ReplayDiceShakerFactory <|.. ReplayDiceShakerFactoryAdapter
+    ReplayObserverPort <|.. ConsoleReplayAdapter
+
+    class Board {
+        <<interface>>
+    }
+
+    class DiceShaker {
+        <<interface>>
+    }
+
+    class RecordingDiceShakerPort {
+        <<interface>>
+    }
+
+    class ReplayDiceShakerFactory {
+        <<interface>>
+    }
+
+    class ReplayObserverPort {
+        <<interface>>
+    }
+
+    class BoardFactoryAdapter
+
+    class RandomDiceShakerAdapter
+
+    class FixedDiceShakerAdapter
+
+    class RecordingDiceShakerAdapter
+
+    class ReplayDiceShakerFactoryAdapter
+
+    class ConsoleReplayAdapter
+```
+
+### Why It Is Used
+
+Adapters connect the application core to infrastructure details, while keeping the domain and use cases independent.
+
+### SOLID Principles Used
+
+#### Dependency Inversion Principle
+
+The application core depends on ports, while adapters implement those ports.
+
+#### Single Responsibility Principle
+
+Each adapter converts one external concern into the form expected by the application.
+
+---
+
+# Overall Evaluation
+
+The implementation successfully applies object-oriented design, clean architecture, and multiple design patterns to solve the requirements of the board game simulation.
+
+## Strengths
+
+### Maintainability
+
+The code is split into clear responsibilities such as domain model, use cases, ports, and infrastructure adapters.
+
+### Extensibility
+
+The project can support new rules, dice types, boards, storage systems, and display systems with minimal changes to existing code.
+
+### Testability
+
+Because the application depends on interfaces, dependencies can be replaced with mocks or test doubles.
+
+### Good Use of Design Patterns
+
+The game uses patterns for real design problems:
+
+- Factory for board and dice creation
+- Strategy for interchangeable algorithms
+- Decorator for combining movement rules
+- State for lifecycle management
+- Observer for event notifications
+- Repository for save/replay persistence
+- Adapter for infrastructure separation
+
+### Good Use of SOLID
+
+The most strongly demonstrated principles are:
+
+- Single Responsibility Principle
+- Open/Closed Principle
 - Dependency Inversion Principle
-- Extensible notification system
+- Liskov Substitution Principle
+
+## Limitations
+
+### More Classes and Complexity
+
+Using several patterns increases the number of classes, which can make the project harder to understand at first.
+
+### Console Interface Only
+
+The current implementation uses console adapters. However, because of the architecture, a GUI or web interface could be added later.
+
+### Some Behaviour Depends on Configuration
+
+The game relies on correct wiring of strategies, decorators, observers, and adapters. This is flexible, but it also means configuration must be managed carefully.
+
+## Conclusion
+
+The game demonstrates a strong implementation of clean architecture and object-oriented design. The use of Ports and Adapters keeps the domain independent from infrastructure, while the design patterns make the game flexible enough to support the required variations and advanced features.
+
+Overall, the implementation is scalable, maintainable, and suitable for extension.
