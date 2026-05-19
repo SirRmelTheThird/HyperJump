@@ -17,8 +17,8 @@ public class BoardFactoryAdapter implements Board {
 
     public BoardFactoryAdapter() {
         this(Map.of(
-                2, SmallBoard::new,
-                4, LargeBoard::new
+                2, SmallBoard::getInstance,
+                4, LargeBoard::getInstance
         ));
     }
 

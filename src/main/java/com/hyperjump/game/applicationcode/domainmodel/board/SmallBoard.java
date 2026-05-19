@@ -15,8 +15,14 @@ public class SmallBoard extends AbstractBoard {
             21, 22, 23, 24, 25
     };
 
-    public SmallBoard() {
+    private static final SmallBoard INSTANCE = new SmallBoard();
+
+    private SmallBoard() {
         super(GRID);
+    }
+
+    public static SmallBoard getInstance() {
+        return INSTANCE;
     }
 
     @Override public int getSize() {

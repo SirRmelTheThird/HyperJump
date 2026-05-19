@@ -16,8 +16,14 @@ public class LargeBoard extends AbstractBoard {
             31, 32, 33, 34, 35, 36
     };
 
-    public LargeBoard() {
+    private static final LargeBoard INSTANCE = new LargeBoard();
+
+    private LargeBoard() {
         super(GRID);
+    }
+
+    public static LargeBoard getInstance() {
+        return INSTANCE;
     }
 
     @Override public int getSize() {

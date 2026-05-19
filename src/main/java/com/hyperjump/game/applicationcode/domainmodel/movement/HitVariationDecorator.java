@@ -24,7 +24,7 @@ public class HitVariationDecorator extends MovementDecorator {
                 hitRule.getHitPlayer(player, result.getEndPosition());
 
         if (hitPlayer == null) {
-            return result;  
+            return result;
         }
 
         Position hitPosition = result.getEndPosition();

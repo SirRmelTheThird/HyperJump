@@ -4,6 +4,7 @@ Introduction Here
 ## Spring Boot Application
 This diagram represents the entry point and application flow of the game using a Clean Architecture approach.
 
+### Game
 ```mermaid
 classDiagram
     direction LR
@@ -35,6 +36,40 @@ classDiagram
 
     StartGameService ..|> StartGameUseCase
     StartGameService ..> GameSessionUseCase : << use >>
+```
+
+### Replay
+```mermaid
+classDiagram
+    direction LR
+
+    class GameConsoleRunner {
+    }
+
+    class CommandLineRunner {
+        <<interface>>
+        +run(String... args)
+    }
+
+    class ReplayGameUseCase {
+        <<interface>>
+        + replay()
+    }
+
+    class ReplayGameService {
+        + replay()
+    }
+
+    class ReplaySessionUseCase {
+        + setupReplay()
+        + startReplay()
+    }
+
+    GameConsoleRunner ..|> CommandLineRunner
+    GameConsoleRunner ..> ReplayGameUseCase : << use >>
+
+    ReplayGameService ..|> ReplayGameUseCase
+    ReplayGameService ..> ReplaySessionUseCase : << use >>
 ```
 
 ### Components
