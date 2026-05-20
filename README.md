@@ -76,6 +76,9 @@ These classes control the use cases but do not directly depend on infrastructure
 
 ## Replay
 
+The `GameConsoleRunner` receives user replay interaction from the console and calls the input ports from `ReplayGameUseCase`.
+This interfaces used by external adapters to interact with the application core.
+
 UML Diagram
 
 ```mermaid
@@ -114,8 +117,6 @@ classDiagram
     ReplaySessionUseCase ..|> ReplayGameUseCase
     ReplaySessionUseCase ..> SavedGameRepository : << use >>
 ```
-The `GameConsoleRunner` receives user replay interaction from the console and calls the input ports from `ReplayGameUseCase`.
-This interfaces used by external adapters to interact with the application core.
 
 Application services implement the input ports and coordinate the game flow.
 
@@ -128,7 +129,7 @@ Files:
 
 These classes control the use cases but do not directly depend on infrastructure details.
 
-## Ports and Adapters 
+# Ports and Adapters 
 
 The project uses **Ports and Adapters**, also known as **Hexagonal Architecture**.
 
@@ -161,7 +162,11 @@ File:
 This port requires to notify the turns count and interacts with the associated adapter.
 
 ## Game Started Port
+
 UML Diagram
+
+Output ports define what the application needs from outside systems.
+
 ```mermaid
 classDiagram
     direction BT
@@ -181,13 +186,16 @@ classDiagram
     PathsDisplayAdapter ..|> GameStartedObserverPort
 ```
 
-Output ports define what the application needs from outside systems.
 File:
 - `GameStartedObserverPort`
 This port requires to notify that the game has started and interacts with the associated adapter.
 
 ## Game Ended Port
+
+Output ports define what the application needs from outside systems.
+
 UML Diagram
+
 ```mermaid
 classDiagram
     direction BT
@@ -207,13 +215,16 @@ classDiagram
     GameOverDisplayAdapter ..|> GameEndedObserverPort
 ```
 
-Output ports define what the application needs from outside systems.
 File:
 - `GameEndedObserverPort`
 This port requires to notify the game has ended and interacts with the associated adapter.
 
 ## Game Saved Port
+
+Output ports define what the application needs from outside systems.
+
 UML Diagram
+
 ```mermaid
 classDiagram
     direction BT
@@ -233,13 +244,16 @@ classDiagram
     GameSavedDisplayAdapter ..|> GameSavedObserverPort
 ```
 
-Output ports define what the application needs from outside systems.
 File:
 - `GameSavedObserverPort`
 This port requires to notify the game has saved and interacts with the associated adapter.
 
 ## Replay Port
+
+Output ports define what the application needs from outside systems.
+
 UML Diagram
+
 ```mermaid
 classDiagram
     direction BT
@@ -259,13 +273,16 @@ classDiagram
     ReplayDisplayAdapter ..|> ReplayObserverPort
 ```
 
-Output ports define what the application needs from outside systems.
 File:
 - `ReplayObserverPort`
 This port requires to notify the replay has started and interacts with the associated adapter.
 
 ## Board Port
+
+Output ports define what the application needs from outside systems.
+
 UML Diagram
+
 ```mermaid
 classDiagram
     direction BT
@@ -286,13 +303,16 @@ classDiagram
     BoardFactoryAdapter ..|> Board
 ```
 
-Output ports define what the application needs from outside systems.
 File:
 - `Board`
 This port requires to notify the game has created a board and interacts with the associated adapter.
 
 ## DiceShaker Port
+
+Output ports define what the application needs from outside systems.
+
 UML Diagram
+
 ```mermaid
 classDiagram
     direction BT
@@ -321,13 +341,16 @@ classDiagram
     ReplayDiceShakerAdapter ..|> DiceShaker
 ```
 
-Output ports define what the application needs from outside systems.
 File:
 - `DiceShaker`
 This port requires to notify types of diceshaker sequences and interacts with the associated adapter.
 
 ## Game Saved Port
+
+Output ports define what the application needs from outside systems.
+
 UML Diagram
+
 ```mermaid
 classDiagram
     direction BT
@@ -354,7 +377,6 @@ classDiagram
     InMemorySavedGameRepositoryAdapter ..|> SavedGameRepository
 ```
 
-Output ports define what the application needs from outside systems.
 File:
 - `SavedGameRepository`
 This port requires to notify game repository has saved and interacts with the associated adapter.
