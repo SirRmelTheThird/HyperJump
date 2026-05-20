@@ -1,6 +1,5 @@
 package com.hyperjump.game.applicationcode.domainmodel.movement;
 
-import com.hyperjump.game.applicationcode.domainmodel.movement.events.ExactEndEvent;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
 import com.hyperjump.game.applicationcode.domainmodel.rules.ExactEndRule;
 import com.hyperjump.game.applicationcode.domainmodel.value.DiceRoll;

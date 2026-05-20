@@ -1,6 +1,5 @@
 package com.hyperjump.game.applicationcode.domainmodel.movement;
 
-
 import com.hyperjump.game.applicationcode.domainmodel.movement.events.ExactEndEvent;
 import com.hyperjump.game.applicationcode.domainmodel.movement.events.MoveEvent;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
