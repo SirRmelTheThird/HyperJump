@@ -21,6 +21,9 @@ These patterns help make the game easier to extend, test, and maintain.
 # Architecture
 
 ## Game
+
+UML Diagram
+
 ```mermaid
 classDiagram
     direction LR
@@ -72,6 +75,8 @@ Files:
 These classes control the use cases but do not directly depend on infrastructure details.
 
 ## Replay
+
+UML Diagram
 
 ```mermaid
 classDiagram
@@ -130,6 +135,7 @@ The project uses **Ports and Adapters**, also known as **Hexagonal Architecture*
 The main idea is that the core application should not depend directly on external systems. Instead, the application depends on interfaces called **ports**, and infrastructure classes implement those ports as **adapters**.
 
 ## Turn Port
+UML Diagram
 ```mermaid
 classDiagram
     direction BT
@@ -155,6 +161,7 @@ File:
 This port requires to notify the turns count and interacts with the associated adapter.
 
 ## Game Started Port
+UML Diagram
 ```mermaid
 classDiagram
     direction BT
@@ -180,6 +187,7 @@ File:
 This port requires to notify that the game has started and interacts with the associated adapter.
 
 ## Game Ended Port
+UML Diagram
 ```mermaid
 classDiagram
     direction BT
@@ -205,6 +213,7 @@ File:
 This port requires to notify the game has ended and interacts with the associated adapter.
 
 ## Game Saved Port
+UML Diagram
 ```mermaid
 classDiagram
     direction BT
@@ -230,6 +239,7 @@ File:
 This port requires to notify the game has saved and interacts with the associated adapter.
 
 ## Replay Port
+UML Diagram
 ```mermaid
 classDiagram
     direction BT
@@ -255,6 +265,7 @@ File:
 This port requires to notify the replay has started and interacts with the associated adapter.
 
 ## Board Port
+UML Diagram
 ```mermaid
 classDiagram
     direction BT
@@ -281,6 +292,7 @@ File:
 This port requires to notify the game has created a board and interacts with the associated adapter.
 
 ## DiceShaker Port
+UML Diagram
 ```mermaid
 classDiagram
     direction BT
@@ -315,6 +327,7 @@ File:
 This port requires to notify types of diceshaker sequences and interacts with the associated adapter.
 
 ## Game Saved Port
+UML Diagram
 ```mermaid
 classDiagram
     direction BT
@@ -365,7 +378,7 @@ Domain Model
 
 This means the core game logic does not depend on console output, files, JSON storage, or infrastructure classes.
 
-## SOLID Principles Used
+## SOLID 
 
 ### Dependency Inversion Principle
 
@@ -379,13 +392,9 @@ Each adapter has one job. For example, `JsonFileSavedGameRepositoryAdapter` hand
 
 New adapters can be added without changing the core game logic.
 
----
-
-# Variations and Advanced Features
+# Variations / Advanced Features
 
 ## Single Die Variation
-
-### Description
 
 The game supports the use of a single six-sided die for testing purpose the fixed single dice sequence will be used as an alternative to the standard random two-dice setup.
 
