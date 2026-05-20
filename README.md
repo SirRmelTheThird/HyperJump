@@ -1223,3 +1223,38 @@ The game relies on correct wiring of strategies, decorators, observers, and adap
 
 The game demonstrates a strong implementation of clean architecture and object-oriented design. The use of Ports and Adapters keeps the domain independent from infrastructure, while the design patterns make the game flexible enough to support the required variations and advanced features.
 
+```text
+=== GAME 1 ===
+
+Players: 2
+
+Board Size: 25
+
+Game Rules: None
+
+Fixed sequence of dice rolls [1, 2, 3, 4, 5, 6]
+
+Board: rows = 5 columns = 5
+
+RED Home (Position 1), 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, End (Position 25)
+
+BLUE Home (Position 25), 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, End (Position 1)
+
+RED's turn 1 rolls Single Dice 1
+RED moves from Home (Position 1) to 2
+
+BLUE's turn 1 rolls Single Dice 2
+BLUE moves from Home (Position 25) to 23
+
+...
+
+BLUE wins! in 12 turns
+Total turns: 12
+
+Game State: InPlay → GameOver
+
+Dice rolls: {1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6}
+
+Game Id: 1 saved.
+```
+
