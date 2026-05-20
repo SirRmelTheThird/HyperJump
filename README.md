@@ -136,7 +136,11 @@ The project uses **Ports and Adapters**, also known as **Hexagonal Architecture*
 The main idea is that the core application should not depend directly on external systems. Instead, the application depends on interfaces called **ports**, and infrastructure classes implement those ports as **adapters**.
 
 ## Turn Port
+
+Output ports define what the application needs from outside systems.
+
 UML Diagram
+
 ```mermaid
 classDiagram
     direction BT
@@ -156,8 +160,6 @@ classDiagram
     TurnDisplayAdapter ..|> TurnObserverPort
 ```
 
-Output ports define what the application needs from outside systems.
-File:
 - `TurnObserverPort`
 This port requires to notify the turns count and interacts with the associated adapter.
 
@@ -186,7 +188,6 @@ classDiagram
     PathsDisplayAdapter ..|> GameStartedObserverPort
 ```
 
-File:
 - `GameStartedObserverPort`
 This port requires to notify that the game has started and interacts with the associated adapter.
 
@@ -215,7 +216,6 @@ classDiagram
     GameOverDisplayAdapter ..|> GameEndedObserverPort
 ```
 
-File:
 - `GameEndedObserverPort`
 This port requires to notify the game has ended and interacts with the associated adapter.
 
@@ -244,7 +244,6 @@ classDiagram
     GameSavedDisplayAdapter ..|> GameSavedObserverPort
 ```
 
-File:
 - `GameSavedObserverPort`
 This port requires to notify the game has saved and interacts with the associated adapter.
 
@@ -273,7 +272,6 @@ classDiagram
     ReplayDisplayAdapter ..|> ReplayObserverPort
 ```
 
-File:
 - `ReplayObserverPort`
 This port requires to notify the replay has started and interacts with the associated adapter.
 
@@ -303,7 +301,6 @@ classDiagram
     BoardFactoryAdapter ..|> Board
 ```
 
-File:
 - `Board`
 This port requires to notify the game has created a board and interacts with the associated adapter.
 
@@ -341,7 +338,6 @@ classDiagram
     ReplayDiceShakerAdapter ..|> DiceShaker
 ```
 
-File:
 - `DiceShaker`
 This port requires to notify types of diceshaker sequences and interacts with the associated adapter.
 
@@ -377,12 +373,11 @@ classDiagram
     InMemorySavedGameRepositoryAdapter ..|> SavedGameRepository
 ```
 
-File:
 - `SavedGameRepository`
 This port requires to notify game repository has saved and interacts with the associated adapter.
 These adapters connect the application to external concerns
 
-## Dependency Explanation
+## Dependency 
 
 The dependencies point inward toward the application core.
 
@@ -408,7 +403,7 @@ The application depends on port interfaces such as `Board`, `DiceShaker`, and `S
 
 ### Single Responsibility Principle
 
-Each adapter has one job. For example, `JsonFileSavedGameRepositoryAdapter` handles file persistence although the adapter isnt fully implemented as of yet the class is there for further devlopement, while the console adpaters handles console output for example `ConsoleTurnAdapter` handles turn output for each player.
+Each adapter has one job. For example, `JsonFileSavedGameRepositoryAdapter` handles file persistence although the adapter isnt fully implemented as of yet the class is there for further developement, while the console adpaters handles console output for example `ConsoleTurnAdapter` handles turn output for each player.
 
 ### Open/Closed Principle
 
@@ -453,7 +448,7 @@ classDiagram
 
 ### Design
 
-The dice system is abstracted through dice interfaces and implementations. This allows the game to use either a single die, double dice, or fixed dice for replay/testing.
+The dice system is abstracted through dice interfaces and implementations. This allows the game to use either a random double dice / single dice, or for this example a fixed single dice for replay and testing.
 
 ### SOLID Principles Used
 
@@ -468,8 +463,6 @@ New dice types can be added without changing the main game session logic.
 #### Dependency Inversion Principle
 
 The game depends on dice abstractions rather than concrete dice classes.
-
----
 
 ## Exact End Variation
 
