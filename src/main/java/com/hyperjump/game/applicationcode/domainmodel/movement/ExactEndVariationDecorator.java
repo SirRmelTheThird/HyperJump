@@ -28,6 +28,6 @@ public class ExactEndVariationDecorator extends MovementDecorator {
         }
 
         player.moveToIndex(bouncedIndex);
-        return result.withEndPosition(player.getCurrentPos()).withEvent(new ExactEndEvent());
+        return result.withEndPosition(player.getCurrentPos());
     }
 }
