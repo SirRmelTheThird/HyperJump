@@ -22,6 +22,9 @@ These patterns help make the game easier to extend, test, and maintain.
 
 ## Game
 
+The `GameConsoleRunner` receives user interaction from the console and calls the input ports frome `StartGameUseCase`
+This interfaces used by external adapters to interact with the application core.
+
 UML Diagram
 
 ```mermaid
@@ -60,9 +63,6 @@ classDiagram
     GameSessionUseCase ..|> StartGameUseCase
     GameSessionUseCase ..> SavedGameRepository : << use >>
 ```
-
-The `GameConsoleRunner` receives user interaction from the console and calls the input ports frome `StartGameUseCase`
-This interfaces used by external adapters to interact with the application core.
 
 Application services implement the input ports and coordinate the game flow.
 
