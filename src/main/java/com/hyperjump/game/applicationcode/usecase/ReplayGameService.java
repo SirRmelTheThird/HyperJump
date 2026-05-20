@@ -47,7 +47,7 @@ public class ReplayGameService implements ReplayGameUseCase {
         DiceShaker diceShaker = replayDiceShakerFactory.createReplayDiceShaker(savedGame.getDiceRolls());
         BoardFactory fullBoard = board.createBoard(playerCount);
 
-        InitialisePlayerUseCase playerSetup = new InitialisePlayerUseCase(diceShaker, turnObservers, gameEndedObservers);
+        InitialisePlayerUseCase playerSetup = new InitialisePlayerUseCase(diceShaker, turnObservers);
         playerSetup.setupPlayers(playerCount, fullBoard);
 
         SavedRuleSelection savedRuleSelection = new SavedRuleSelection(savedGame.getConfiguration().getRules(), playerSetup.getPlayers());

@@ -28,6 +28,8 @@ public class GameConsoleRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws InterruptedException {
 
+        savedGameRepository.clearAll();
+
         for (int i = 0; i < GAME_COUNT; i++) {
             gameRunnerObserver.onGameRunStarted(i + 1);
             startGameUseCase.play();

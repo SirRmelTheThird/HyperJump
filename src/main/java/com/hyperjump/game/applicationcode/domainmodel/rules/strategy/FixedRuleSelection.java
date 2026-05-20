@@ -14,7 +14,8 @@ public class FixedRuleSelection implements RuleSelectionStrategy {
 
     @Override
     public List<GameRule> select(List<GameRule> availableRules) {
-        List<List<GameRule>> combos = List.of(
+        List<List<GameRule>> ruleCombinations = List.of(
+                List.of(),
                 List.of(availableRules.get(0)),
                 List.of(availableRules.get(1)),
                 List.of(availableRules.get(2)),
@@ -23,8 +24,8 @@ public class FixedRuleSelection implements RuleSelectionStrategy {
                 List.of(availableRules.get(1), availableRules.get(2)),
                 List.of(availableRules.get(0), availableRules.get(1), availableRules.get(2))
         );
-        List<GameRule> selectedCombo = combos.get(index);
-        index = (index + 1) % combos.size();
+        List<GameRule> selectedCombo = ruleCombinations.get(index);
+        index = (index + 1) % ruleCombinations.size();
 
         return selectedCombo;
     }

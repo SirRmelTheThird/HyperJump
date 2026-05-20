@@ -39,7 +39,7 @@ public class AppConfig {
 
     @Bean
     public InitialisePlayerUseCase initialisePlayerUseCase(RecordingDiceShakerPort diceShaker) {
-        return new InitialisePlayerUseCase(diceShaker, List.of(turnDisplay), List.of(gameEndedDisplay));
+        return new InitialisePlayerUseCase(diceShaker, List.of(turnDisplay));
     }
 
     @Bean

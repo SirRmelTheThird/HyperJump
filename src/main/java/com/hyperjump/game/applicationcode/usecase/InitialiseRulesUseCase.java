@@ -20,16 +20,18 @@ public class InitialiseRulesUseCase {
     }
 
     public List<GameRule> setupRules(int boardSize, List<Player> players) {
-        if (ruleSelectionStrategy.hasPreselectedRules()) {
-            return ruleSelectionStrategy.select(List.of());
-        }
+        List<GameRule> availableRules = createAvailableRules(boardSize, players);
 
-        List<GameRule> availableRules = List.of(
+        return ruleSelectionStrategy.select(availableRules);
+    }
+
+    private List<GameRule> createAvailableRules(int boardSize, List<Player> players) {
+        if (ruleSelectionStrategy.hasPreselectedRules()) return List.of();
+
+        return List.of(
                 new ExactEndRule(),
                 new TeleportRule(boardSize, players, teleportGenerationStrategy),
                 new HitRule(new SamePositionHit(players))
         );
-
-        return ruleSelectionStrategy.select(availableRules);
     }
 }

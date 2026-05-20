@@ -36,9 +36,7 @@ public class ConsoleTurnAdapter implements TurnObserverPort {
     private String formatRoll(DiceRoll roll) {
         int[] dice = roll.getValue();
 
-        if (dice.length == 1) {
-            return "Single Dice " + dice[0];
-        }
+        if (dice.length == 1) return "Single Dice " + dice[0];
 
         return "Double Dice " + dice[0] + " + " + dice[1];
     }
@@ -48,15 +46,5 @@ public class ConsoleTurnAdapter implements TurnObserverPort {
                 .stream()
                 .map(event -> event.describe(player))
                 .collect(Collectors.joining("\n"));
-    }
-
-    private String formatPosition(Player player, Position position) {
-        if (position.equals(player.getStartPos())) {
-            return "Home (Position " + position + ")";
-        }
-        if (position.equals(player.getEndPos())) {
-            return "End (Position " + position + ")";
-        }
-        return String.valueOf(position.value());
     }
 }

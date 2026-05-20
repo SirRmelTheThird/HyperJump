@@ -29,9 +29,7 @@ public class BoardFactoryAdapter implements Board {
     @Override
     public BoardFactory createBoard(int playerCount) {
         Supplier<BoardFactory> creator = boardCreators.get(playerCount);
-        if (creator == null) {
-            throw new DomainException("Unsupported number of players: " + playerCount);
-        }
+        if (creator == null) throw new DomainException("Unsupported number of players: " + playerCount);
         return creator.get();
     }
 }

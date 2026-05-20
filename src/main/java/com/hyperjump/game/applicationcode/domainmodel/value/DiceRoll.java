@@ -1,20 +1,15 @@
 package com.hyperjump.game.applicationcode.domainmodel.value;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Arrays;
 
 public final class DiceRoll {
 
     private final int[] dice;
 
-    @JsonCreator
-    public DiceRoll(@JsonProperty("dice") int[] dice) {
+    public DiceRoll(int[] dice) {
         this.dice = dice;
     }
 
-    @JsonProperty("dice")
     public int[] getValue() {
         return dice.clone();
     }

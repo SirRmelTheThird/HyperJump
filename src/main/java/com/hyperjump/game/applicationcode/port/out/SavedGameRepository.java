@@ -9,4 +9,5 @@ public interface SavedGameRepository {
     void save(SavedGame savedGame);
     SavedGame findById(int id);
     List<SavedGame> findAll();
+    void clearAll();
 }

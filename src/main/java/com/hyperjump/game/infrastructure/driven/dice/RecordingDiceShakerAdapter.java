@@ -22,15 +22,13 @@ public class RecordingDiceShakerAdapter implements RecordingDiceShakerPort {
     @Override
     public DiceRoll roll() {
         DiceRoll result = delegate.roll();
-        if (savedGame != null) {
-            savedGame.recordRoll(result);
-        }
+        if (savedGame != null) savedGame.recordRoll(result);
         return result;
     }
 
     @Override
     public String describe() {
-        return delegate.describe();  // delegates to the wrapped shaker
+        return delegate.describe();
     }
 
     @Override

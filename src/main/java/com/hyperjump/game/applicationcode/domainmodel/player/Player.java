@@ -32,10 +32,6 @@ public class Player {
         return path;
     }
 
-    public int getPathIndex() {
-        return pathIndex;
-    }
-
     public Position getStartPos() {
         return path.getFirst();
     }

@@ -38,6 +38,11 @@ public class ConsoleGameStartedAdapter implements GameStartedObserverPort {
 
 
     private void displayRules(GameStartInfo info) {
+        if (info.rules().isEmpty()) {
+            display.show("Game Rules: None");
+            display.show("");
+            return;
+        }
         display.show("Game Rules:");
         for (GameRule rule : info.rules()) {
             display.show(" - " + rule.getDescription());
@@ -67,12 +72,8 @@ public class ConsoleGameStartedAdapter implements GameStartedObserverPort {
     }
 
     private String formatPosition(Player player, Position position) {
-        if (position.equals(player.getStartPos())) {
-            return player.getColour() + " Home (Position " + position + ")";
-        }
-        if (position.equals(player.getEndPos())) {
-            return "End (Position " + position + ")";
-        }
+        if (position.equals(player.getStartPos())) return player.getColour() + " Home (Position " + position + ")";
+        if (position.equals(player.getEndPos())) return "End (Position " + position + ")";
         return position.toString();
     }
 }

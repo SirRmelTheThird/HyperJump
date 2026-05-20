@@ -1,10 +1,15 @@
 package com.hyperjump.game.infrastructure.driven.persistence;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hyperjump.game.applicationcode.domainmodel.replay.SavedGame;
 import com.hyperjump.game.applicationcode.domainmodel.shared.DomainException;
+import com.hyperjump.game.applicationcode.domainmodel.value.Position;
 import com.hyperjump.game.applicationcode.port.out.SavedGameRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -19,13 +24,29 @@ import java.util.List;
 public class JsonFileSavedGameRepositoryAdapter implements SavedGameRepository {
 
     private static final TypeReference<List<SavedGame>> SAVED_GAME_LIST = new TypeReference<>() {};
-    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final ObjectMapper objectMapper;
     private final Path directory = Path.of(System.getProperty("user.home"), ".hyperjump");
     private final Path file = directory.resolve("saved-games.json");
 
+    public JsonFileSavedGameRepositoryAdapter() {
+        SimpleModule module = new SimpleModule();
+        module.addKeyDeserializer(Position.class, new KeyDeserializer() {
+            @Override
+            public Object deserializeKey(String key, DeserializationContext ctxt) {
+                return new Position(Integer.parseInt(key));
+            }
+        });
+        this.objectMapper = new ObjectMapper().registerModule(module);
+    }
+
+    @PostConstruct
+    public void init() {
+        clearAll();
+    }
+
     @Override
     public int nextId() {
-
         return findAll().stream()
                 .mapToInt(SavedGame::getId)
                 .max()
@@ -58,6 +79,16 @@ public class JsonFileSavedGameRepositoryAdapter implements SavedGameRepository {
         }
     }
 
+    @Override
+    public void clearAll() {
+        ensureDirectoryExists();
+        try {
+            Files.writeString(file, "[]");
+        } catch (IOException e) {
+            throw new DomainException("Could not clear saved games", e);
+        }
+    }
+
     private void writeGames(List<SavedGame> games) {
         ensureDirectoryExists();
         try {
@@ -69,10 +100,7 @@ public class JsonFileSavedGameRepositoryAdapter implements SavedGameRepository {
 
     private void ensureFileExists() {
         ensureDirectoryExists();
-        if (Files.exists(file)) {
-            return;
-        }
-
+        if (Files.exists(file)) return;
         try {
             Files.writeString(file, "[]");
         } catch (IOException e) {

@@ -34,4 +34,10 @@ public class InMemorySavedGameRepositoryAdapter implements SavedGameRepository {
         return new ArrayList<>(games.values());
     }
 
+    @Override
+    public void clearAll() {
+        games.clear();
+        nextId = 1;
+    }
+
 }

@@ -20,17 +20,15 @@ import java.util.List;
 public class InitialisePlayerUseCase {
 
     private final List<TurnObserverPort> turnObservers;
-    private final List<GameEndedObserverPort> gameEndedObservers;
     private final DiceShaker diceShaker;
     private final List<PlayerPositionStrategy> positionStrategies;
 
     private List<Player> players;
     private RoundRobinPlayerSelector selector;
 
-    public InitialisePlayerUseCase(DiceShaker diceShaker, List<TurnObserverPort> turnObservers, List<GameEndedObserverPort> gameEndedObservers) {
+    public InitialisePlayerUseCase(DiceShaker diceShaker, List<TurnObserverPort> turnObservers) {
         this.diceShaker = diceShaker;
         this.turnObservers = turnObservers;
-        this.gameEndedObservers = gameEndedObservers;
         this.positionStrategies = List.of(new TwoPlayerPosition(), new FourPlayerPosition());
     }
 
