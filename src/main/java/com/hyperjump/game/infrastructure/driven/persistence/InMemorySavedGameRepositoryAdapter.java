@@ -33,4 +33,5 @@ public class InMemorySavedGameRepositoryAdapter implements SavedGameRepository {
     public List<SavedGame> findAll() {
         return new ArrayList<>(games.values());
     }
+
 }
