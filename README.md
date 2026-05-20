@@ -136,7 +136,11 @@ The project uses **Ports and Adapters**, also known as **Hexagonal Architecture*
 The main idea is that the core application should not depend directly on external systems. Instead, the application depends on interfaces called **ports**, and infrastructure classes implement those ports as **adapters**.
 
 ## Turn Port
+
+Output ports define what the application needs from outside systems.
+
 UML Diagram
+
 ```mermaid
 classDiagram
     direction BT
@@ -156,8 +160,6 @@ classDiagram
     TurnDisplayAdapter ..|> TurnObserverPort
 ```
 
-Output ports define what the application needs from outside systems.
-File:
 - `TurnObserverPort`
 This port requires to notify the turns count and interacts with the associated adapter.
 
@@ -186,7 +188,6 @@ classDiagram
     PathsDisplayAdapter ..|> GameStartedObserverPort
 ```
 
-File:
 - `GameStartedObserverPort`
 This port requires to notify that the game has started and interacts with the associated adapter.
 
@@ -215,7 +216,6 @@ classDiagram
     GameOverDisplayAdapter ..|> GameEndedObserverPort
 ```
 
-File:
 - `GameEndedObserverPort`
 This port requires to notify the game has ended and interacts with the associated adapter.
 
@@ -244,7 +244,6 @@ classDiagram
     GameSavedDisplayAdapter ..|> GameSavedObserverPort
 ```
 
-File:
 - `GameSavedObserverPort`
 This port requires to notify the game has saved and interacts with the associated adapter.
 
@@ -273,7 +272,6 @@ classDiagram
     ReplayDisplayAdapter ..|> ReplayObserverPort
 ```
 
-File:
 - `ReplayObserverPort`
 This port requires to notify the replay has started and interacts with the associated adapter.
 
@@ -303,7 +301,6 @@ classDiagram
     BoardFactoryAdapter ..|> Board
 ```
 
-File:
 - `Board`
 This port requires to notify the game has created a board and interacts with the associated adapter.
 
@@ -341,7 +338,6 @@ classDiagram
     ReplayDiceShakerAdapter ..|> DiceShaker
 ```
 
-File:
 - `DiceShaker`
 This port requires to notify types of diceshaker sequences and interacts with the associated adapter.
 
@@ -377,12 +373,11 @@ classDiagram
     InMemorySavedGameRepositoryAdapter ..|> SavedGameRepository
 ```
 
-File:
 - `SavedGameRepository`
 This port requires to notify game repository has saved and interacts with the associated adapter.
 These adapters connect the application to external concerns
 
-## Dependency Explanation
+## Dependency 
 
 The dependencies point inward toward the application core.
 
@@ -402,15 +397,15 @@ This means the core game logic does not depend on console output, files, JSON st
 
 ## SOLID 
 
-### Dependency Inversion Principle
+### Dependency Inversion 
 
 The application depends on port interfaces such as `Board`, `DiceShaker`, and `SavedGameRepository`.
 
-### Single Responsibility Principle
+### Single Responsibility 
 
-Each adapter has one job. For example, `JsonFileSavedGameRepositoryAdapter` handles file persistence although the adapter isnt fully implemented as of yet the class is there for further devlopement, while the console adpaters handles console output for example `ConsoleTurnAdapter` handles turn output for each player.
+Each adapter has one job. For example, `JsonFileSavedGameRepositoryAdapter` handles file persistence although the adapter isnt fully implemented as of yet the class is there for further developement, while the console adpaters handles console output for example `ConsoleTurnAdapter` handles turn output for each player.
 
-### Open/Closed Principle
+### Open/Closed 
 
 New adapters can be added without changing the core game logic.
 
@@ -419,6 +414,8 @@ New adapters can be added without changing the core game logic.
 ## Single Die Variation
 
 The game supports the use of a single six-sided die for testing purpose the fixed single dice sequence will be used as an alternative to the standard random two-dice setup.
+The dice system is abstracted through dice interfaces and implementations. This allows the game to use either a random double dice / single dice, or for this example a fixed single dice for replay and testing.
+
 
 ### UML Diagram
 
@@ -451,31 +448,23 @@ classDiagram
     }
 ```
 
-### Design
+### SOLID Principles 
 
-The dice system is abstracted through dice interfaces and implementations. This allows the game to use either a single die, double dice, or fixed dice for replay/testing.
-
-### SOLID Principles Used
-
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 Each dice class is only responsible for producing dice rolls.
 
-#### Open/Closed Principle
+#### Open/Closed 
 
 New dice types can be added without changing the main game session logic.
 
-#### Dependency Inversion Principle
+#### Dependency Inversion 
 
 The game depends on dice abstractions rather than concrete dice classes.
 
----
-
 ## Exact End Variation
 
-### Description
-
-Players must land exactly on the END position to win. If the dice roll is too high, the player reaches the end and then bounces backwards.
+The Exact End variation is implemented using a movement decorator. The `ExactEndVariationDecorator` wraps the normal movement behaviour and adds bounce-back logic.
 
 ### UML Diagram
 
@@ -517,31 +506,23 @@ classDiagram
     }
 ```
 
-### Design
+### SOLID Principles
 
-The Exact End variation is implemented using a movement decorator. The `ExactEndVariationDecorator` wraps the normal movement behaviour and adds bounce-back logic.
-
-### SOLID Principles Used
-
-#### Open/Closed Principle
+#### Open/Closed 
 
 Exact-end behaviour is added without modifying `BasicMovement`.
 
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 `ExactEndVariationDecorator` only handles exact-end movement behaviour.
 
-#### Liskov Substitution Principle
+#### Liskov Substitution 
 
 The decorator can be used wherever a `Movement` object is expected.
 
----
-
 ## Hit Variation
 
-### Description
-
-If a player would land on a position occupied by another player, the moving player stays where they are and forfeits the turn.
+The Hit variation uses both the **Decorator Pattern** and the **Strategy Pattern**. The decorator adds hit behaviour to movement, while `HitStrategy` allows the hit detection algorithm to be separated from the rule itself.
 
 ### UML Diagram
 
@@ -592,11 +573,7 @@ classDiagram
     }
 ```
 
-### Design
-
-The Hit variation uses both the **Decorator Pattern** and the **Strategy Pattern**. The decorator adds hit behaviour to movement, while `HitStrategy` allows the hit detection algorithm to be separated from the rule itself.
-
-### SOLID Principles Used
+### SOLID Principles
 
 #### Single Responsibility Principle
 
@@ -610,13 +587,9 @@ New hit strategies can be added without changing `HitRule`.
 
 `HitRule` depends on the `HitStrategy` interface rather than a concrete implementation.
 
----
-
 ## Teleport Variation
 
-### Description
-
-Players can teleport through wormholes. If a player lands on one side of a wormhole, they are moved to the paired position.
+The Teleport variation uses the **Decorator Pattern** to add teleport behaviour to movement. It also uses the **Strategy Pattern** to allow different ways of generating wormholes, such as fixed teleport positions, random teleport positions, or no teleport positions.
 
 ### UML Diagram
 
@@ -671,17 +644,13 @@ classDiagram
     }
 ```
 
-### Design
+### SOLID Principles
 
-The Teleport variation uses the **Decorator Pattern** to add teleport behaviour to movement. It also uses the **Strategy Pattern** to allow different ways of generating wormholes, such as fixed teleport positions, random teleport positions, or no teleport positions.
-
-### SOLID Principles Used
-
-#### Open/Closed Principle
+#### Open/Closed 
 
 Teleport behaviour and teleport generation can be changed without modifying the main movement logic.
 
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 `TeleportVariationDecorator` handles teleport movement, while teleport generation classes handle wormhole creation.
 
@@ -689,12 +658,9 @@ Teleport behaviour and teleport generation can be changed without modifying the 
 
 `TeleportRule` depends on `TeleportGenerationStrategy`, not a concrete generator.
 
----
+## Large Board Variation
 
-## Large Board with Four Players Variation
-
-### Description
-
+The game uses a board factory adapter to create the correct board based on the number of players. This separates board creation from the main game logic.
 The game supports two board/player configurations:
 
 - Small 5x5 board with 2 players
@@ -737,84 +703,25 @@ classDiagram
     class LargeBoard
 ```
 
-### Design
+### SOLID Principles
 
-The game uses a board factory adapter to create the correct board based on the number of players. This separates board creation from the main game logic.
-
-### SOLID Principles Used
-
-#### Open/Closed Principle
+#### Open/Closed 
 
 New board types can be added without changing the main game flow.
 
-#### Liskov Substitution Principle
+#### Liskov Substitution 
 
 `SmallBoard` and `LargeBoard` can both be used as `BoardFactory` implementations.
 
-#### Dependency Inversion Principle
+#### Dependency Inversion 
 
 The application uses the `Board` port instead of directly depending on board implementations.
-
----
-
-## Player Position Variation
-
-### Description
-
-Player starting and ending positions change depending on whether the game has two or four players.
-
-### UML Diagram
-
-```mermaid
-classDiagram
-    PlayerPositionStrategy <|.. TwoPlayerPosition
-    PlayerPositionStrategy <|.. FourPlayerPosition
-
-    InitialisePlayerUseCase --> PlayerPositionStrategy : uses
-
-    class InitialisePlayerUseCase {
-        +setupPlayers(playerCount, BoardFactory)
-    }
-
-    class PlayerPositionStrategy {
-        <<interface>>
-        +supports(playerCount): boolean
-        +startPositions(start, end, cols): List~Position~
-        +endPositions(start, end, cols): List~Position~
-    }
-
-    class TwoPlayerPosition
-
-    class FourPlayerPosition
-```
-
-### Design
-
-This uses the Strategy Pattern. Different positioning algorithms are used for two-player and four-player games.
-
-### SOLID Principles Used
-
-#### Single Responsibility Principle
-
-Each positioning strategy only handles one player-count configuration.
-
-#### Open/Closed Principle
-
-New player positioning rules can be added as new strategies.
-
-#### Dependency Inversion Principle
-
-`InitialisePlayerUseCase` can depend on the strategy abstraction instead of hardcoding player placement logic.
-
----
 
 # Advanced Features
 
 ## Game State Machine
 
-### Description
-
-The game uses a state machine to control the game lifecycle:
+The game state machine is implemented using the **State Pattern**. Each state controls its own behaviour rather than using large conditional statements.
 
 - Ready State
 - In Play State
@@ -873,31 +780,24 @@ classDiagram
     class GameOverState
 ```
 
-### Design
+### SOLID Principles 
 
-The game state machine is implemented using the **State Pattern**. Each state controls its own behaviour rather than using large conditional statements.
-
-### SOLID Principles Used
-
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 Each state class only handles behaviour for one game state.
 
-#### Open/Closed Principle
+#### Open/Closed 
 
 New states can be added without rewriting the state machine.
 
-#### Liskov Substitution Principle
+#### Liskov Substitution 
 
 All states implement `GameState` and can be used interchangeably.
 
----
-
 ## Game Save and Replay
 
-### Description
-
-The game can save completed games and replay them later using the saved configuration and dice rolls.
+The save and replay system uses ports and adapters to keep persistence and replay dice separate from the core game logic.
+The game can save completed games in memory and replay them later using the saved configuration and dice rolls.
 
 ### UML Diagram
 
@@ -913,10 +813,10 @@ classDiagram
     SavedGameRepository <|.. InMemorySavedGameRepositoryAdapter
     SavedGameRepository <|.. JsonFileSavedGameRepositoryAdapter
 
-    ReplayDiceShakerFactory <|.. ReplayDiceShakerFactoryAdapter
+    ReplayDiceShaker <|.. ReplayDiceShakerAdapter
     DiceShaker <|.. ReplayDiceShakerAdapter
 
-    ReplayDiceShakerFactoryAdapter --> ReplayDiceShakerAdapter : instantiate
+    ReplayDiceShakerAdapter --> ReplayDiceShaker : instantiate
 
     class ReplayGameUseCase {
         <<interface>>
@@ -934,7 +834,7 @@ classDiagram
         +findAll()
     }
 
-    class ReplayDiceShakerFactory {
+    class ReplayDiceShaker {
         <<interface>>
         +createReplayDiceShaker(rolls): DiceShaker
     }
@@ -954,38 +854,28 @@ classDiagram
 
     class JsonFileSavedGameRepositoryAdapter
 
-    class ReplayDiceShakerFactoryAdapter
+    class ReplayDiceShakerAdapter
 
     class ReplayDiceShakerAdapter
 ```
 
-### Design
+### SOLID Principles 
 
-The save and replay system uses ports and adapters to keep persistence and replay dice separate from the core game logic.
-
-### SOLID Principles Used
-
-#### Dependency Inversion Principle
-
-Replay logic depends on `SavedGameRepository` and `ReplayDiceShakerFactory` interfaces.
-
-#### Open/Closed Principle
-
-Different storage implementations can be added without changing replay logic.
-
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 `ReplayGameService` handles replay, repositories handle saving/loading, and replay dice adapters reproduce saved dice rolls.
 
----
+#### Dependency Inversion 
 
-# Design Patterns Used
+Replay logic depends on `SavedGameRepository` and `ReplayDiceShaker` interfaces.
+
+#### Open/Closed 
+
+Different storage implementations can be added without changing replay logic.
+
+# Design Patterns 
 
 ## Factory Pattern
-
-### Type
-
-Creational Design Pattern
 
 ### Where It Is Used
 
@@ -1037,27 +927,21 @@ classDiagram
 
 The Factory Pattern is used to separate object creation from game logic. For example, `BoardFactoryAdapter` decides whether to create a `SmallBoard` or a `LargeBoard`.
 
-### SOLID Principles Used
+### SOLID Principles 
 
-#### Open/Closed Principle
+#### Open/Closed 
 
 New board types can be added without changing the game session logic.
 
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 The factory is responsible only for object creation.
 
-#### Dependency Inversion Principle
+#### Dependency Inversion 
 
 The game uses the `Board` abstraction instead of creating concrete board objects directly.
 
----
-
-## Strategy Pattern: Rule Selection
-
-### Type
-
-Behavioural Design Pattern
+## Strategy Pattern
 
 ### Where It Is Used
 
@@ -1099,25 +983,17 @@ classDiagram
 
 Rule selection can change depending on whether the game uses fixed rules, random rules, or saved rules for replay. The Strategy Pattern allows this behaviour to change without modifying `InitialiseRulesUseCase`.
 
-### SOLID Principles Used
+### SOLID Principles 
 
-#### Open/Closed Principle
+#### Open/Closed 
 
 New rule-selection strategies can be added without changing the rule setup use case.
 
-#### Dependency Inversion Principle
+#### Dependency Inversion 
 
 `InitialiseRulesUseCase` depends on `RuleSelectionStrategy`, not concrete rule selection classes.
 
----
-
-## Strategy Pattern: Teleport Generation
-
-### Type
-
-Behavioural Design Pattern
-
-### Where It Is Used
+## Strategy Pattern
 
 The Strategy Pattern is used in:
 
@@ -1158,27 +1034,21 @@ classDiagram
 
 The game can generate teleport wormholes in different ways. This allows teleporting to be fixed, random, or disabled without changing the teleport rule itself.
 
-### SOLID Principles Used
+### SOLID Principles 
 
-#### Open/Closed Principle
+#### Open/Closed 
 
 New teleport generation methods can be added as new strategies.
 
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 Teleport generation is separated from teleport movement behaviour.
 
-#### Dependency Inversion Principle
+#### Dependency Inversion 
 
 `TeleportRule` depends on the `TeleportGenerationStrategy` abstraction.
 
----
-
-## Strategy Pattern: Hit Detection
-
-### Type
-
-Behavioural Design Pattern
+## Strategy Pattern
 
 ### Where It Is Used
 
@@ -1209,33 +1079,27 @@ classDiagram
     class SamePositionHit
 ```
 
-### Why It Is Used
+### Why It Is 
 
 Hit detection is separated into a strategy so the rule can support different ways of checking collisions in the future.
 
-### SOLID Principles Used
+### SOLID Principles 
 
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 `SamePositionHit` only checks whether a player has landed on another player.
 
-#### Open/Closed Principle
+#### Open/Closed 
 
 New hit detection algorithms can be added without changing `HitRule`.
 
-#### Dependency Inversion Principle
+#### Dependency Inversion 
 
 `HitRule` depends on the `HitStrategy` interface.
 
 ---
 
-## Strategy Pattern: Path Calculation
-
-### Type
-
-Behavioural Design Pattern
-
-### Where It Is Used
+## Strategy Pattern
 
 The Strategy Pattern is used in:
 
