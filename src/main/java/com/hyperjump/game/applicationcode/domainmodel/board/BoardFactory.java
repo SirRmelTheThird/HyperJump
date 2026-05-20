@@ -12,7 +12,6 @@ public interface BoardFactory {
     int getStartPosition();
     int getEndPosition();
     int indexOf(Position position);
-    Position getPosition(int index);
     boolean supports(int playerCount);
     List<Position> calculatePath(Position startPos, Position endPos);
 }

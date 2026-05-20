@@ -1,9 +1,5 @@
 package com.hyperjump.game.applicationcode.domainmodel.board;
 
-import com.hyperjump.game.applicationcode.domainmodel.value.Position;
-
-import java.util.List;
-
 public class LargeBoard extends AbstractBoard {
 
     private static final int COLS = 6;

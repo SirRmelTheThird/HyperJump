@@ -8,6 +8,7 @@ import java.util.List;
 
 public class RotatedPathCalculation implements PathCalculationStrategy {
 
+
     @Override
     public List<Position> calculate(List<Position> fullBoard, int cols, Position startPos) {
         List<Position> path = new ArrayList<>(fullBoard);

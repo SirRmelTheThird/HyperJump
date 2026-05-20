@@ -31,10 +31,6 @@ public abstract class AbstractBoard implements BoardFactory {
         return positions.indexOf(position);
     }
 
-    @Override
-    public Position getPosition(int index) {
-        return positions.get(index);
-    }
 
     @Override
     public List<Position> calculatePath(Position startPos, Position endPos) {

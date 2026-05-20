@@ -13,6 +13,7 @@ public class SamePositionHit implements HitStrategy {
         this.players = players;
     }
 
+
     @Override
     public Player getHitPlayer(Player currentPlayer, Position position) {
 

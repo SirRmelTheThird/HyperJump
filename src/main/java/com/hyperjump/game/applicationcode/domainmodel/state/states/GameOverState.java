@@ -1,6 +1,5 @@
 package com.hyperjump.game.applicationcode.domainmodel.state.states;
 
-import com.hyperjump.game.applicationcode.domainmodel.player.Player;
 import com.hyperjump.game.applicationcode.domainmodel.state.GameContext;
 import com.hyperjump.game.applicationcode.domainmodel.state.GameState;
 
