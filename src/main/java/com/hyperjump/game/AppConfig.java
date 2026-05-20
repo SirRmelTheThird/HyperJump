@@ -8,7 +8,7 @@ import com.hyperjump.game.applicationcode.port.out.*;
 import com.hyperjump.game.applicationcode.usecase.GameSessionUseCase;
 import com.hyperjump.game.applicationcode.usecase.InitialisePlayerUseCase;
 import com.hyperjump.game.applicationcode.usecase.InitialiseRulesUseCase;
-import com.hyperjump.game.applicationcode.usecase.ReplayGameService;
+import com.hyperjump.game.applicationcode.usecase.ReplaySessionUseCase;
 import com.hyperjump.game.infrastructure.driven.dice.RecordingDiceShakerAdapter;
 import com.hyperjump.game.infrastructure.driving.*;
 import org.springframework.context.annotation.Bean;
@@ -59,15 +59,15 @@ public class AppConfig {
     }
 
     @Bean
-    public ReplayGameUseCase replayGameUseCase(SavedGameRepository repository, Board board, ReplayDiceShakerFactory replayDiceShakerFactory, GameRunnerObserverPort gameRunnerDisplay) {
-        return new ReplayGameService(
+    public ReplayGameUseCase replayGameUseCase(SavedGameRepository repository, Board board, ReplayDiceShaker replayDiceShaker, GameRunnerObserverPort gameRunnerDisplay) {
+        return new ReplaySessionUseCase(
                 repository,
                 board,
                 List.of(turnDisplay),
                 List.of(gameStartedDisplay),
                 List.of(gameEndedDisplay),
                 List.of(gameRunnerDisplay),
-                replayDiceShakerFactory
+                replayDiceShaker
         );
     }
 }

@@ -4,6 +4,6 @@ import com.hyperjump.game.applicationcode.domainmodel.value.DiceRoll;
 
 import java.util.List;
 
-public interface ReplayDiceShakerFactory {
+public interface ReplayDiceShaker {
     DiceShaker createReplayDiceShaker(List<DiceRoll> rolls);
 }
