@@ -35,31 +35,27 @@ classDiagram
 
     class StartGameUseCase {
         <<interface>>
-        + play()
-    }
-
-    class StartGameService {
-        + play()
+        +play()
     }
 
     class GameSessionUseCase {
-        + setupGame()
-        + startGame()
+        +play()
     }
 
     class SavedGameRepository {
         <<interface>>
-        + save(SavedGame)
-        + findById(id)
-        + findAll()
+        +nextId()
+        +save(SavedGame)
+        +findById(id)
+        +findAll()
+        +clearAll()
     }
 
     GameConsoleRunner ..|> CommandLineRunner
     GameConsoleRunner ..> StartGameUseCase : << use >>
 
-    StartGameService ..|> StartGameUseCase
-    StartGameService ..> GameSessionUseCase : << use >>
-    StartGameService ..> SavedGameRepository : << use >>
+    GameSessionUseCase ..|> StartGameUseCase
+    GameSessionUseCase ..> SavedGameRepository : << use >>
 ```
 
 The `GameConsoleRunner` receives user interaction from the console and calls the input ports frome `StartGameUseCase`
@@ -91,31 +87,27 @@ classDiagram
 
     class ReplayGameUseCase {
         <<interface>>
-        + replay()
-    }
-
-    class ReplayGameService {
-        + replay()
+        +replay(int gameId)
     }
 
     class ReplaySessionUseCase {
-        + setupReplay()
-        + startReplay()
+        +replay(int gameId)
     }
 
     class SavedGameRepository {
         <<interface>>
-        + save(SavedGame)
-        + findById(id)
-        + findAll()
+        +nextId()
+        +save(SavedGame)
+        +findById(id)
+        +findAll()
+        +clearAll()
     }
 
     GameConsoleRunner ..|> CommandLineRunner
     GameConsoleRunner ..> ReplayGameUseCase : << use >>
 
-    ReplayGameService ..|> ReplayGameUseCase
-    ReplayGameService ..> ReplaySessionUseCase : << use >>
-    ReplayGameService ..> SavedGameRepository : << use >>
+    ReplaySessionUseCase ..|> ReplayGameUseCase
+    ReplaySessionUseCase ..> SavedGameRepository : << use >>
 ```
 The `GameConsoleRunner` receives user replay interaction from the console and calls the input ports from `ReplayGameUseCase`.
 This interfaces used by external adapters to interact with the application core.
@@ -127,6 +119,7 @@ Files:
 - `ReplaySessionUseCase`
 - `InitialisePlayerUseCase`
 - `InitialiseRulesUseCase`
+- `InitialiseReplayUseCase`
 
 These classes control the use cases but do not directly depend on infrastructure details.
 
@@ -376,11 +369,11 @@ This means the core game logic does not depend on console output, files, JSON st
 
 ### Dependency Inversion Principle
 
-The application depends on interfaces such as `Board`, `DiceShaker`, and `SavedGameRepository`, not concrete classes.
+The application depends on port interfaces such as `Board`, `DiceShaker`, and `SavedGameRepository`.
 
 ### Single Responsibility Principle
 
-Each adapter has one job. For example, `JsonFileSavedGameRepositoryAdapter` handles file persistence, while `ConsoleTurnAdapter` handles turn output.
+Each adapter has one job. For example, `JsonFileSavedGameRepositoryAdapter` handles file persistence although the adapter isnt fully implemented as of yet the class is there for further devlopement, while the console adpaters handles console output for example `ConsoleTurnAdapter` handles turn output for each player.
 
 ### Open/Closed Principle
 
@@ -394,7 +387,7 @@ New adapters can be added without changing the core game logic.
 
 ### Description
 
-The game supports the use of a single six-sided die as an alternative to the standard two-dice setup.
+The game supports the use of a single six-sided die for testing purpose the fixed single dice sequence will be used as an alternative to the standard random two-dice setup.
 
 ### UML Diagram
 
