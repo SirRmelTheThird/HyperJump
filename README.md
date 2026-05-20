@@ -590,53 +590,14 @@ The game state machine is implemented using the **State Pattern**. Each state co
 
 ```mermaid
 stateDiagram-v2
-    [*] --> ReadyState
+    [*] --> Ready
 
-    ReadyState --> InPlayState : turn()
-    InPlayState --> InPlayState : turn()
-    InPlayState --> GameOverState : winnerFound()
+    Ready --> InPlay : start game / first turn
 
-    GameOverState --> GameOverState : turn()
-    GameOverState --> [*]
-```
+    InPlay --> InPlay : next turn
+    InPlay --> GameOver : winning condition met
 
-### Class UML Diagram
-
-```mermaid
-classDiagram
-    GameState <|.. ReadyState
-    GameState <|.. InPlayState
-    GameState <|.. GameOverState
-
-    GameStateMachine --> GameState : current state
-    GameStateMachine ..|> GameContext
-
-    ReadyState --> GameContext : updates
-    InPlayState --> GameContext : updates
-    GameOverState --> GameContext : uses
-
-    class GameState {
-        <<interface>>
-        +turn()
-        +isGameOver(): boolean
-        +getWinner(): Player
-    }
-
-    class GameContext {
-        <<interface>>
-        +setGameState(GameState)
-    }
-
-    class GameStateMachine {
-        +play()
-        +setGameState(GameState)
-    }
-
-    class ReadyState
-
-    class InPlayState
-
-    class GameOverState
+    GameOver --> [*]
 ```
 
 ### SOLID Principles 
@@ -661,7 +622,6 @@ The game can save completed games in memory and replay them later using the save
 ### UML Diagram
 
 ```mermaid
-classDiagram
 classDiagram
     ReplayGameUseCase <|.. ReplayGameService
 
@@ -738,11 +698,8 @@ The Factory Pattern is used to separate object creation from game logic. For exa
 Pattern is used in:
 
 - `BoardFactory`
-- `BoardFactoryAdapter`
 - `SmallBoard`
 - `LargeBoard`
-- `DiceShakerFactory`
-- `ReplayDiceShakerFactory`
 
 ### UML Diagram
 
@@ -828,6 +785,8 @@ New rule-selection strategies can be added without changing the rule setup use c
 #### Dependency Inversion 
 
 `InitialiseRulesUseCase` depends on `RuleSelectionStrategy`, not concrete rule selection classes.
+
+# Strategy Pattern
 
 Pattern is used in:
 
@@ -921,8 +880,6 @@ classDiagram
 
 New hit detection algorithms can be added without changing `HitRule`.
 
-#### Dependency Inversion 
-
 ## Strategy Pattern
 
 Different players need different board paths depending on their start and end positions. The Strategy Pattern allows path calculation to change without changing the board class.
@@ -1013,15 +970,13 @@ classDiagram
 
 ### SOLID Principles 
 
-#### Open/Closed 
-
-New player count configurations can be added as new strategies.
-
 #### Single Responsibility 
 
 Each positioning strategy handles one player layout.
 
----
+#### Open/Closed 
+
+New player count configurations can be added as new strategies.
 
 ## Decorator Pattern
 
@@ -1072,13 +1027,13 @@ classDiagram
 
 ### SOLID Principles 
 
-#### Open/Closed 
-
-New movement rules can be added without editing `BasicMovement`.
-
 #### Single Responsibility 
 
 Each decorator handles one rule.
+
+#### Open/Closed 
+
+New movement rules can be added without editing `BasicMovement`.
 
 #### Liskov Substitution 
 
@@ -1094,12 +1049,12 @@ Pattern is used in:
 - `GameStartedObserverPort`
 - `GameEndedObserverPort`
 - `GameSavedObserverPort`
-- `ReplayObserverPort`
+- `GamERunnerObserverPort`
 - `ConsoleTurnAdapter`
 - `ConsoleGameStartedAdapter`
 - `ConsoleGameEndedAdapter`
 - `ConsoleGameSavedAdapter`
-- `ConsoleReplayAdapter`
+- `ConsoleGameRunnerDisplayAdapter`
 
 ### UML Diagram
 
@@ -1208,17 +1163,17 @@ classDiagram
 
 ### SOLID Principles 
 
-#### Dependency Inversion 
+#### Single Responsibility 
 
-Use cases depend on `SavedGameRepository`, not file or memory storage directly.
+Repository classes only handle persistence.
 
 #### Open/Closed 
 
 New storage methods can be added without changing game or replay services.
 
-#### Single Responsibility 
+#### Dependency Inversion 
 
-Repository classes only handle persistence.
+Use cases depend on `SavedGameRepository`, not file or memory storage directly.
 
 # Overall Evaluation
 
@@ -1250,15 +1205,6 @@ The game uses patterns for real design problems:
 - Repository for save/replay persistence
 - Adapter for infrastructure separation
 
-### Good Use of SOLID
-
-The most strongly demonstrated principles are:
-
-- Single Responsibility Principle
-- Open/Closed Principle
-- Dependency Inversion Principle
-- Liskov Substitution Principle
-
 ## Limitations
 
 ### More Classes and Complexity
@@ -1277,4 +1223,3 @@ The game relies on correct wiring of strategies, decorators, observers, and adap
 
 The game demonstrates a strong implementation of clean architecture and object-oriented design. The use of Ports and Adapters keeps the domain independent from infrastructure, while the design patterns make the game flexible enough to support the required variations and advanced features.
 
-Overall, the implementation is scalable, maintainable, and suitable for extension.
