@@ -15,6 +15,16 @@ public class MoveEvent implements GameEvent {
 
     @Override
     public String describe(Player player) {
-        return player.getColour() + " moves from " + from.value() + " to " + to.value();
+
+        return player.getColour() + " moves from " + formatPosition(player, from) + " to " + formatPosition(player, to);
+    }
+    private String formatPosition(Player player, Position position) {
+        if (position.equals(player.getStartPos())) {
+            return "Home (Position " + position + ")";
+        }
+        if (position.equals(player.getEndPos())) {
+            return "End (Position " + position + ")";
+        }
+        return String.valueOf(position.value());
     }
 }

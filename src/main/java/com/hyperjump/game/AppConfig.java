@@ -26,38 +26,29 @@ public class AppConfig {
     private final GameEndedObserverPort    gameEndedDisplay = new ConsoleGameEndedAdapter(display);
     private final GameStartedObserverPort  gameStartedDisplay = new ConsoleGameStartedAdapter(display);
     private final GameSavedObserverPort    gameSavedDisplay = new ConsoleGameSavedAdapter(display);
-    private final ReplayObserverPort       replayDisplay    = new ConsoleReplayAdapter(display);
 
-    // Volatile (transitive): wraps the profile-selected DiceShaker
     @Bean
     public RecordingDiceShakerPort recordingDiceShaker(DiceShaker diceShaker) {
         return new RecordingDiceShakerAdapter(diceShaker);
     }
 
-    // Volatile (transitive): depends on RecordingDiceShakerPort (volatile)
+    @Bean
+    public GameRunnerObserverPort gameRunnerDisplayAdapter() {
+        return new ConsoleGameRunnerDisplayAdapter(display);
+    }
+
     @Bean
     public InitialisePlayerUseCase initialisePlayerUseCase(RecordingDiceShakerPort diceShaker) {
         return new InitialisePlayerUseCase(diceShaker, List.of(turnDisplay), List.of(gameEndedDisplay));
     }
 
-    // Volatile (transitive): depends on RuleSelectionStrategy and
-    // TeleportGenerationStrategy — both swapped by profile
     @Bean
-    public InitialiseRulesUseCase initialiseRulesUseCase(
-            RuleSelectionStrategy ruleSelectionStrategy,
-            TeleportGenerationStrategy teleportGenerationStrategy) {
+    public InitialiseRulesUseCase initialiseRulesUseCase(RuleSelectionStrategy ruleSelectionStrategy, TeleportGenerationStrategy teleportGenerationStrategy) {
         return new InitialiseRulesUseCase(ruleSelectionStrategy, teleportGenerationStrategy);
     }
 
-    // Volatile (transitive): depends on Board, both use cases, and
-    // SavedGameRepository — all volatile
     @Bean
-    public StartGameUseCase startGameUseCase(
-            Board board,
-            RecordingDiceShakerPort recordingDice,
-            InitialisePlayerUseCase playerSetup,
-            InitialiseRulesUseCase rulesSetup,
-            SavedGameRepository savedGameRepository) {
+    public StartGameUseCase startGameUseCase(Board board, RecordingDiceShakerPort recordingDice, InitialisePlayerUseCase playerSetup, InitialiseRulesUseCase rulesSetup, SavedGameRepository savedGameRepository) {
         return new GameSessionUseCase(
                 PLAYER_COUNT, board, playerSetup, rulesSetup,
                 recordingDice, savedGameRepository,
@@ -67,19 +58,15 @@ public class AppConfig {
         );
     }
 
-    // Volatile: SavedGameRepository is the volatile dependency itself
-    // (swapped between memory/file profiles)
     @Bean
-    public ReplayGameUseCase replayGameUseCase(
-            SavedGameRepository repository,
-            Board board,
-            ReplayDiceShakerFactory replayDiceShakerFactory) {
+    public ReplayGameUseCase replayGameUseCase(SavedGameRepository repository, Board board, ReplayDiceShakerFactory replayDiceShakerFactory, GameRunnerObserverPort gameRunnerDisplay) {
         return new ReplayGameService(
-                repository, board,
+                repository,
+                board,
                 List.of(turnDisplay),
                 List.of(gameStartedDisplay),
                 List.of(gameEndedDisplay),
-                List.of(replayDisplay),
+                List.of(gameRunnerDisplay),
                 replayDiceShakerFactory
         );
     }

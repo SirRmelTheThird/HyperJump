@@ -18,16 +18,16 @@ public class ReplayGameService implements ReplayGameUseCase {
     private final List<TurnObserverPort>        turnObservers;
     private final List<GameStartedObserverPort> gameStartedObservers;
     private final List<GameEndedObserverPort>   gameEndedObservers;
-    private final List<ReplayObserverPort>      replayObservers;
+    private final List<GameRunnerObserverPort> gameRunnerObservers;
     private final ReplayDiceShakerFactory       replayDiceShakerFactory;
 
-    public ReplayGameService(SavedGameRepository repository, Board board, List<TurnObserverPort> turnObservers, List<GameStartedObserverPort> gameStartedObservers, List<GameEndedObserverPort> gameEndedObservers, List<ReplayObserverPort> replayObservers, ReplayDiceShakerFactory replayDiceShakerFactory) {
+    public ReplayGameService(SavedGameRepository repository, Board board, List<TurnObserverPort> turnObservers, List<GameStartedObserverPort> gameStartedObservers, List<GameEndedObserverPort> gameEndedObservers, List<GameRunnerObserverPort> gameRunnerObservers, ReplayDiceShakerFactory replayDiceShakerFactory) {
         this.repository              = repository;
         this.board                   = board;
         this.turnObservers           = turnObservers;
         this.gameStartedObservers    = gameStartedObservers;
         this.gameEndedObservers      = gameEndedObservers;
-        this.replayObservers         = replayObservers;
+        this.gameRunnerObservers         = gameRunnerObservers;
         this.replayDiceShakerFactory = replayDiceShakerFactory;
     }
 
@@ -74,10 +74,10 @@ public class ReplayGameService implements ReplayGameUseCase {
     }
 
     private void notifyReplayStarted(SavedGame savedGame) {
-        replayObservers.forEach(o -> o.onReplayStarted(savedGame));
+        gameRunnerObservers.forEach(o -> o.onReplaySelected(savedGame));
     }
 
     private void notifyReplayNotFound(int gameId) {
-        replayObservers.forEach(o -> o.onReplayNotFound(gameId));
+        gameRunnerObservers.forEach(o -> o.onReplayNotFound(gameId));
     }
 }
