@@ -4,7 +4,9 @@
 
 HyperJump is a Java-based turn-based board game that allows players to move across a board using dice rolls. The game supports multiple gameplay variations such as single-die movement, exact-end rules, hit detection, teleporting through wormholes, and larger boards for four players.
 
-The project is designed using clean architecture principles, especially **Ports and Adapters Architecture**, so that the core game logic is separated from infrastructure code such as console output, persistence, replay storage, and dice adapters.
+The game is designed using clean architecture principles, especially **Ports and Adapters Architecture**, so that the core game logic is separated from infrastructure code such as console output, persistence, replay storage, and dice adapters.
+
+To run the game, make sure to input "test, memory" in the active profiles category in run configurations for a fixed single dice simulation, while "real, memory" is for a random double/single dice simulation of all variations.
 
 The implementation also uses several design patterns, including:
 
@@ -14,9 +16,6 @@ The implementation also uses several design patterns, including:
 - State Pattern
 - Observer Pattern
 - Repository Pattern
-- Adapter Pattern
-
-These patterns help make the game easier to extend, test, and maintain.
 
 # Architecture
 
@@ -134,146 +133,6 @@ These classes control the use cases but do not directly depend on infrastructure
 The project uses **Ports and Adapters**, also known as **Hexagonal Architecture**.
 
 The main idea is that the core application should not depend directly on external systems. Instead, the application depends on interfaces called **ports**, and infrastructure classes implement those ports as **adapters**.
-
-## Turn Port
-
-Output ports define what the application needs from outside systems.
-
-UML Diagram
-
-```mermaid
-classDiagram
-    direction BT
-
-    class PlayerTurn {
-    }
-
-    class TurnObserverPort {
-        <<interface>>
-        +onTurnPlayed(playerTurn): void
-    }
-
-    class TurnDisplayAdapter {
-    }
-
-    PlayerTurn --> TurnObserverPort : notifies
-    TurnDisplayAdapter ..|> TurnObserverPort
-```
-
-- `TurnObserverPort`
-This port requires to notify the turns count and interacts with the associated adapter.
-
-## Game Started Port
-
-UML Diagram
-
-Output ports define what the application needs from outside systems.
-
-```mermaid
-classDiagram
-    direction BT
-
-    class GameSessionUseCase {
-    }
-
-    class GameStartedObserverPort {
-        <<interface>>
-        +onGameStarted(players): void
-    }
-
-    class PathsDisplayAdapter {
-    }
-
-    GameSessionUseCase --> GameStartedObserverPort : notifies
-    PathsDisplayAdapter ..|> GameStartedObserverPort
-```
-
-- `GameStartedObserverPort`
-This port requires to notify that the game has started and interacts with the associated adapter.
-
-## Game Ended Port
-
-Output ports define what the application needs from outside systems.
-
-UML Diagram
-
-```mermaid
-classDiagram
-    direction BT
-
-    class PlayerTurn {
-    }
-
-    class GameEndedObserverPort {
-        <<interface>>
-        +onGameOver(playerTurn): void
-    }
-
-    class GameOverDisplayAdapter {
-    }
-
-    PlayerTurn --> GameEndedObserverPort : notifies
-    GameOverDisplayAdapter ..|> GameEndedObserverPort
-```
-
-- `GameEndedObserverPort`
-This port requires to notify the game has ended and interacts with the associated adapter.
-
-## Game Saved Port
-
-Output ports define what the application needs from outside systems.
-
-UML Diagram
-
-```mermaid
-classDiagram
-    direction BT
-
-    class GameSessionUseCase {
-    }
-
-    class GameSavedObserverPort {
-        <<interface>>
-        +onGameSaved(savedGame): void
-    }
-
-    class GameSavedDisplayAdapter {
-    }
-
-    GameSessionUseCase --> GameSavedObserverPort : notifies
-    GameSavedDisplayAdapter ..|> GameSavedObserverPort
-```
-
-- `GameSavedObserverPort`
-This port requires to notify the game has saved and interacts with the associated adapter.
-
-## Replay Port
-
-Output ports define what the application needs from outside systems.
-
-UML Diagram
-
-```mermaid
-classDiagram
-    direction BT
-
-    class ReplayGameService {
-    }
-
-    class ReplayObserverPort {
-        <<interface>>
-        +onReplayStarted(savedGame): void
-    }
-
-    class ReplayDisplayAdapter {
-    }
-
-    ReplayGameService --> ReplayObserverPort : notifies
-    ReplayDisplayAdapter ..|> ReplayObserverPort
-```
-
-- `ReplayObserverPort`
-This port requires to notify the replay has started and interacts with the associated adapter.
 
 ## Board Port
 
@@ -731,53 +590,14 @@ The game state machine is implemented using the **State Pattern**. Each state co
 
 ```mermaid
 stateDiagram-v2
-    [*] --> ReadyState
+    [*] --> Ready
 
-    ReadyState --> InPlayState : turn()
-    InPlayState --> InPlayState : turn()
-    InPlayState --> GameOverState : winnerFound()
+    Ready --> InPlay : start game / first turn
 
-    GameOverState --> GameOverState : turn()
-    GameOverState --> [*]
-```
+    InPlay --> InPlay : next turn
+    InPlay --> GameOver : winning condition met
 
-### Class UML Diagram
-
-```mermaid
-classDiagram
-    GameState <|.. ReadyState
-    GameState <|.. InPlayState
-    GameState <|.. GameOverState
-
-    GameStateMachine --> GameState : current state
-    GameStateMachine ..|> GameContext
-
-    ReadyState --> GameContext : updates
-    InPlayState --> GameContext : updates
-    GameOverState --> GameContext : uses
-
-    class GameState {
-        <<interface>>
-        +turn()
-        +isGameOver(): boolean
-        +getWinner(): Player
-    }
-
-    class GameContext {
-        <<interface>>
-        +setGameState(GameState)
-    }
-
-    class GameStateMachine {
-        +play()
-        +setGameState(GameState)
-    }
-
-    class ReadyState
-
-    class InPlayState
-
-    class GameOverState
+    GameOver --> [*]
 ```
 
 ### SOLID Principles 
@@ -806,7 +626,7 @@ classDiagram
     ReplayGameUseCase <|.. ReplayGameService
 
     ReplayGameService --> SavedGameRepository : loads
-    ReplayGameService --> ReplayDiceShakerFactory : creates replay dice
+    ReplayGameService --> ReplayDiceShaker : creates replay dice
     ReplayGameService --> ReplayObserverPort : notifies
     ReplayGameService --> ReplaySessionUseCase : uses
 
@@ -815,8 +635,6 @@ classDiagram
 
     ReplayDiceShaker <|.. ReplayDiceShakerAdapter
     DiceShaker <|.. ReplayDiceShakerAdapter
-
-    ReplayDiceShakerAdapter --> ReplayDiceShaker : instantiate
 
     class ReplayGameUseCase {
         <<interface>>
@@ -855,8 +673,6 @@ classDiagram
     class JsonFileSavedGameRepositoryAdapter
 
     class ReplayDiceShakerAdapter
-
-    class ReplayDiceShakerAdapter
 ```
 
 ### SOLID Principles 
@@ -877,39 +693,18 @@ Different storage implementations can be added without changing replay logic.
 
 ## Factory Pattern
 
-### Where It Is Used
+The Factory Pattern is used to separate object creation from game logic. For example, `BoardFactoryAdapter` decides whether to create a `SmallBoard` or a `LargeBoard`.
 
-The Factory Pattern is used in:
+Pattern is used in:
 
 - `BoardFactory`
-- `BoardFactoryAdapter`
 - `SmallBoard`
 - `LargeBoard`
-- `DiceShakerFactory`
-- `ReplayDiceShakerFactory`
 
 ### UML Diagram
 
 ```mermaid
 classDiagram
-    Board <|.. BoardFactoryAdapter
-    BoardFactoryAdapter --> SmallBoard : instantiate
-    BoardFactoryAdapter --> LargeBoard : instantiate
-
-    SmallBoard --|> AbstractBoard
-    LargeBoard --|> AbstractBoard
-
-    AbstractBoard --|> BoardFactory
-
-    class Board {
-        <<interface>>
-        +createBoard(playerCount): BoardFactory
-    }
-
-    class BoardFactoryAdapter {
-        +createBoard(playerCount): BoardFactory
-    }
-
     class BoardFactory {
         <<interface>>
     }
@@ -921,11 +716,13 @@ classDiagram
     class SmallBoard
 
     class LargeBoard
+
+    BoardFactory <|.. AbstractBoard
+
+    AbstractBoard <|-- SmallBoard
+    AbstractBoard <|-- LargeBoard
 ```
 
-### Why It Is Used
-
-The Factory Pattern is used to separate object creation from game logic. For example, `BoardFactoryAdapter` decides whether to create a `SmallBoard` or a `LargeBoard`.
 
 ### SOLID Principles 
 
@@ -943,9 +740,9 @@ The game uses the `Board` abstraction instead of creating concrete board objects
 
 ## Strategy Pattern
 
-### Where It Is Used
+Rule selection can change depending on whether the game uses fixed rules, random rules, or saved rules for replay. The Strategy Pattern allows this behaviour to change without modifying `InitialiseRulesUseCase`.
 
-The Strategy Pattern is used in:
+Pattern is used in:
 
 - `RuleSelectionStrategy`
 - `FixedRuleSelection`
@@ -979,10 +776,6 @@ classDiagram
     class SavedRuleSelection
 ```
 
-### Why It Is Used
-
-Rule selection can change depending on whether the game uses fixed rules, random rules, or saved rules for replay. The Strategy Pattern allows this behaviour to change without modifying `InitialiseRulesUseCase`.
-
 ### SOLID Principles 
 
 #### Open/Closed 
@@ -995,7 +788,9 @@ New rule-selection strategies can be added without changing the rule setup use c
 
 ## Strategy Pattern
 
-The Strategy Pattern is used in:
+Pattern is used in:
+
+The game can generate teleport wormholes in different ways. This allows teleporting to be fixed, random, or disabled without changing the teleport rule itself.
 
 - `TeleportGenerationStrategy`
 - `FixedTeleportGeneration`
@@ -1030,10 +825,6 @@ classDiagram
     class NoOpTeleportGeneration
 ```
 
-### Why It Is Used
-
-The game can generate teleport wormholes in different ways. This allows teleporting to be fixed, random, or disabled without changing the teleport rule itself.
-
 ### SOLID Principles 
 
 #### Open/Closed 
@@ -1050,9 +841,9 @@ Teleport generation is separated from teleport movement behaviour.
 
 ## Strategy Pattern
 
-### Where It Is Used
+Hit detection is separated into a strategy so the rule can support different ways of checking collisions in the future.
 
-The Strategy Pattern is used in:
+Pattern is used in:
 
 - `HitStrategy`
 - `SamePositionHit`
@@ -1079,10 +870,6 @@ classDiagram
     class SamePositionHit
 ```
 
-### Why It Is 
-
-Hit detection is separated into a strategy so the rule can support different ways of checking collisions in the future.
-
 ### SOLID Principles 
 
 #### Single Responsibility 
@@ -1093,15 +880,11 @@ Hit detection is separated into a strategy so the rule can support different way
 
 New hit detection algorithms can be added without changing `HitRule`.
 
-#### Dependency Inversion 
-
-`HitRule` depends on the `HitStrategy` interface.
-
----
-
 ## Strategy Pattern
 
-The Strategy Pattern is used in:
+Different players need different board paths depending on their start and end positions. The Strategy Pattern allows path calculation to change without changing the board class.
+
+Pattern is used in:
 
 - `PathCalculationStrategy`
 - `ForwardPathCalculation`
@@ -1139,31 +922,21 @@ classDiagram
     class ReversedRotatedPathCalculation
 ```
 
-### Why It Is Used
+### SOLID Principles 
 
-Different players may need different board paths depending on their start and end positions. The Strategy Pattern allows path calculation to change without changing the board class.
-
-### SOLID Principles Used
-
-#### Open/Closed Principle
+#### Open/Closed 
 
 New path calculations can be added as separate classes.
 
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 Each path calculation class handles one path algorithm.
 
----
+## Strategy Pattern
 
-## Strategy Pattern: Player Positioning
+The game needs different player start and end positions for two-player and four-player games. The Strategy Pattern avoids hardcoding all positioning logic inside the player setup class.
 
-### Type
-
-Behavioural Design Pattern
-
-### Where It Is Used
-
-The Strategy Pattern is used in:
+Pattern is used in:
 
 - `PlayerPositionStrategy`
 - `TwoPlayerPosition`
@@ -1195,31 +968,21 @@ classDiagram
     class FourPlayerPosition
 ```
 
-### Why It Is Used
+### SOLID Principles 
 
-The game needs different player start and end positions for two-player and four-player games. The Strategy Pattern avoids hardcoding all positioning logic inside the player setup class.
-
-### SOLID Principles Used
-
-#### Open/Closed Principle
-
-New player count configurations can be added as new strategies.
-
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 Each positioning strategy handles one player layout.
 
----
+#### Open/Closed 
+
+New player count configurations can be added as new strategies.
 
 ## Decorator Pattern
 
-### Type
+The Decorator Pattern allows gameplay variations to be layered on top of basic movement. For example, the game can use only basic movement, or combine exact-end, hit, and teleport variations together.
 
-Structural Design Pattern
-
-### Where It Is Used
-
-The Decorator Pattern is used in:
+Pattern is used in:
 
 - `Movement`
 - `BasicMovement`
@@ -1262,135 +1025,75 @@ classDiagram
     class TeleportVariationDecorator
 ```
 
-### Why It Is Used
+### SOLID Principles 
 
-The Decorator Pattern allows gameplay variations to be layered on top of basic movement. For example, the game can use only basic movement, or combine exact-end, hit, and teleport variations together.
-
-### SOLID Principles Used
-
-#### Open/Closed Principle
-
-New movement rules can be added without editing `BasicMovement`.
-
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 Each decorator handles one rule.
 
-#### Liskov Substitution Principle
+#### Open/Closed 
+
+New movement rules can be added without editing `BasicMovement`.
+
+#### Liskov Substitution 
 
 Each decorator implements `Movement`, so it can replace any other movement object.
 
----
-
-## State Pattern
-
-### Type
-
-Behavioural Design Pattern
-
-### Where It Is Used
-
-The State Pattern is used in:
-
-- `GameState`
-- `GameStateMachine`
-- `ReadyState`
-- `InPlayState`
-- `GameOverState`
-
-### UML Diagram
-
-```mermaid
-stateDiagram-v2
-    [*] --> ReadyState
-
-    ReadyState --> InPlayState : turn()
-    InPlayState --> InPlayState : turn()
-    InPlayState --> GameOverState : winner found
-    GameOverState --> GameOverState : extra turn gives Game Over message
-```
-
-### Why It Is Used
-
-The State Pattern controls the lifecycle of the game without relying on procedural `if` or `switch` logic.
-
-### SOLID Principles Used
-
-#### Single Responsibility Principle
-
-Each state handles its own behaviour.
-
-#### Open/Closed Principle
-
-New states can be added without rewriting the whole state machine.
-
-#### Liskov Substitution Principle
-
-All states implement the same `GameState` interface.
-
----
-
 ## Observer Pattern
 
-### Type
+The Observer Pattern decouples game events from console output. The game does not need to know how events are displayed.
 
-Behavioural Design Pattern
-
-### Where It Is Used
-
-The Observer Pattern is used in:
+Pattern is used in:
 
 - `TurnObserverPort`
 - `GameStartedObserverPort`
 - `GameEndedObserverPort`
 - `GameSavedObserverPort`
-- `ReplayObserverPort`
+- `GamERunnerObserverPort`
 - `ConsoleTurnAdapter`
 - `ConsoleGameStartedAdapter`
 - `ConsoleGameEndedAdapter`
 - `ConsoleGameSavedAdapter`
-- `ConsoleReplayAdapter`
+- `ConsoleGameRunnerDisplayAdapter`
 
 ### UML Diagram
 
 ```mermaid
 classDiagram
+    direction TB
+
     TurnObserverPort <|.. ConsoleTurnAdapter
     GameStartedObserverPort <|.. ConsoleGameStartedAdapter
     GameEndedObserverPort <|.. ConsoleGameEndedAdapter
     GameSavedObserverPort <|.. ConsoleGameSavedAdapter
-    ReplayObserverPort <|.. ConsoleReplayAdapter
-
-    PlayerTurn --> TurnObserverPort : notifies
-    GameSessionUseCase --> GameStartedObserverPort : notifies
-    GameSessionUseCase --> GameEndedObserverPort : notifies
-    GameSessionUseCase --> GameSavedObserverPort : notifies
-    ReplayGameService --> ReplayObserverPort : notifies
-
-    class PlayerTurn
-
-    class GameSessionUseCase
-
-    class ReplayGameService
+    GameRunnerObserverPort <|.. ConsoleGameRunnerDisplayAdapter
 
     class TurnObserverPort {
         <<interface>>
+        +onTurnPlayed(PlayerTurn playerTurn): void
     }
 
     class GameStartedObserverPort {
         <<interface>>
+        +onGameStarted(GameStartInfo gameStartInfo): void
     }
 
     class GameEndedObserverPort {
         <<interface>>
+        +onGameEnded(GameEndInfo info): void
     }
 
     class GameSavedObserverPort {
         <<interface>>
+        +onGameSaved(SavedGame savedGame): void
     }
 
-    class ReplayObserverPort {
+    class GameRunnerObserverPort {
         <<interface>>
+        +onGameRunStarted(int gameNumber): void
+        +onReplayRunStarted(): void
+        +onReplaySelected(SavedGame savedGame): void
+        +onReplayNotFound(int gameId): void
     }
 
     class ConsoleTurnAdapter
@@ -1401,38 +1104,28 @@ classDiagram
 
     class ConsoleGameSavedAdapter
 
-    class ConsoleReplayAdapter
+    class ConsoleGameRunnerDisplayAdapter
 ```
 
-### Why It Is Used
+### SOLID Principles 
 
-The Observer Pattern decouples game events from console output. The game does not need to know how events are displayed.
-
-### SOLID Principles Used
-
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 Game logic produces events, while console adapters display them.
 
-#### Open/Closed Principle
+#### Open/Closed 
 
 New observers can be added without changing the game session logic.
 
-#### Dependency Inversion Principle
+#### Dependency Inversion 
 
 The game depends on observer interfaces, not console classes.
 
----
-
 ## Repository Pattern
 
-### Type
+The Repository Pattern separates game saving and loading from the main game logic.
 
-Architectural / Persistence Design Pattern
-
-### Where It Is Used
-
-The Repository Pattern is used in:
+Pattern is used in:
 
 - `SavedGameRepository`
 - `InMemorySavedGameRepositoryAdapter`
@@ -1468,107 +1161,19 @@ classDiagram
     }
 ```
 
-### Why It Is Used
+### SOLID Principles 
 
-The Repository Pattern separates game saving and loading from the main game logic.
-
-### SOLID Principles Used
-
-#### Dependency Inversion Principle
-
-Use cases depend on `SavedGameRepository`, not file or memory storage directly.
-
-#### Open/Closed Principle
-
-New storage methods can be added without changing game or replay services.
-
-#### Single Responsibility Principle
+#### Single Responsibility 
 
 Repository classes only handle persistence.
 
----
+#### Open/Closed 
 
-## Adapter Pattern
+New storage methods can be added without changing game or replay services.
 
-### Type
+#### Dependency Inversion 
 
-Structural Design Pattern
-
-### Where It Is Used
-
-The Adapter Pattern is used in:
-
-- `BoardFactoryAdapter`
-- `RandomDiceShakerAdapter`
-- `FixedDiceShakerAdapter`
-- `RecordingDiceShakerAdapter`
-- `ReplayDiceShakerAdapter`
-- `ReplayDiceShakerFactoryAdapter`
-- `ConsoleTurnAdapter`
-- `ConsoleGameStartedAdapter`
-- `ConsoleGameEndedAdapter`
-- `ConsoleGameSavedAdapter`
-- `ConsoleReplayAdapter`
-
-### UML Diagram
-
-```mermaid
-classDiagram
-    Board <|.. BoardFactoryAdapter
-    DiceShaker <|.. RandomDiceShakerAdapter
-    DiceShaker <|.. FixedDiceShakerAdapter
-    RecordingDiceShakerPort <|.. RecordingDiceShakerAdapter
-    ReplayDiceShakerFactory <|.. ReplayDiceShakerFactoryAdapter
-    ReplayObserverPort <|.. ConsoleReplayAdapter
-
-    class Board {
-        <<interface>>
-    }
-
-    class DiceShaker {
-        <<interface>>
-    }
-
-    class RecordingDiceShakerPort {
-        <<interface>>
-    }
-
-    class ReplayDiceShakerFactory {
-        <<interface>>
-    }
-
-    class ReplayObserverPort {
-        <<interface>>
-    }
-
-    class BoardFactoryAdapter
-
-    class RandomDiceShakerAdapter
-
-    class FixedDiceShakerAdapter
-
-    class RecordingDiceShakerAdapter
-
-    class ReplayDiceShakerFactoryAdapter
-
-    class ConsoleReplayAdapter
-```
-
-### Why It Is Used
-
-Adapters connect the application core to infrastructure details, while keeping the domain and use cases independent.
-
-### SOLID Principles Used
-
-#### Dependency Inversion Principle
-
-The application core depends on ports, while adapters implement those ports.
-
-#### Single Responsibility Principle
-
-Each adapter converts one external concern into the form expected by the application.
-
----
+Use cases depend on `SavedGameRepository`, not file or memory storage directly.
 
 # Overall Evaluation
 
@@ -1600,15 +1205,6 @@ The game uses patterns for real design problems:
 - Repository for save/replay persistence
 - Adapter for infrastructure separation
 
-### Good Use of SOLID
-
-The most strongly demonstrated principles are:
-
-- Single Responsibility Principle
-- Open/Closed Principle
-- Dependency Inversion Principle
-- Liskov Substitution Principle
-
 ## Limitations
 
 ### More Classes and Complexity
@@ -1627,4 +1223,38 @@ The game relies on correct wiring of strategies, decorators, observers, and adap
 
 The game demonstrates a strong implementation of clean architecture and object-oriented design. The use of Ports and Adapters keeps the domain independent from infrastructure, while the design patterns make the game flexible enough to support the required variations and advanced features.
 
-Overall, the implementation is scalable, maintainable, and suitable for extension.
+```text
+=== GAME 1 ===
+
+Players: 2
+
+Board Size: 25
+
+Game Rules: None
+
+Fixed sequence of dice rolls [1, 2, 3, 4, 5, 6]
+
+Board: rows = 5 columns = 5
+
+RED Home (Position 1), 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, End (Position 25)
+
+BLUE Home (Position 25), 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, End (Position 1)
+
+RED's turn 1 rolls Single Dice 1
+RED moves from Home (Position 1) to 2
+
+BLUE's turn 1 rolls Single Dice 2
+BLUE moves from Home (Position 25) to 23
+
+...
+
+BLUE wins! in 12 turns
+Total turns: 12
+
+Game State: InPlay → GameOver
+
+Dice rolls: {1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6}
+
+Game Id: 1 saved.
+```
+
