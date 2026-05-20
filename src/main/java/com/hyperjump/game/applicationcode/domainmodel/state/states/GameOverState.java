@@ -7,11 +7,9 @@ import com.hyperjump.game.applicationcode.domainmodel.state.GameState;
 public class GameOverState implements GameState {
 
     private final GameContext context;
-    private final Player winner;
 
-    public GameOverState(GameContext context, Player winner) {
+    public GameOverState(GameContext context) {
         this.context = context;
-        this.winner = winner;
     }
 
     @Override
@@ -23,7 +21,4 @@ public class GameOverState implements GameState {
         return true;
     }
 
-    public Player getWinner() {
-        return winner;
-    }
 }
