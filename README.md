@@ -4,7 +4,9 @@
 
 HyperJump is a Java-based turn-based board game that allows players to move across a board using dice rolls. The game supports multiple gameplay variations such as single-die movement, exact-end rules, hit detection, teleporting through wormholes, and larger boards for four players.
 
-The project is designed using clean architecture principles, especially **Ports and Adapters Architecture**, so that the core game logic is separated from infrastructure code such as console output, persistence, replay storage, and dice adapters.
+The game is designed using clean architecture principles, especially **Ports and Adapters Architecture**, so that the core game logic is separated from infrastructure code such as console output, persistence, replay storage, and dice adapters.
+
+To run the game, make sure to input "test, memory" in the active profiles category in run configurations for a fixed single dice simulation, while "real, memory" is for a random double/single dice simulation of all variations.
 
 The implementation also uses several design patterns, including:
 
@@ -14,8 +16,6 @@ The implementation also uses several design patterns, including:
 - State Pattern
 - Observer Pattern
 - Repository Pattern
-
-These patterns help make the game easier to extend, test, and maintain.
 
 # Architecture
 
@@ -786,7 +786,7 @@ New rule-selection strategies can be added without changing the rule setup use c
 
 `InitialiseRulesUseCase` depends on `RuleSelectionStrategy`, not concrete rule selection classes.
 
-# Strategy Pattern
+## Strategy Pattern
 
 Pattern is used in:
 
