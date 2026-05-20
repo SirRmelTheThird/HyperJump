@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GameConsoleRunner implements CommandLineRunner {
 
-    private static final int GAME_COUNT = 7;
+    private static final int GAME_COUNT = 8;
 
     private final StartGameUseCase startGameUseCase;
     private final ReplayGameUseCase replayGameUseCase;
