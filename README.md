@@ -414,6 +414,8 @@ New adapters can be added without changing the core game logic.
 ## Single Die Variation
 
 The game supports the use of a single six-sided die for testing purpose the fixed single dice sequence will be used as an alternative to the standard random two-dice setup.
+The dice system is abstracted through dice interfaces and implementations. This allows the game to use either a random double dice / single dice, or for this example a fixed single dice for replay and testing.
+
 
 ### UML Diagram
 
@@ -446,11 +448,7 @@ classDiagram
     }
 ```
 
-### Design
-
-The dice system is abstracted through dice interfaces and implementations. This allows the game to use either a random double dice / single dice, or for this example a fixed single dice for replay and testing.
-
-### SOLID Principles Used
+### SOLID Principles 
 
 #### Single Responsibility Principle
 
@@ -466,9 +464,7 @@ The game depends on dice abstractions rather than concrete dice classes.
 
 ## Exact End Variation
 
-### Description
-
-Players must land exactly on the END position to win. If the dice roll is too high, the player reaches the end and then bounces backwards.
+The Exact End variation is implemented using a movement decorator. The `ExactEndVariationDecorator` wraps the normal movement behaviour and adds bounce-back logic.
 
 ### UML Diagram
 
@@ -510,11 +506,7 @@ classDiagram
     }
 ```
 
-### Design
-
-The Exact End variation is implemented using a movement decorator. The `ExactEndVariationDecorator` wraps the normal movement behaviour and adds bounce-back logic.
-
-### SOLID Principles Used
+### SOLID Principles
 
 #### Open/Closed Principle
 
@@ -528,13 +520,9 @@ Exact-end behaviour is added without modifying `BasicMovement`.
 
 The decorator can be used wherever a `Movement` object is expected.
 
----
-
 ## Hit Variation
 
-### Description
-
-If a player would land on a position occupied by another player, the moving player stays where they are and forfeits the turn.
+The Hit variation uses both the **Decorator Pattern** and the **Strategy Pattern**. The decorator adds hit behaviour to movement, while `HitStrategy` allows the hit detection algorithm to be separated from the rule itself.
 
 ### UML Diagram
 
@@ -585,11 +573,7 @@ classDiagram
     }
 ```
 
-### Design
-
-The Hit variation uses both the **Decorator Pattern** and the **Strategy Pattern**. The decorator adds hit behaviour to movement, while `HitStrategy` allows the hit detection algorithm to be separated from the rule itself.
-
-### SOLID Principles Used
+### SOLID Principles
 
 #### Single Responsibility Principle
 
@@ -603,13 +587,9 @@ New hit strategies can be added without changing `HitRule`.
 
 `HitRule` depends on the `HitStrategy` interface rather than a concrete implementation.
 
----
-
 ## Teleport Variation
 
-### Description
-
-Players can teleport through wormholes. If a player lands on one side of a wormhole, they are moved to the paired position.
+The Teleport variation uses the **Decorator Pattern** to add teleport behaviour to movement. It also uses the **Strategy Pattern** to allow different ways of generating wormholes, such as fixed teleport positions, random teleport positions, or no teleport positions.
 
 ### UML Diagram
 
@@ -664,11 +644,7 @@ classDiagram
     }
 ```
 
-### Design
-
-The Teleport variation uses the **Decorator Pattern** to add teleport behaviour to movement. It also uses the **Strategy Pattern** to allow different ways of generating wormholes, such as fixed teleport positions, random teleport positions, or no teleport positions.
-
-### SOLID Principles Used
+### SOLID Principles
 
 #### Open/Closed Principle
 
@@ -682,9 +658,7 @@ Teleport behaviour and teleport generation can be changed without modifying the 
 
 `TeleportRule` depends on `TeleportGenerationStrategy`, not a concrete generator.
 
----
-
-## Large Board with Four Players Variation
+## Large Board Variation
 
 ### Description
 
@@ -694,6 +668,8 @@ The game supports two board/player configurations:
 - Large 6x6 board with 4 players
 
 ### UML Diagram
+
+The game uses a board factory adapter to create the correct board based on the number of players. This separates board creation from the main game logic.
 
 ```mermaid
 classDiagram
@@ -730,11 +706,7 @@ classDiagram
     class LargeBoard
 ```
 
-### Design
-
-The game uses a board factory adapter to create the correct board based on the number of players. This separates board creation from the main game logic.
-
-### SOLID Principles Used
+### SOLID Principles
 
 #### Open/Closed Principle
 
@@ -748,13 +720,9 @@ New board types can be added without changing the main game flow.
 
 The application uses the `Board` port instead of directly depending on board implementations.
 
----
-
 ## Player Position Variation
 
-### Description
-
-Player starting and ending positions change depending on whether the game has two or four players.
+This uses the Strategy Pattern. Different positioning algorithms are used for two-player and four-player games.
 
 ### UML Diagram
 
@@ -781,11 +749,7 @@ classDiagram
     class FourPlayerPosition
 ```
 
-### Design
-
-This uses the Strategy Pattern. Different positioning algorithms are used for two-player and four-player games.
-
-### SOLID Principles Used
+### SOLID Principles 
 
 #### Single Responsibility Principle
 
@@ -799,15 +763,11 @@ New player positioning rules can be added as new strategies.
 
 `InitialisePlayerUseCase` can depend on the strategy abstraction instead of hardcoding player placement logic.
 
----
-
 # Advanced Features
 
 ## Game State Machine
 
-### Description
-
-The game uses a state machine to control the game lifecycle:
+The game state machine is implemented using the **State Pattern**. Each state controls its own behaviour rather than using large conditional statements.
 
 - Ready State
 - In Play State
@@ -866,11 +826,7 @@ classDiagram
     class GameOverState
 ```
 
-### Design
-
-The game state machine is implemented using the **State Pattern**. Each state controls its own behaviour rather than using large conditional statements.
-
-### SOLID Principles Used
+### SOLID Principles 
 
 #### Single Responsibility Principle
 
@@ -884,13 +840,10 @@ New states can be added without rewriting the state machine.
 
 All states implement `GameState` and can be used interchangeably.
 
----
-
 ## Game Save and Replay
 
-### Description
-
-The game can save completed games and replay them later using the saved configuration and dice rolls.
+The save and replay system uses ports and adapters to keep persistence and replay dice separate from the core game logic.
+The game can save completed games in memory and replay them later using the saved configuration and dice rolls.
 
 ### UML Diagram
 
@@ -906,10 +859,10 @@ classDiagram
     SavedGameRepository <|.. InMemorySavedGameRepositoryAdapter
     SavedGameRepository <|.. JsonFileSavedGameRepositoryAdapter
 
-    ReplayDiceShakerFactory <|.. ReplayDiceShakerFactoryAdapter
+    ReplayDiceShaker <|.. ReplayDiceShakerAdapter
     DiceShaker <|.. ReplayDiceShakerAdapter
 
-    ReplayDiceShakerFactoryAdapter --> ReplayDiceShakerAdapter : instantiate
+    ReplayDiceShakerAdapter --> ReplayDiceShaker : instantiate
 
     class ReplayGameUseCase {
         <<interface>>
@@ -927,7 +880,7 @@ classDiagram
         +findAll()
     }
 
-    class ReplayDiceShakerFactory {
+    class ReplayDiceShaker {
         <<interface>>
         +createReplayDiceShaker(rolls): DiceShaker
     }
@@ -947,20 +900,16 @@ classDiagram
 
     class JsonFileSavedGameRepositoryAdapter
 
-    class ReplayDiceShakerFactoryAdapter
+    class ReplayDiceShakerAdapter
 
     class ReplayDiceShakerAdapter
 ```
 
-### Design
-
-The save and replay system uses ports and adapters to keep persistence and replay dice separate from the core game logic.
-
-### SOLID Principles Used
+### SOLID Principles 
 
 #### Dependency Inversion Principle
 
-Replay logic depends on `SavedGameRepository` and `ReplayDiceShakerFactory` interfaces.
+Replay logic depends on `SavedGameRepository` and `ReplayDiceShaker` interfaces.
 
 #### Open/Closed Principle
 
@@ -970,9 +919,8 @@ Different storage implementations can be added without changing replay logic.
 
 `ReplayGameService` handles replay, repositories handle saving/loading, and replay dice adapters reproduce saved dice rolls.
 
----
 
-# Design Patterns Used
+# Design Patterns 
 
 ## Factory Pattern
 
