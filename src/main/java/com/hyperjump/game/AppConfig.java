@@ -1,7 +1,6 @@
 package com.hyperjump.game;
 
-import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.RuleSelectionStrategy;
-import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.TeleportGenerationStrategy;
+import com.hyperjump.game.applicationcode.domainmodel.rules.strategy.*;
 import com.hyperjump.game.applicationcode.port.in.ReplayGameUseCase;
 import com.hyperjump.game.applicationcode.port.in.StartGameUseCase;
 import com.hyperjump.game.applicationcode.port.out.*;
@@ -13,6 +12,7 @@ import com.hyperjump.game.infrastructure.driven.dice.RecordingDiceShakerAdapter;
 import com.hyperjump.game.infrastructure.driving.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.util.List;
 
@@ -26,6 +26,31 @@ public class AppConfig {
     private final GameEndedObserverPort    gameEndedDisplay = new ConsoleGameEndedAdapter(display);
     private final GameStartedObserverPort  gameStartedDisplay = new ConsoleGameStartedAdapter(display);
     private final GameSavedObserverPort    gameSavedDisplay = new ConsoleGameSavedAdapter(display);
+
+
+    @Bean
+    @Profile("real")
+    public RuleSelectionStrategy randomRuleSelection() {
+        return new RandomRuleSelection();
+    }
+
+    @Bean
+    @Profile("test")
+    public RuleSelectionStrategy fixedRuleSelection() {
+        return new FixedRuleSelection();
+    }
+
+    @Bean
+    @Profile("real")
+    public TeleportGenerationStrategy randomTeleportGeneration() {
+        return new RandomTeleportGeneration();
+    }
+
+    @Bean
+    @Profile("test")
+    public TeleportGenerationStrategy fixedTeleportGeneration() {
+        return new FixedTeleportGeneration();
+    }
 
     @Bean
     public RecordingDiceShakerPort recordingDiceShaker(DiceShaker diceShaker) {

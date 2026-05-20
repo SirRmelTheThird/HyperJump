@@ -1,6 +1,7 @@
 package com.hyperjump.game.infrastructure.driving;
 
 import com.hyperjump.game.applicationcode.domainmodel.replay.SavedGame;
+import com.hyperjump.game.applicationcode.port.out.DisplayPort;
 import com.hyperjump.game.applicationcode.port.out.GameRunnerObserverPort;
 
 public class ConsoleGameRunnerDisplayAdapter implements GameRunnerObserverPort {

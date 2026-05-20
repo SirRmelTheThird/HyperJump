@@ -1,11 +1,10 @@
 package com.hyperjump.game.infrastructure.driving;
 
 import com.hyperjump.game.applicationcode.domainmodel.movement.TurnOutcome;
-import com.hyperjump.game.applicationcode.domainmodel.movement.events.GameEvent;
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
 import com.hyperjump.game.applicationcode.domainmodel.player.PlayerTurn;
 import com.hyperjump.game.applicationcode.domainmodel.value.DiceRoll;
-import com.hyperjump.game.applicationcode.domainmodel.value.Position;
+import com.hyperjump.game.applicationcode.port.out.DisplayPort;
 import com.hyperjump.game.applicationcode.port.out.TurnObserverPort;
 
 import java.util.stream.Collectors;

@@ -2,6 +2,7 @@ package com.hyperjump.game.infrastructure.driving;
 
 import com.hyperjump.game.applicationcode.domainmodel.replay.SavedGame;
 import com.hyperjump.game.applicationcode.domainmodel.value.DiceRoll;
+import com.hyperjump.game.applicationcode.port.out.DisplayPort;
 import com.hyperjump.game.applicationcode.port.out.GameSavedObserverPort;
 
 import java.util.stream.Collectors;

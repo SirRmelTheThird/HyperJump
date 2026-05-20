@@ -2,6 +2,7 @@ package com.hyperjump.game.infrastructure.driving;
 
 import com.hyperjump.game.applicationcode.domainmodel.player.Player;
 import com.hyperjump.game.applicationcode.domainmodel.value.Position;
+import com.hyperjump.game.applicationcode.port.out.DisplayPort;
 import com.hyperjump.game.applicationcode.port.out.GameRule;
 import com.hyperjump.game.applicationcode.port.out.GameStartedObserverPort;
 

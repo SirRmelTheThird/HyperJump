@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-@Component
-@Profile("real")
 public class RandomTeleportGeneration implements TeleportGenerationStrategy {
 
     private static final int MAX_WORMHOLES = 2;

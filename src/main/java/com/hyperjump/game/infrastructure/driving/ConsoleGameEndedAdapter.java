@@ -1,5 +1,6 @@
 package com.hyperjump.game.infrastructure.driving;
 
+import com.hyperjump.game.applicationcode.port.out.DisplayPort;
 import com.hyperjump.game.applicationcode.port.out.GameEndedObserverPort;
 
 public class ConsoleGameEndedAdapter implements GameEndedObserverPort {

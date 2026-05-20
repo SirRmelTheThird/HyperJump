@@ -1,5 +1,7 @@
 package com.hyperjump.game.infrastructure.driving;
 
+import com.hyperjump.game.applicationcode.port.out.DisplayPort;
+
 public class ConsoleDisplayAdapter implements DisplayPort {
 
     @Override

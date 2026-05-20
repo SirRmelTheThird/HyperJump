@@ -1,13 +1,9 @@
 package com.hyperjump.game.applicationcode.domainmodel.rules.strategy;
 
 import com.hyperjump.game.applicationcode.port.out.GameRule;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
-@Profile("test")
 public class FixedRuleSelection implements RuleSelectionStrategy {
 
     private int index = 0;
