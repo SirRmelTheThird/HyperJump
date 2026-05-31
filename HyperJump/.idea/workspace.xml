@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5ace572d-e43a-4968-8948-f469daf7e4bd" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Record" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;SirRmelTheThird&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/SirRmelTheThird/HyperJump.git&quot;,
+    &quot;accountId&quot;: &quot;4c8de1ad-8a8a-476e-9600-707034e521b5&quot;
+  }
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3DrJ6oGyendu5oQIxntxqsQiQQI" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.FIxedGameInMemory.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.FixedGameInJSON.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.GameApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.Real.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.RealGameInJSON.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.RealGameInMemory.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.Test.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/armel/IntelliJ/HyperJump/Game&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.hyperjump.game.applicationcode.domainmodel.gameenum" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.FIxedGameInMemory">
+    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="ACTIVE_PROFILES" value="test,file" />
+      <module name="game" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.hyperjump.game.GameApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Spring Boot.RealGameInMemory" />
+      <item itemvalue="Spring Boot.FIxedGameInMemory" />
+      <item itemvalue="Spring Boot.RealGameInJSON" />
+      <item itemvalue="Spring Boot.FixedGameInJSON" />
+    </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.33514.17" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5ace572d-e43a-4968-8948-f469daf7e4bd" name="Changes" comment="" />
+      <created>1779034082914</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1779034082914</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
