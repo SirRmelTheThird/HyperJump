@@ -1223,6 +1223,7 @@ The game relies on correct wiring of strategies, decorators, observers, and adap
 
 The game demonstrates a strong implementation of clean architecture and object-oriented design. The use of Ports and Adapters keeps the domain independent from infrastructure, while the design patterns make the game flexible enough to support the required variations and advanced features.
 
+## Example Output
 ```text
 === GAME 1 ===
 
@@ -1257,4 +1258,10 @@ Dice rolls: {1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6}
 
 Game Id: 1 saved.
 ```
+
+## License
+
+This project is licensed under the MIT License.
+
+See the `LICENSE` file for more information.
 
