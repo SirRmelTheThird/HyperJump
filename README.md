@@ -1,6 +1,6 @@
 <div align="center">
     
-# HyperJump
+# ♟️ HyperJump
 
 ![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk&logoColor=white) 
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.14-6DB33F?logo=springboot&logoColor=white) 
