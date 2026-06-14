@@ -1,6 +1,6 @@
 <div align="center">
     
-# ♟️ HyperJump
+# 🎲 HyperJump
 
 ![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk&logoColor=white) 
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.14-6DB33F?logo=springboot&logoColor=white) 
@@ -28,7 +28,7 @@ The implementation also uses several design patterns, including:
 - Observer Pattern
 - Repository Pattern
 
-# Architecture
+# 🏗️ Architecture
 
 ## Game
 
@@ -139,7 +139,7 @@ Files:
 
 These classes control the use cases but do not directly depend on infrastructure details.
 
-# Ports and Adapters 
+# 🔌 Ports and Adapters
 
 The project uses **Ports and Adapters**, also known as **Hexagonal Architecture**.
 
@@ -279,7 +279,7 @@ Each adapter has one job. For example, `JsonFileSavedGameRepositoryAdapter` hand
 
 New adapters can be added without changing the core game logic.
 
-# Variations / Advanced Features
+# 🎯 Variations
 
 ## Single Die Variation
 
@@ -587,7 +587,7 @@ New board types can be added without changing the main game flow.
 
 The application uses the `Board` port instead of directly depending on board implementations.
 
-# Advanced Features
+# ⚡ Advanced Features
 
 ## Game State Machine
 
@@ -700,7 +700,7 @@ Replay logic depends on `SavedGameRepository` and `ReplayDiceShaker` interfaces.
 
 Different storage implementations can be added without changing replay logic.
 
-# Design Patterns 
+# 🧩 Design Patterns
 
 ## Factory Pattern
 
@@ -1186,7 +1186,7 @@ New storage methods can be added without changing game or replay services.
 
 Use cases depend on `SavedGameRepository`, not file or memory storage directly.
 
-# Overall Evaluation
+# 📝 Overall Evaluation
 
 The implementation successfully applies object-oriented design, clean architecture, and multiple design patterns to solve the requirements of the board game simulation.
 
