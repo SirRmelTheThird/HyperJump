@@ -6,7 +6,6 @@
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.14-6DB33F?logo=springboot&logoColor=white) 
 ![Maven](https://img.shields.io/badge/Maven-build-C71A36?logo=apachemaven&logoColor=white) 
 ![License](https://img.shields.io/badge/license-MIT-blue)
-
     
 </div>
 
