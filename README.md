@@ -2,12 +2,11 @@
     
 # HyperJump
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Java-25-orange?logo=openjdk&logoColor=white">
-  <img src="https://img.shields.io/badge/Spring_Boot-3.5.14-6DB33F?logo=springboot&logoColor=white">
-  <img src="https://img.shields.io/badge/Maven-build-C71A36?logo=apachemaven&logoColor=white">
-  <img src="https://img.shields.io/badge/license-MIT-blue">
-</p>
+![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk&logoColor=white) 
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.14-6DB33F?logo=springboot&logoColor=white) 
+![Maven](https://img.shields.io/badge/Maven-build-C71A36?logo=apachemaven&logoColor=white) 
+![License](https://img.shields.io/badge/license-MIT-blue)
+
     
 </div>
 
