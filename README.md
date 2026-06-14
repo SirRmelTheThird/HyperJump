@@ -4,6 +4,8 @@
     
 </div>
 
+<img width="1158" height="1211" alt="Screenshot 2026-06-14 113412" src="https://github.com/user-attachments/assets/36b87377-2c68-4894-8f78-dc7a664ac33e" />
+
 ## Introduction
 
 HyperJump is a Java-based turn-based board game that allows players to move across a board using dice rolls. The game supports multiple gameplay variations such as single-die movement, exact-end rules, hit detection, teleporting through wormholes, and larger boards for four players.
