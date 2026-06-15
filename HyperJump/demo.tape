@@ -1,10 +1,10 @@
-Output demo.gif
+Output docs/demo.gif
 
-Set FontSize 14
-Set Width 1000
-Set Height 600
+Set FontSize 22
+Set Width 800
+Set Height 450
 Set Theme "Dracula"
 
-Type "mvn spring-boot:run -Dspring-boot.run.profiles=test,memory"
+Type "./mvnw spring-boot:run '-Dspring-boot.run.profiles=test,memory'"
 Enter
 Sleep 10s
