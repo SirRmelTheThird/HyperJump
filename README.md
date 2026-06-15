@@ -9,7 +9,7 @@
     
 </div>
 
-<img width="1158" height="1211" alt="Screenshot 2026-06-14 113412" src="https://github.com/user-attachments/assets/36b87377-2c68-4894-8f78-dc7a664ac33e" />
+<img src="https://github.com/SirRmelTheThird/HyperJump/blob/main/HyperJump/docs/demo.gif?raw=true" alt="HyperJump Demo"/>
 
 ## Introduction
 
