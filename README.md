@@ -2,10 +2,10 @@
     
 # 🎲 HyperJump
 
-![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk&logoColor=white) 
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.14-6DB33F?logo=springboot&logoColor=white) 
-![Maven](https://img.shields.io/badge/Maven-build-C71A36?logo=apachemaven&logoColor=white) 
-![License](https://img.shields.io/badge/license-MIT-blue)
+[![Java](https://img.shields.io/badge/Java-25-orange.svg?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.java.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.14-6DB33F.svg?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Maven](https://img.shields.io/badge/Maven-build-C71A36.svg?style=for-the-badge&logo=apachemaven&logoColor=white)](https://maven.apache.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
     
 </div>
 
